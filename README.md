@@ -1,5 +1,7 @@
 # How to run the project
-`pip install requirements.txt`
+`pip install requirements.txt\n
+`
+
 `python3 manage.py runserver`
 
 
