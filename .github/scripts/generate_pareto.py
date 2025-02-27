@@ -6,7 +6,7 @@ from collections import Counter
 # GitHub API setup
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPO = os.getenv("GITHUB_REPOSITORY")
-HEADERS = {"Authorization": f"token {GITHUB_TOKEN}"}
+HEADERS = {"Authorization": f"Bearer {GITHUB_TOKEN}"}  # Update token type to Bearer
 
 # Fetch issues
 def fetch_issues():
