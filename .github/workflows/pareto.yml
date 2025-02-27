@@ -1,0 +1,33 @@
+name: Pareto Chart Generator
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+  schedule:
+    - cron: "0 0 * * 1"  # Runs every Monday at midnight
+
+jobs:
+  generate-pareto:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install Dependencies
+        run: pip install matplotlib requests
+
+      - name: Generate Pareto Chart
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python .github/scripts/generate_pareto.py
+
+      - name: Upload Pareto Chart
+        uses: actions/upload-artifact@v3
+        with:
+          name: pareto-chart
+          path: pareto_chart.png
