@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to the latest version
 
       - name: Set Up Python
         uses: actions/setup-python@v4
@@ -27,7 +27,7 @@ jobs:
         run: python .github/scripts/generate_pareto.py
 
       - name: Upload Pareto Chart
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Updated to v4
         with:
           name: pareto-chart
           path: pareto_chart.png
