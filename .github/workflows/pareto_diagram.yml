@@ -1,8 +1,9 @@
+
 name: Generate Pareto Diagram
 
 on:
   schedule:
-    - cron: '0 0 * * 1' # Runs every Monday at midnight
+    - cron: '0 0 * * 1' # Runs every Monday
   push:
     branches:
       - main
