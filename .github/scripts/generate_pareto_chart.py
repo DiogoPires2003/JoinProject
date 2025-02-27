@@ -1,31 +1,34 @@
-import matplotlib.pyplot as plt
-from collections import Counter
 import requests
+import matplotlib.pyplot as plt
 
-# Get issues from the GitHub API
-response = requests.get('https://api.github.com/repos/DiogoPires2003/JoinProject/issues?state=all')
-issues = response.json()
+# Replace with your repository owner and name
+owner = "DiogoPires2003"
+repo = "JoinProject"
 
-# Count the occurrences of each label
-label_counts = Counter(label['name'] for issue in issues for label in issue['labels'])
+# Fetch open issues
+open_issues = requests.get(f"https://api.github.com/repos/{owner}/{repo}/issues?state=open").json()
+# Fetch closed issues
+closed_issues = requests.get(f"https://api.github.com/repos/{owner}/{repo}/issues?state=closed").json()
 
-# Sort labels by count in descending order
-sorted_labels = sorted(label_counts.items(), key=lambda x: x[1], reverse=True)
-labels, counts = zip(*sorted_labels)
+# Count issues by labels
+issue_counts = {}
+for issue in open_issues + closed_issues:
+    for label in issue.get('labels', []):
+        label_name = label['name']
+        issue_counts[label_name] = issue_counts.get(label_name, 0) + 1
 
-# Create the Pareto chart
-fig, ax = plt.subplots()
-ax.bar(labels, counts, color='b')
-ax.set_xlabel('Labels')
-ax.set_ylabel('Number of Issues')
-ax.set_title('Pareto Chart of Issues by Label')
+# Sort issues by count
+sorted_issue_counts = dict(sorted(issue_counts.items(), key=lambda item: item[1], reverse=True))
 
-# Plot cumulative percentage line
-cumulative_counts = [sum(counts[:i+1]) for i in range(len(counts))]
-cumulative_percentage = [count / cumulative_counts[-1] * 100 for count in cumulative_counts]
-ax2 = ax.twinx()
-ax2.plot(labels, cumulative_percentage, color='r', marker='D', ms=5)
-ax2.set_ylabel('Cumulative Percentage')
+# Generate Pareto Diagram
+labels = list(sorted_issue_counts.keys())
+counts = list(sorted_issue_counts.values())
 
-# Save the chart
-plt.savefig('pareto_chart.png')
+plt.figure(figsize=(10, 6))
+plt.bar(labels, counts, color='blue')
+plt.xlabel('Issue Labels')
+plt.ylabel('Number of Issues')
+plt.title('Pareto Diagram of Issues')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig('pareto_diagram.png')
