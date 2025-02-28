@@ -41,4 +41,4 @@ jobs:
           git config --global user.email 'github-actions@github.com'
           git add pareto_chart.png
           git commit -m 'Add generated Pareto chart'
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
