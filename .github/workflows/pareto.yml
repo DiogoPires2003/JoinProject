@@ -30,7 +30,7 @@ jobs:
           python pareto.py
       
       - name: Upload Pareto chart
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pareto-chart
           path: pareto_chart.png
