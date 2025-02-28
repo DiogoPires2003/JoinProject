@@ -27,7 +27,7 @@ jobs:
       
       - name: Run Pareto analysis script
         run: |
-          python pareto.py
+          python .github/scripts/pareto.py
       
       - name: Upload Pareto chart
         uses: actions/upload-artifact@v4
