@@ -1,13 +1,41 @@
+import os
+import requests
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Sample data: replace with actual issue data
-data = {
-    'Issue Type': ['UI Bug', 'Crash', 'Performance Issue', 'Security Vulnerability', 'API Error'],
-    'Count': [150, 80, 60, 30, 20],
-    'Severity': ['High', 'Critical', 'Medium', 'High', 'Low']
+# GitHub repository details
+repo_owner = os.getenv('GITHUB_REPOSITORY_OWNER')  # This will be set automatically by GitHub Actions
+repo_name = os.getenv('GITHUB_REPOSITORY').split('/')[1]
+github_token = os.getenv('GH_PAT')  # Make sure you set this secret in your GitHub Actions
+
+# GitHub API endpoint for issues
+url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/issues"
+
+# Set up the headers with authentication
+headers = {
+    "Authorization": f"token {github_token}"
 }
+
+# Fetch issues from the repository
+response = requests.get(url, headers=headers)
+issues = response.json()
+
+# Process the issue data
+data = {'Issue Type': [], 'Count': [], 'Severity': []}
+
+for issue in issues:
+    if 'pull_request' not in issue:  # Exclude pull requests
+        issue_type = issue.get('labels', [{}])[0].get('name', 'Unlabeled')  # Use the first label as the issue type
+        severity = 'High'  # You can customize how to map severity from issue labels or other properties
+        data['Issue Type'].append(issue_type)
+        data['Count'].append(1)
+        data['Severity'].append(severity)
+
+# Create a DataFrame
 df = pd.DataFrame(data)
+
+# Group by issue type and count occurrences
+df = df.groupby(['Issue Type']).agg({'Count': 'sum'}).reset_index()
 
 # Sort data in descending order of frequency
 df = df.sort_values(by='Count', ascending=False)
