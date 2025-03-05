@@ -32,19 +32,13 @@ jobs:
       - name: Get issues with conventional commits
         id: get_issues
         run: |
-          # Use GitHub API to list issues and filter conventional commits (e.g., feat, fix, docs, etc.)
           issues=$(curl -s -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
             "https://api.github.com/repos/${{ github.repository }}/issues?state=open")
-          
-          # Filter for conventional commit types (for example, 'feat' or 'fix')
           conventional_issues=$(echo "$issues" | jq -r '.[] | select(.title | test("^(feat|fix|docs|chore):")) | .number')
-
-          # Pass the filtered issues to the Python script
           echo "::set-output name=issues::$conventional_issues"
 
       - name: Run Pareto analysis script
         run: |
-          # Pass the issues to the Python script
           python .github/scripts/pareto.py ${{ steps.get_issues.outputs.issues }}
 
       - name: List files in the repository (for debugging)
