@@ -32,9 +32,9 @@ jobs:
         run: |
           python .github/scripts/pareto.py
       
-      - name: Check if pareto_chart.png is staged for commit
+      - name: List files in the repository (for debugging)
         run: |
-          git status
+          ls -la
 
       - name: Upload Pareto chart
         uses: actions/upload-artifact@v4
@@ -46,7 +46,7 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git add pareto_chart.png
+          git add -f pareto_chart.png
           git commit -m 'Add generated Pareto chart'
           git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }} HEAD:main
         env:
