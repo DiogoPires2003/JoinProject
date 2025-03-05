@@ -25,7 +25,12 @@ data = {'Issue Type': [], 'Count': [], 'Severity': []}
 
 for issue in issues:
     if 'pull_request' not in issue:  # Exclude pull requests
-        issue_type = issue.get('labels', [{}])[0].get('name', 'Unlabeled')  # Use the first label as the issue type
+        # Check if 'labels' exists and is a list, then fetch the label
+        labels = issue.get('labels', [])
+        if labels:  # If there are labels, use the first one
+            issue_type = labels[0].get('name', 'Unlabeled')
+        else:
+            issue_type = 'Unlabeled'  # No labels found
         severity = 'High'  # You can customize how to map severity from issue labels or other properties
         data['Issue Type'].append(issue_type)
         data['Count'].append(1)
