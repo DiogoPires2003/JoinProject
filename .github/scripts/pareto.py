@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -16,6 +17,9 @@ headers = {
     "Authorization": f"token {github_token}"
 }
 
+# Regular expression for conventional commit format
+conventional_commit_regex = r'^(feat|fix|chore|docs|style|refactor|test)(\([^\)]+\))?: .+'
+
 # Fetch issues from the repository
 response = requests.get(url, headers=headers)
 issues = response.json()
@@ -25,16 +29,28 @@ data = {'Issue Type': [], 'Count': [], 'Severity': []}
 
 for issue in issues:
     if 'pull_request' not in issue:  # Exclude pull requests
-        # Check if 'labels' exists and is a list, then fetch the label
-        labels = issue.get('labels', [])
-        if labels:  # If there are labels, use the first one
-            issue_type = labels[0].get('name', 'Unlabeled')
-        else:
-            issue_type = 'Unlabeled'  # No labels found
-        severity = 'High'  # You can customize how to map severity from issue labels or other properties
-        data['Issue Type'].append(issue_type)
-        data['Count'].append(1)
-        data['Severity'].append(severity)
+        # Check if issue has any commits (via associated PR commits or other)
+        commits_url = issue.get('comments_url', '').replace('comments', 'commits')
+        
+        if commits_url:
+            commits_response = requests.get(commits_url, headers=headers)
+            commits = commits_response.json()
+            
+            # Check each commit message against the conventional commit regex
+            for commit in commits:
+                commit_message = commit.get('commit', {}).get('message', '')
+                if re.match(conventional_commit_regex, commit_message):
+                    # If the commit follows conventional commit format, process this issue
+                    labels = issue.get('labels', [])
+                    if labels:  # If there are labels, use the first one
+                        issue_type = labels[0].get('name', 'Unlabeled')
+                    else:
+                        issue_type = 'Unlabeled'  # No labels found
+                    severity = 'High'  # You can customize how to map severity from issue labels or other properties
+                    data['Issue Type'].append(issue_type)
+                    data['Count'].append(1)
+                    data['Severity'].append(severity)
+                    break  # Stop after finding the first valid conventional commit
 
 # Create a DataFrame
 df = pd.DataFrame(data)
