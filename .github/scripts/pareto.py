@@ -22,18 +22,28 @@ conventional_commit_regex = r'^(feat|fix|chore|docs|style|refactor|test)(\([^\)]
 
 # Fetch issues from the repository
 response = requests.get(url, headers=headers)
+
+# Check for valid response
+if response.status_code != 200:
+    print(f"Error fetching issues: {response.status_code} - {response.text}")
+    exit(1)
+
 issues = response.json()
 
 # Process the issue data
 data = {'Issue Type': [], 'Count': [], 'Severity': []}
 
 for issue in issues:
-    if 'pull_request' not in issue:  # Exclude pull requests
+    if isinstance(issue, dict) and 'pull_request' not in issue:  # Exclude pull requests and ensure it's a valid issue
         # Check if issue has any commits (via associated PR commits or other)
         commits_url = issue.get('comments_url', '').replace('comments', 'commits')
         
         if commits_url:
             commits_response = requests.get(commits_url, headers=headers)
+            if commits_response.status_code != 200:
+                print(f"Error fetching commits: {commits_response.status_code} - {commits_response.text}")
+                continue  # Skip this issue if there's an error fetching commits
+            
             commits = commits_response.json()
             
             # Check each commit message against the conventional commit regex
@@ -54,6 +64,11 @@ for issue in issues:
 
 # Create a DataFrame
 df = pd.DataFrame(data)
+
+# If no data was added, print a message
+if df.empty:
+    print("No issues with conventional commits found.")
+    exit(0)
 
 # Group by issue type and count occurrences
 df = df.groupby(['Issue Type']).agg({'Count': 'sum'}).reset_index()
