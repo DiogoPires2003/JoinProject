@@ -1,6 +1,9 @@
 name: Pareto Analysis
+
 permissions:
   contents: write
+  issues: read  # This grants access to issue data
+
 on:
   push:
     branches:
@@ -12,24 +15,27 @@ on:
 jobs:
   pareto_analysis:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pandas matplotlib requests
-      
+
       - name: Run Pareto analysis script
         run: |
           python .github/scripts/pareto.py
-      
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}  # Ensure the GitHub token is passed
+
       - name: Upload Pareto chart
         uses: actions/upload-artifact@v4
         with:
