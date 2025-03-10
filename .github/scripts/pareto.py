@@ -4,8 +4,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import json
 
-# Get issues data from environment variable
-issues_data = os.getenv('ISSUES')
+# Get issues data from file
+issues_file = os.getenv('ISSUES_FILE')
+with open(issues_file, 'r') as file:
+    issues_data = file.read()
+
 issues = json.loads(issues_data)
 
 conventional_commit_pattern = r"^(feat|fix|docs|chore|style|refactor|test|build|ci|perf|merge|revert|workflow|types|wip):"
