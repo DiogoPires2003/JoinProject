@@ -38,16 +38,13 @@ jobs:
 
       # Step 4: Fetch issue data
       - name: Fetch issue data
-        id: fetch_issues
         run: |
-          issues=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all&per_page=100")
+          issues=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all&per_page=100")
           echo "$issues" > issues.json
-          echo "::set-output name=issues_file::issues.json"
+          echo "ISSUES_FILE=issues.json" >> $GITHUB_ENV
 
       # Step 5: Run Pareto analysis script
       - name: Run Pareto analysis script
-        env:
-          ISSUES_FILE: ${{ steps.fetch_issues.outputs.issues_file }}
         run: |
           python .github/scripts/pareto.py
 
