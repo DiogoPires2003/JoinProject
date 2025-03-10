@@ -10,10 +10,12 @@ with open(issues_file, 'r') as file:
     issues_data = file.read()
 
 issues = json.loads(issues_data)
+print("Total issues fetched:", len(issues))
 
 conventional_commit_pattern = r"^(feat|fix|docs|chore|style|refactor|test|build|ci|perf|merge|revert|workflow|types|wip):"
 
 titles = [issue['title'] for issue in issues]
+print("Issue titles:", titles)
 
 # Extract commit type from titles
 commit_types = []
@@ -22,9 +24,12 @@ for title in titles:
     if match:
         commit_types.append(match.group(1))  # Get the commit type (e.g., feat, fix, docs)
 
+print("Commit types:", commit_types)
+
 # Count frequency of each commit type
 commit_counts = pd.Series(commit_types).value_counts().reset_index()
 commit_counts.columns = ['Commit Type', 'Count']
+print("Commit counts:", commit_counts)
 
 # Sort data in descending order of frequency
 commit_counts = commit_counts.sort_values(by='Count', ascending=False)
