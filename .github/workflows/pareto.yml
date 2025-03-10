@@ -68,6 +68,7 @@ jobs:
           git diff --exit-code || echo "Changes detected"
 
       # Step 9: Commit and push chart
+      - name: Commit and push chart
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
