@@ -1,3 +1,9 @@
+#HOW TO RUN
+#Add pareto.yml to .github/workflows
+#Add pareto.py to .gtihub/scripts
+#Create a secret token named GH_PAT
+#run action
+
 name: Pareto Analysis
 
 permissions:
