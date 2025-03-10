@@ -38,7 +38,11 @@ jobs:
           issues=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all&per_page=100")
           echo "$issues" > issues.json
           echo "ISSUES_FILE=issues.json" >> $GITHUB_ENV
-
+          
+      - name: Print issues.json content
+        run: |
+          cat issues.json
+    
       - name: Run Pareto analysis script
         run: |
           python .github/scripts/pareto.py
