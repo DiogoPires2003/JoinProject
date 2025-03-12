@@ -1,0 +1,31 @@
+name: Run Python Scripts in Parallel
+
+on:
+  push:
+    branches:
+      - main  # O la rama que desees, como 'master'
+
+jobs:
+  run_scripts:
+    strategy:
+      matrix:
+        script: [checksheet.py, generate_histogram.py, histogram.py, pareto.py, run_chart.py]  # Lista de tus scripts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # Especifica la versión de Python que usas
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # Si tienes un archivo requirements.txt con dependencias
+
+      - name: Run ${{ matrix.script }}  # Ejecuta cada script en paralelo
+        run: |
+          python .github/scripts/${{ matrix.script }}
