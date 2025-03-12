@@ -13,38 +13,33 @@ with open(issues_file, 'r') as file:
 issues = json.loads(issues_data)
 print("Total issues fetched:", len(issues))
 
-conventional_commit_pattern = r"^(feat|fix|docs|chore|style|refactor|test|build|ci|perf|merge|revert|workflow|types|wip):"
+# Extract labels from issues
+labels = []
+for issue in issues:
+    issue_labels = issue.get('labels', [])
+    for label in issue_labels:
+        labels.append(label['name'])
 
-titles = [issue['title'] for issue in issues]
-print("Issue titles:", titles)
+print("Labels:", labels)
 
-# Extract commit type from titles
-commit_types = []
-for title in titles:
-    match = re.match(conventional_commit_pattern, title)
-    if match:
-        commit_types.append(match.group(1))  # Get the commit type (e.g., feat, fix, docs)
-
-print("Commit types:", commit_types)
-
-# Count frequency of each commit type
-commit_counts = pd.Series(commit_types).value_counts().reset_index()
-commit_counts.columns = ['Commit Type', 'Count']
-print("Commit counts:", commit_counts)
+# Count frequency of each label
+label_counts = pd.Series(labels).value_counts().reset_index()
+label_counts.columns = ['Label', 'Count']
+print("Label counts:", label_counts)
 
 # Sort data in descending order of frequency
-commit_counts = commit_counts.sort_values(by 'Count', ascending=False)
+label_counts = label_counts.sort_values(by='Count', ascending=False)
 
 # Calculate cumulative percentage for histogram
-commit_counts['Cumulative Percentage'] = commit_counts['Count'].cumsum() / commit_counts['Count'].sum() * 100
+label_counts['Cumulative Percentage'] = label_counts['Count'].cumsum() / label_counts['Count'].sum() * 100
 
 # Plot the histogram
 fig, ax1 = plt.subplots(figsize=(10, 6))
 
 # Bar chart for frequency count
-ax1.bar(commit_counts['Commit Type'], commit_counts['Count'], color='b', label='Frequency')
+ax1.bar(label_counts['Label'], label_counts['Count'], color='b', label='Frequency')
 ax1.set_ylabel('Frequency', color='b')
-ax1.set_xlabel('Commit Type')
+ax1.set_xlabel('Label')
 ax1.tick_params(axis='y', labelcolor='b')
 
 # Save the plot to a file
