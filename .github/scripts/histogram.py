@@ -43,6 +43,6 @@ ax1.set_xlabel('Label')
 ax1.tick_params(axis='y', labelcolor='b')
 
 # Save the plot to a file
-file_name = f"histogram{datetime.now()}.png"
+file_name = "histogram.png"
 plt.savefig(file_name, bbox_inches='tight')
 plt.show()
