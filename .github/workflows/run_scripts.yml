@@ -1,9 +1,10 @@
-name: Run Python Scripts in Parallel
+name: Run all Scripts
 
 on:
   push:
     branches:
       - main  # O la rama que desees, como 'master'
+  workflow_dispatch:  # Permite ejecutar el workflow manualmente
 
 jobs:
   run_scripts:
