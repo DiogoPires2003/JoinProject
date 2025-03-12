@@ -141,7 +141,7 @@
       },
       "week2": {
         "completed": false,
-        "issues_count": 0
+        "issues_count": 6
       },
       "week3": {
         "completed": false,
@@ -151,7 +151,7 @@
         "completed": false,
         "issues_count": 0
       },
-      "total_issues": 0
+      "total_issues": 6
     }
   }
 }
