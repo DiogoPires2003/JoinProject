@@ -48,7 +48,7 @@ jobs:
           if [ -f "ishikawa/checksheet_table.png" ]; then echo "Table image generated"; else echo "Table image not found"; fi
       
       - name: Upload Checksheet as artifacts
-        uses: actions/upload-artifact@v2  # Corrected to use v2
+        uses: actions/upload-artifact@v3  # Updated to v3
         with:
           name: checksheet-files  # Optional: Name the artifact
           path: |
