@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: read
 
 jobs:
   generate-report:
@@ -31,25 +32,32 @@ jobs:
           python-version: "3.10"
 
       - name: 📦 Instalar dependencias
-        run: pip install requests matplotlib
+        run: pip install requests matplotlib scipy
+
+      - name: 🧑‍💻 Obtener los datos de los issues desde GitHub
+        run: |
+          issues=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all&per_page=100")
+          echo "$issues" > issues.json
+          echo "ISSUES_FILE=issues.json" >> $GITHUB_ENV
 
       - name: 📊 Ejecutar el script de generación de gráficos
-        run: python .github/scripts/run_chart.py  # Ajusta la ruta si es necesario
+        run: python .github/scripts/scriptrunchart.py  # Ajusta la ruta si es necesario
 
-      - name: 📂 Mover gráficos a la carpeta ishikawa/
-        run: mv grafico_historial/*/*.png ishikawa/
-
-      - name: 📝 Hacer commit y push de los gráficos
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add ishikawa/
-          git commit -m "📊 Actualizar gráficos de issues - Semana $(date +'%V %B')" || echo "Sin cambios para commitear"
-          git push
-        continue-on-error: true
-
-      - name: 📤 Subir gráficos como artifacts
+       # Subir los gráficos como artifacts
+      - name: Subir gráficos como artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: report-images
-          path: ishikawa/
+          name: gráficos  # Nombre del artifact que puedes usar para identificarlo
+          path: output/*.png
+
+
+      - name: 📤 Commit y Push de los gráficos generados
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add output/*.png
+          git commit -m "Actualizar gráficos de issues [skip ci]" || echo "No hay cambios para commit"
+          git push
+
+          
+        continue-on-error: true
