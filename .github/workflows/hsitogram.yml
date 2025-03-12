@@ -1,0 +1,67 @@
+#HOW TO RUN
+#Add pareto.yml to .github/workflows
+#Add pareto.py to .gtihub/scripts
+#Create a secret token named GH_PAT
+#run action
+
+name: Pareto Analysis Tool
+
+permissions:
+  contents: write
+  issues: read
+
+on:
+  schedule:
+    - cron: "0 12 * * 1"
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  pareto_analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas matplotlib
+
+      - name: Fetch issue data
+        run: |
+          issues=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all&per_page=100")
+          echo "$issues" > issues.json
+          echo "ISSUES_FILE=issues.json" >> $GITHUB_ENV
+          
+      - name: Print issues.json content
+        run: |
+          cat issues.json
+    
+      - name: Run Pareto analysis script
+        run: |
+          python .github/scripts/pareto.py
+
+      - name: Check if Pareto chart is generated
+        run: |
+          if [ -f "pareto_chart.png" ]; then echo "Pareto chart generated"; else echo "Pareto chart not found"; fi
+
+      - name: Commit and push chart
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          find . -type f -name "pareto_chart*.png" -exec mv {} ishikawa/ \;
+          git add *
+          git commit -m 'Update generated Pareto chart' || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }} || echo "No changes to push"
