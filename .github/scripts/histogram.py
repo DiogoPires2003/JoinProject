@@ -33,12 +33,12 @@ commit_counts.columns = ['Commit Type', 'Count']
 print("Commit counts:", commit_counts)
 
 # Sort data in descending order of frequency
-commit_counts = commit_counts.sort_values(by='Count', ascending=False)
+commit_counts = commit_counts.sort_values(by 'Count', ascending=False)
 
-# Calculate cumulative percentage for Pareto chart
+# Calculate cumulative percentage for histogram
 commit_counts['Cumulative Percentage'] = commit_counts['Count'].cumsum() / commit_counts['Count'].sum() * 100
 
-# Plot the Pareto chart
+# Plot the histogram
 fig, ax1 = plt.subplots(figsize=(10, 6))
 
 # Bar chart for frequency count
@@ -48,6 +48,6 @@ ax1.set_xlabel('Commit Type')
 ax1.tick_params(axis='y', labelcolor='b')
 
 # Save the plot to a file
-file_name = f"pareto_chart{datetime.now()}.png"
+file_name = f"histogram{datetime.now()}.png"
 plt.savefig(file_name, bbox_inches='tight')
 plt.show()
