@@ -47,17 +47,6 @@ ax1.set_ylabel('Frequency', color='b')
 ax1.set_xlabel('Commit Type')
 ax1.tick_params(axis='y', labelcolor='b')
 
-# Line chart for cumulative percentage
-ax2 = ax1.twinx()
-ax2.plot(commit_counts['Commit Type'], commit_counts['Cumulative Percentage'], color='r', marker='o', linestyle='-',
-         label='Cumulative %')
-ax2.set_ylabel('Cumulative Percentage', color='r')
-ax2.tick_params(axis='y', labelcolor='r')
-
-plt.title('Pareto Chart of Commit Types')
-plt.xticks(rotation=45)
-plt.grid(True)
-
 # Save the plot to a file
 file_name = f"pareto_chart{datetime.now()}.png"
 plt.savefig(file_name, bbox_inches='tight')
