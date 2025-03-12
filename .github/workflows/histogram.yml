@@ -58,7 +58,7 @@ jobs:
           if [ -f "histogram.png" ]; then echo "Histogram generated"; else echo "Histogram not found"; fi
 
       - name: Upload histogram artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: histogram
           path: histogram*.png
