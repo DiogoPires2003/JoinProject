@@ -10,7 +10,7 @@ jobs:
   run_scripts:
     strategy:
       matrix:
-        script: [checksheet.py, generate_histogram.py, histogram.py, pareto.py, run_chart.py]  # Lista de tus scripts
+        script: [checksheet.py, histogram.py, pareto.py, run_chart.py]  # Lista de tus scripts
     runs-on: ubuntu-latest
 
     steps:
