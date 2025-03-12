@@ -4,7 +4,7 @@
 #Create a secret token named GH_PAT
 #run action
 
-name: Pareto Analysis
+name: Pareto Analysis Tool
 
 permissions:
   contents: write
