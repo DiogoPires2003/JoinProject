@@ -50,14 +50,3 @@ jobs:
           name: gráficos  # Nombre del artifact que puedes usar para identificarlo
           path: output/*.png
 
-
-      - name: 📤 Commit y Push de los gráficos generados
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add output/*.png
-          git commit -m "Actualizar gráficos de issues [skip ci]" || echo "No hay cambios para commit"
-          git push
-
-          
-        continue-on-error: true
