@@ -1,6 +1,6 @@
 #HOW TO RUN
-#Add pareto.yml to .github/workflows
-#Add pareto.py to .gtihub/scripts
+#Add histogram.yml to .github/workflows
+#Add histogram.py to .github/scripts
 #Create a secret token named GH_PAT
 #run action
 
@@ -22,7 +22,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  pareto_analysis:
+  histogram_analysis:
     runs-on: ubuntu-latest
 
     steps:
@@ -49,13 +49,13 @@ jobs:
         run: |
           cat issues.json
     
-      - name: Run Pareto analysis script
+      - name: Run histogram analysis script
         run: |
           python .github/scripts/histogram.py
 
-      - name: Check if Pareto chart is generated
+      - name: Check if histogram is generated
         run: |
-          if [ -f "pareto_chart.png" ]; then echo "Pareto chart generated"; else echo "Pareto chart not found"; fi
+          if [ -f "histogram.png" ]; then echo "Histogram generated"; else echo "Histogram not found"; fi
 
       - name: Commit and push chart
         run: |
@@ -63,5 +63,5 @@ jobs:
           git config --global user.email 'github-actions@github.com'
           find . -type f -name "histogram*.png" -exec mv {} ishikawa/ \;
           git add *
-          git commit -m 'Update generated Pareto chart' || echo "No changes to commit"
+          git commit -m 'Update generated histogram' || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }} || echo "No changes to push"
