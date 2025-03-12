@@ -4,7 +4,7 @@
 #Create a secret token named GH_PAT
 #run action
 
-name: Pareto Analysis Tool
+name: Histogram
 
 permissions:
   contents: write
@@ -51,7 +51,7 @@ jobs:
     
       - name: Run Pareto analysis script
         run: |
-          python .github/scripts/pareto.py
+          python .github/scripts/histogram.py
 
       - name: Check if Pareto chart is generated
         run: |
