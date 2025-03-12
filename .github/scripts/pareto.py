@@ -3,6 +3,7 @@ import re
 import pandas as pd
 import matplotlib.pyplot as plt
 import json
+from datetime import datetime
 
 # Get issues data from file
 issues_file = os.getenv('ISSUES_FILE')
@@ -58,5 +59,6 @@ plt.xticks(rotation=45)
 plt.grid(True)
 
 # Save the plot to a file
-plt.savefig('pareto_chart.png', bbox_inches='tight')
+file_name = f"pareto_chart{datetime.now()}.png"
+plt.savefig(file_name, bbox_inches='tight')
 plt.show()
