@@ -1,4 +1,4 @@
-name: Generar Reporte de Issues
+name: Run_Chart
 
 on:
   schedule:
