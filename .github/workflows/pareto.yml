@@ -53,7 +53,7 @@ jobs:
 
       - name: Upload Pareto chart as artifact
         if: success()  # Esto asegura que solo se sube si la ejecución fue exitosa
-        uses: actions/upload-artifact@v2  # Cambio a la versión v2
+        uses: actions/upload-artifact@v4  # Cambio a la versión v2
         with:
           name: pareto-chart
           path: pareto_chart.png
