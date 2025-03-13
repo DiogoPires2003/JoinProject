@@ -2,10 +2,7 @@ import os
 import requests
 from datetime import datetime, timedelta
 import calendar
-import json
-import sys
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
 
@@ -117,6 +114,9 @@ def generate_month_checklist(year, month):
     first_day = datetime(year, month, 1)
     _, last_day_num = calendar.monthrange(year, month)
     last_day = datetime(year, month, last_day_num)
+    
+    # Format month name for filename
+    month_name = first_day.strftime('%B_%Y')
 
     # Divide month into 4 weeks (approximately)
     days_in_month = (last_day - first_day).days + 1
@@ -163,18 +163,15 @@ def generate_month_checklist(year, month):
 
         checklist_data["phases"][phase] = phase_data
 
-    return checklist_data
+    return checklist_data, month_name
 
-def save_checklist_to_json(checklist_data, output_file="checksheet_data.json"):
-    """Save checklist data in JSON format"""
-    with open(output_file, 'w') as file:
-        json.dump(checklist_data, file, indent=2)
-    print(f"Checklist saved to {output_file}")
-
-def generate_check_sheet_png(checklist_data):
+def generate_check_sheet_png(checklist_data, month_name):
     """Generate PNG visualization of the check sheet data as a table with checkboxes"""
     month = checklist_data["month"]
     phases = checklist_data["phases"]
+    
+    # Define output path with month and year
+    output_path = f"checksheet_{month_name}.png"
     
     # Create a pandas DataFrame for visualization
     data = []
@@ -243,9 +240,9 @@ def generate_check_sheet_png(checklist_data):
     
     # Adjust layout and save
     plt.tight_layout()
-    plt.savefig('checksheet_table.png', dpi=300, bbox_inches='tight')
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
     
-    print("Check sheet visualization generated: checksheet_table.png")
+    print(f"Check sheet visualization generated: {output_path}")
 
 def main():
     # Get current month and year
@@ -257,13 +254,10 @@ def main():
     create_devops_labels()
     
     # Generate checklist data
-    checklist_data = generate_month_checklist(year, month)
-    
-    # Save to JSON
-    save_checklist_to_json(checklist_data)
+    checklist_data, month_name = generate_month_checklist(year, month)
     
     # Generate PNG visualization
-    generate_check_sheet_png(checklist_data)
+    generate_check_sheet_png(checklist_data, month_name)
     
     print("Check sheet generation complete")
 
