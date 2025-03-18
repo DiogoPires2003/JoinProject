@@ -20,7 +20,7 @@ from healthApp.views import landing, register, home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', landing),
-    path('register/', register),
-    path('home/', home),
+    path('', landing, name='landing'),
+    path('register/', register,name='register'),
+    path('home/', home,name='home'),
 ]
