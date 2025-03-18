@@ -6,7 +6,7 @@ labels: [
 ]
 body:
   - type: textarea
-    id: user_type
+    id: name
     attributes:
       label: "Name"
       description: Please specify the type of user
@@ -14,25 +14,25 @@ body:
     validations:
       required: true
   - type: textarea
-    id: goal
+    id: desctiption
     attributes:
-      label: "Goal"
+      label: "Description"
       description: Please specify the user's goal
       placeholder: ex. I want [some goal]...
     validations:
       required: true
   - type: textarea
-    id: reason
+    id: motivation
     attributes:
-      label: "Reason"
+      label: "Motivation"
       description: Please specify the reason for the goal
       placeholder: ex. so that [some reason]...
     validations:
       required: true
   - type: textarea
-    id: acceptance_criteria
+    id: fit_criterion
     attributes:
-      label: "Acceptance Criteria"
+      label: "Fit criterion"
       description: Please specify the acceptance criteria
       placeholder: ex. 1. Given [some context], when [some action is taken], then [a particular set of observable outcomes should occur].
     validations:
