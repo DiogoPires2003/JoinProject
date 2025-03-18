@@ -8,7 +8,7 @@ body:
   - type: textarea
     id: user_type
     attributes:
-      label: "User Type"
+      label: "Name"
       description: Please specify the type of user
       placeholder: ex. As a [type of user]...
     validations:
