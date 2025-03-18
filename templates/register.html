@@ -2,6 +2,23 @@
 <html>
 <head>
     <title>Register</title>
+    <script>
+        function toggleInsuranceNumber() {
+            var hasInsuranceCheckbox = document.getElementById('id_has_insurance');
+            var insuranceNumberField = document.getElementById('id_insurance_number');
+            if (hasInsuranceCheckbox.checked) {
+                insuranceNumberField.setAttribute('required', 'required');
+            } else {
+                insuranceNumberField.removeAttribute('required');
+            }
+        }
+
+        window.onload = function () {
+            var hasInsuranceCheckbox = document.getElementById('id_has_insurance');
+            hasInsuranceCheckbox.addEventListener('change', toggleInsuranceNumber);
+            toggleInsuranceNumber();  // Initial check
+        };
+    </script>
 </head>
 <body>
 <h2>Register</h2>
