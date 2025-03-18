@@ -1,5 +1,5 @@
 """
-ASGI config for betterHealth project.
+ASGI config for betterhealth project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'betterHealth.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'betterhealth.settings')
 
 application = get_asgi_application()

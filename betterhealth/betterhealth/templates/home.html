@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Les teves Cites</h1>
+{% if appointments %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Data i Hora</th>
+                <th>Estat</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr>
+                <td>{{ appointment.date|date:"d/m/Y H:i" }}</td>
+                <td>{{ appointment.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hi ha cites programades.</p>
+{% endif %}
+{% endblock %}
