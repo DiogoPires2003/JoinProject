@@ -16,7 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from healthApp.views import landing, register, home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', landing, name='landing'),
+    path('register/', register,name='register'),
+    path('home/', home,name='home'),
 ]
