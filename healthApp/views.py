@@ -1,31 +1,51 @@
+from .forms import PatientForm
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from .forms import PatientForm, EmailAuthenticationForm
+from .models import Patient
+from django.contrib.auth.hashers import check_password
 
-def landing(request):
+
+def login_view(request):
     if request.method == 'POST':
-        form = EmailAuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            email = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username=email, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('home')  # Redirect to a home page or any other page
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        try:
+            patient = Patient.objects.get(email=email)
+            if check_password(password, patient.password):
+                request.session['patient_id'] = patient.id
+                return redirect('home')
             else:
-                form.add_error(None, 'Invalid email or password')
-    else:
-        form = EmailAuthenticationForm()
-    return render(request, 'landing.html', {'form': form})
+                return render(request, 'login.html', {'error': 'Invalid password'})
+
+        except Patient.DoesNotExist:
+            return render(request, 'login.html', {'error': 'Invalid email'})
+
+    return render(request, 'login.html')
+
+
+def home(request):
+    if request.method == 'POST' and 'patient_id' in request.session:
+        del request.session['patient_id']
+        return redirect('login')
+
+    patient_id = request.session.get('patient_id')
+    if not patient_id:
+        return redirect('login')
+
+    try:
+        patient = Patient.objects.get(id=patient_id)
+        return render(request, 'home.html', {'patient': patient})
+    except Patient.DoesNotExist:
+        return redirect('login')
+
+
 def register(request):
     if request.method == 'POST':
         form = PatientForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('landing')  # Redirect to the login page after successful registration
+            return redirect('login')
     else:
         form = PatientForm()
-    return render(request, 'register.html', {'form': form})
 
-def home(request):
-    return render(request, 'home.html')
+    return render(request, 'register.html', {'form': form})

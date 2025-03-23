@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Landing Page</title>
+    <title>LogIn</title>
     {% load bootstrap5 %}
     {% bootstrap_css %}
 </head>
@@ -23,10 +23,10 @@
                                 <form class="text-center" method="post">
                                     {% csrf_token %}
                                     <div class="mb-3 form-floating {% if error_message %}has-danger{% endif %}">
-                                        <input type="text" name="username" required=""
+                                        <input type="email" name="email" required=""
                                                class="form-control {% if error_message %}is-invalid{% endif %}"
-                                               id="userInput" placeholder="name@example.com">
-                                        <label for="userInput">Usuario</label>
+                                               id="emailInput" placeholder="name@example.com">
+                                        <label for="emailInput">Email</label>
                                     </div>
                                     <div class="mb-4 form-floating {% if error_message %}has-danger{% endif %}">
                                         <input type="password" name="password" required=""

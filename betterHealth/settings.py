@@ -23,10 +23,17 @@ SECRET_KEY = 'django-insecure-jb39^p(19get(nrqk6w(5mv5hboy)jb(x$u-(qd*n66+3*@fsp
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+AUTHENTICATION_BACKENDS = [
+    'healthApp.backends.PatientAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+MIDDLEWARE = [
+    # ... other middleware
+    'healthApp.middleware.PatientAuthenticationMiddleware',
+]
 
 ALLOWED_HOSTS = []
-
-AUTH_USER_MODEL = 'healthApp.Patient'
 # Application definition
 
 INSTALLED_APPS = [

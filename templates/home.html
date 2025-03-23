@@ -1,9 +1,12 @@
+{% load bootstrap5 %}
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hello World</title>
+    <title>Home</title>
+    {% bootstrap_css %}
 </head>
-<body>
-    <h1>Hello, World!</h1>
-</body>
+<form action="{% url 'home' %}" method="post" class="d-flex">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-danger">Logout</button>
+</form>
 </html>
