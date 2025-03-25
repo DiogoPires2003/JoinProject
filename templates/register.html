@@ -23,13 +23,13 @@
     </script>
 </head>
 <body>
-<section class="h-100 gradient-form" style="background-color: #eee;">
+<section class="h-100" style="background-color: #eee;">
     <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col-xl-10">
                 <div class="card rounded-3 text-black">
                     <div class="row g-0">
-                        <div class="col-lg-6">
+                        <div class="col-lg-12">
                             <div class="card-body p-md-5 mx-md-4">
                                 <div class="text-center">
                                     <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
@@ -43,81 +43,91 @@
                                             Please correct the errors below.
                                         </div>
                                     {% endif %}
-                                    <div class="mb-3 form-floating {% if form.first_name.errors %}has-danger{% endif %}">
-                                        <input type="text" name="first_name" required
-                                               class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
-                                               id="firstNameInput" placeholder="First Name"
-                                               value="{{ form.first_name.value|default:'' }}">
-                                        <label for="firstNameInput">First Name</label>
-                                        {% for error in form.first_name.errors %}
-                                            <div class="invalid-feedback">{{ error }}</div>
-                                        {% endfor %}
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3 form-floating {% if form.first_name.errors %}has-danger{% endif %}">
+                                            <input type="text" name="first_name" required
+                                                   class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
+                                                   id="firstNameInput" placeholder="First Name"
+                                                   value="{{ form.first_name.value|default:'' }}">
+                                            <label for="firstNameInput">First Name</label>
+                                            {% for error in form.first_name.errors %}
+                                                <div class="invalid-feedback">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="col-md-6 mb-3 form-floating {% if form.last_name.errors %}has-danger{% endif %}">
+                                            <input type="text" name="last_name" required
+                                                   class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
+                                                   id="lastNameInput" placeholder="Last Name"
+                                                   value="{{ form.last_name.value|default:'' }}">
+                                            <label for="lastNameInput">Last Name</label>
+                                            {% for error in form.last_name.errors %}
+                                                <div class="invalid-feedback">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
                                     </div>
-                                    <div class="mb-3 form-floating {% if form.last_name.errors %}has-danger{% endif %}">
-                                        <input type="text" name="last_name" required
-                                               class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
-                                               id="lastNameInput" placeholder="Last Name"
-                                               value="{{ form.last_name.value|default:'' }}">
-                                        <label for="lastNameInput">Last Name</label>
-                                        {% for error in form.last_name.errors %}
-                                            <div class="invalid-feedback">{{ error }}</div>
-                                        {% endfor %}
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3 form-floating {% if form.dni.errors %}has-danger{% endif %}">
+                                            <input type="text" name="dni" required
+                                                   class="form-control {% if form.dni.errors %}is-invalid{% endif %}"
+                                                   id="dniInput" placeholder="DNI"
+                                                   value="{{ form.dni.value|default:'' }}">
+                                            <label for="dniInput">DNI</label>
+                                            {% for error in form.dni.errors %}
+                                                <div class="invalid-feedback">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="col-md-6 mb-3 form-floating {% if form.email.errors %}has-danger{% endif %}">
+                                            <input type="email" name="email" required
+                                                   class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                                                   id="emailInput" placeholder="Email"
+                                                   value="{{ form.email.value|default:'' }}">
+                                            <label for="emailInput">Email</label>
+                                            {% for error in form.email.errors %}
+                                                <div class="invalid-feedback">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
                                     </div>
-                                    <div class="mb-3 form-floating {% if form.dni.errors %}has-danger{% endif %}">
-                                        <input type="text" name="dni" required
-                                               class="form-control {% if form.dni.errors %}is-invalid{% endif %}"
-                                               id="dniInput" placeholder="DNI" value="{{ form.dni.value|default:'' }}">
-                                        <label for="dniInput">DNI</label>
-                                        {% for error in form.dni.errors %}
-                                            <div class="invalid-feedback">{{ error }}</div>
-                                        {% endfor %}
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3 form-floating {% if form.phone.errors %}has-danger{% endif %}">
+                                            <input type="text" name="phone" required
+                                                   class="form-control {% if form.phone.errors %}is-invalid{% endif %}"
+                                                   id="phoneInput" placeholder="Phone"
+                                                   value="{{ form.phone.value|default:'' }}">
+                                            <label for="phoneInput">Phone</label>
+                                            {% for error in form.phone.errors %}
+                                                <div class="invalid-feedback">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
                                     </div>
-                                    <div class="mb-3 form-floating {% if form.email.errors %}has-danger{% endif %}">
-                                        <input type="email" name="email" required
-                                               class="form-control {% if form.email.errors %}is-invalid{% endif %}"
-                                               id="emailInput" placeholder="Email"
-                                               value="{{ form.email.value|default:'' }}">
-                                        <label for="emailInput">Email</label>
-                                        {% for error in form.email.errors %}
-                                            <div class="invalid-feedback">{{ error }}</div>
-                                        {% endfor %}
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3 form-floating {% if form.password.errors %}has-danger{% endif %}">
+                                            <input type="password" name="password" required
+                                                   class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                                                   id="passwordInput" placeholder="Password">
+                                            <label for="passwordInput">Password</label>
+                                            {% for error in form.password.errors %}
+                                                <div class="invalid-feedback">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="col-md-6 mb-3 form-floating {% if form.confirm_password.errors %}has-danger{% endif %}">
+                                            <input type="password" name="confirm_password" required
+                                                   class="form-control {% if form.confirm_password.errors %}is-invalid{% endif %}"
+                                                   id="confirmPasswordInput" placeholder="Confirm Password">
+                                            <label for="confirmPasswordInput">Confirm Password</label>
+                                            {% for error in form.confirm_password.errors %}
+                                                <div class="invalid-feedback">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+
                                     </div>
-                                    <div class="mb-3 form-floating {% if form.phone.errors %}has-danger{% endif %}">
-                                        <input type="text" name="phone" required
-                                               class="form-control {% if form.phone.errors %}is-invalid{% endif %}"
-                                               id="phoneInput" placeholder="Phone"
-                                               value="{{ form.phone.value|default:'' }}">
-                                        <label for="phoneInput">Phone</label>
-                                        {% for error in form.phone.errors %}
-                                            <div class="invalid-feedback">{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                    <div class="mb-3 form-floating {% if form.password.errors %}has-danger{% endif %}">
-                                        <input type="password" name="password" required
-                                               class="form-control {% if form.password.errors %}is-invalid{% endif %}"
-                                               id="passwordInput" placeholder="Password">
-                                        <label for="passwordInput">Password</label>
-                                        {% for error in form.password.errors %}
-                                            <div class="invalid-feedback">{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                    <div class="mb-3 form-floating {% if form.confirm_password.errors %}has-danger{% endif %}">
-                                        <input type="password" name="confirm_password" required
-                                               class="form-control {% if form.confirm_password.errors %}is-invalid{% endif %}"
-                                               id="confirmPasswordInput" placeholder="Confirm Password">
-                                        <label for="confirmPasswordInput">Confirm Password</label>
-                                        {% for error in form.confirm_password.errors %}
-                                            <div class="invalid-feedback">{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                    <div class="mb-3 form-check">
+                                    <div class="col-md-6 mb-3 form-check">
                                         <input type="checkbox" name="has_insurance" class="form-check-input"
                                                id="id_has_insurance"
                                                {% if form.has_insurance.value %}checked{% endif %}>
                                         <label class="form-check-label" for="id_has_insurance">Do you have
                                             insurance?</label>
                                     </div>
-                                    <div class="mb-3 form-floating {% if form.insurance_number.errors %}has-danger{% endif %}">
+                                    <div class="col-md-6 mb-3 form-floating {% if form.insurance_number.errors %}has-danger{% endif %}">
                                         <input type="text" name="insurance_number"
                                                class="form-control {% if form.insurance_number.errors %}is-invalid{% endif %}"
                                                id="id_insurance_number" placeholder="Insurance Number"
@@ -128,7 +138,7 @@
                                         {% endfor %}
                                     </div>
                                     <div class="text-center pt-1 mb-5 pb-1">
-                                        <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3"
+                                        <button class="btn btn-primary btn-block fa-lg mb-3"
                                                 type="submit">Register
                                         </button>
                                     </div>
@@ -141,15 +151,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
-                            <div class="text-white px-3 py-4 p-md-5 mx-md-4">
-                                <h4 class="mb-4">We are more than just a company</h4>
-                                <p class="small mb-0">Welcome to Better Health Clinic, where your well-being is our top
-                                    priority. Our team of experienced professionals is dedicated to providing
-                                    personalized care and advanced medical treatments. Join us on the journey to better
-                                    health and experience the difference at our state-of-the-art facility.</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -158,22 +159,9 @@
 </section>
 </body>
 <style>
-    .gradient-custom-2 {
-        background: #fccb90;
-        background: -webkit-linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593);
-        background: linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593);
-    }
-
     @media (min-width: 768px) {
         .gradient-form {
             height: 100vh !important;
-        }
-    }
-
-    @media (min-width: 769px) {
-        .gradient-custom-2 {
-            border-top-right-radius: .3rem;
-            border-bottom-right-radius: .3rem;
         }
     }
 </style>
