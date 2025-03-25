@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.validators import RegexValidator, MinLengthValidator
-from django.core.exceptions import ValidationError
 
 class Patient(models.Model):
     first_name = models.CharField(
@@ -60,14 +59,6 @@ class Patient(models.Model):
         max_length=128,
         validators=[MinLengthValidator(8)]
     )
-    confirm_password = models.CharField(
-        max_length=128,
-        validators=[MinLengthValidator(8)]
-    )
-
-    def clean(self):
-        if self.password != self.confirm_password:
-            raise ValidationError("Passwords do not match")
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
