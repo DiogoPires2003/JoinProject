@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Solicitar Cita Médica</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+</head>
+<body>
+<section class="h-100 gradient-form" style="background-color: #f4f4f9;">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-xl-8 col-lg-10">
+                <div class="card rounded-3 shadow-lg text-black">
+                    <div class="row g-0">
+                        <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
+                            <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                                <h4 class="mb-4">Solicite su Cita Médica</h4>
+                                <p class="small mb-0">En nuestra clínica, la salud de nuestros pacientes es nuestra prioridad. Complete el siguiente formulario para agendar su cita médica con uno de nuestros profesionales.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card-body p-md-5 mx-md-4">
+                                <div class="text-center">
+                                    <img src="https://yourlogo.com/logo.png" alt="Logo de la Clínica" style="width: 150px;">
+                                    <h5 class="mt-1 mb-5 pb-1">Cita Médica en Clínica Salud y Bienestar</h5>
+                                </div>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="mb-3 form-floating {% if error_message %}has-danger{% endif %}">
+                                        <input type="text" name="nombre" required=""
+                                               class="form-control {% if error_message %}is-invalid{% endif %}"
+                                               id="nombreInput" placeholder="Juan Pérez">
+                                        <label for="nombreInput">Nombre Completo</label>
+                                    </div>
+                                    <div class="mb-3 form-floating {% if error_message %}has-danger{% endif %}">
+                                        <input type="email" name="email" required=""
+                                               class="form-control {% if error_message %}is-invalid{% endif %}"
+                                               id="emailInput" placeholder="juan@example.com">
+                                        <label for="emailInput">Correo Electrónico</label>
+                                    </div>
+                                    <div class="mb-3 form-floating {% if error_message %}has-danger{% endif %}">
+                                        <input type="tel" name="telefono" required=""
+                                               class="form-control {% if error_message %}is-invalid{% endif %}"
+                                               id="telefonoInput" placeholder="123-456-7890">
+                                        <label for="telefonoInput">Número de Teléfono</label>
+                                    </div>
+                                    <div class="mb-4 form-floating {% if error_message %}has-danger{% endif %}">
+                                        <input type="datetime-local" name="fecha" required=""
+                                               class="form-control {% if error_message %}is-invalid{% endif %}"
+                                               id="fechaInput">
+                                        <label for="fechaInput">Fecha y Hora de la Cita</label>
+                                    </div>
+
+                                    <div class="text-center pt-1 mb-5 pb-1">
+                                        <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3"
+                                                type="submit">Solicitar Cita
+                                        </button>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-center pb-4 flex-column">
+                                        <p class="mb-0 me-2">¿Ya tienes una cuenta?</p>
+                                        <a href="{% url 'login' %}" class="btn btn-outline-danger mt-2">
+                                            Iniciar sesión
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+<style>
+    .gradient-custom-2 {
+        background: #64b3f4;
+        background: -webkit-linear-gradient(to right, #1e3c72, #2a5298);
+        background: linear-gradient(to right, #1e3c72, #2a5298);
+    }
+    @media (min-width: 768px) {
+        .gradient-form {
+            height: 100vh !important;
+        }
+    }
+    @media (min-width: 769px) {
+        .gradient-custom-2 {
+            border-top-right-radius: .3rem;
+            border-bottom-right-radius: .3rem;
+        }
+    }
+</style>
+</html>

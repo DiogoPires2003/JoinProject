@@ -66,3 +66,12 @@ class Patient(models.Model):
     class Meta:
         verbose_name = 'Patient'
         verbose_name_plural = 'Patients'
+
+class Appointment(models.Model):
+    cliente = models.CharField(max_length=100)
+    fecha = models.DateTimeField()
+    descripcion = models.TextField()
+    confirmado = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Cita con {self.cliente} el {self.fecha}"

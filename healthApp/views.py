@@ -2,6 +2,7 @@ from .forms import PatientForm
 from django.shortcuts import render, redirect
 from .models import Patient
 from django.contrib.auth.hashers import check_password
+from .models import Appointment
 
 
 def login_view(request):
@@ -49,3 +50,7 @@ def register(request):
         form = PatientForm()
 
     return render(request, 'register.html', {'form': form})
+
+def appointment_list(request):
+    citas = Appointment.objects.all()
+    return render(request, 'appointment_list.html', {'citas': citas})
