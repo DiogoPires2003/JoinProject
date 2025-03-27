@@ -34,10 +34,7 @@
                                     <div class="mb-3 form-floating {% if error_message %}has-danger{% endif %}">
                                         <select class="form-control {% if error_message %}is-invalid{% endif %}" name="servicio" id="servicioInput" required>
                                             <option value="" disabled selected>Seleccione el tipo de servicio</option>
-                                            <option value="Consulta General">Consulta General</option>
-                                            <option value="Examenes de Laboratorio">Exámenes de Laboratorio</option>
-                                            <option value="Consulta con Especialista">Consulta con Especialista</option>
-                                            <option value="Revisión Médica">Revisión Médica</option>
+                                            <!-- Las opciones se cargarán dinámicamente -->
                                         </select>
                                         <label for="servicioInput"></label>
                                     </div>
@@ -67,12 +64,32 @@
 <!-- Inicializar select2 -->
 <script>
     $(document).ready(function() {
+        // Inicializar select2
         $('#servicioInput').select2({
             placeholder: "Seleccione el tipo de servicio",
             allowClear: true
         });
+
+        // Hacer la solicitud AJAX para obtener los servicios
+        $.ajax({
+            url: "/api/servicios/",  // URL que devuelve los servicios
+            method: "GET",
+            success: function(response) {
+                // Limpiar el desplegable antes de llenarlo
+                $('#servicioInput').empty().append('<option value="" disabled selected>Seleccione el tipo de servicio</option>');
+
+                // Llenar el desplegable con los servicios obtenidos
+                response.forEach(function(service) {
+                    $('#servicioInput').append(new Option(service.nombre, service.id));
+                });
+            },
+            error: function() {
+                alert("Error al cargar los servicios.");
+            }
+        });
     });
 </script>
+
 
 </body>
 <style>

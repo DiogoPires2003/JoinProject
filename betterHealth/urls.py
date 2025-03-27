@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from healthApp.views import login_view, register, home, appointment_list
+from healthApp.views import login_view, register, home, appointment_list, get_services
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +25,5 @@ urlpatterns = [
     path('register/', register,name='register'),
     path('home/', home,name='home'),
     path('appointments/', appointment_list, name='appointment_list'),
+    path('api/servicios/', get_services, name='get_services'),
 ]
