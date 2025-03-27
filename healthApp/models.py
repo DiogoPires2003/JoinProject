@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import RegexValidator, MinLengthValidator
+from django.utils.timezone import now
 
 class Patient(models.Model):
     first_name = models.CharField(
@@ -67,11 +68,24 @@ class Patient(models.Model):
         verbose_name = 'Patient'
         verbose_name_plural = 'Patients'
 
-class Appointment(models.Model):
-    cliente = models.CharField(max_length=100)
-    fecha = models.DateTimeField()
-    descripcion = models.TextField()
-    confirmado = models.BooleanField(default=False)
+class Service(models.Model):
+    name = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"Cita con {self.cliente} el {self.fecha}"
+        return self.name
+
+    class Meta:
+        verbose_name = 'Service'
+        verbose_name_plural = 'Services'
+
+
+
+
+class Appointment(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, null=True, blank=True)
+    start_date = models.DateTimeField(default=now)
+    end_date = models.DateTimeField(default=now)
+
+    def __str__(self):
+        return f"{self.patient} - {self.start_date} - {self.service}"

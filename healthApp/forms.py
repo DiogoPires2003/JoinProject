@@ -3,6 +3,7 @@ from django import forms
 from .models import Patient
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import AuthenticationForm
+from .models import Appointment, Patient, Service
 
 class PatientForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -26,3 +27,17 @@ class PatientForm(forms.ModelForm):
 
 class EmailAuthenticationForm(AuthenticationForm):
     username = forms.EmailField(label='Email', max_length=254)
+
+class AppointmentForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ['patient', 'service', 'start_date', 'end_date']
+        widgets = {
+            'fecha_cita': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filtrar opciones en los campos del formulario
+        self.fields['patient'].queryset = Patient.objects.all()  # Lista de pacientes
+        self.fields['service'].queryset = Service.objects.all()

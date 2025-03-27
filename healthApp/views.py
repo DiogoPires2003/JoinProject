@@ -1,4 +1,4 @@
-from .forms import PatientForm
+from .forms import PatientForm, AppointmentForm
 from django.shortcuts import render, redirect
 from .models import Patient
 from django.contrib.auth.hashers import check_password
@@ -42,7 +42,7 @@ def home(request):
 
 def register(request):
     if request.method == 'POST':
-        form = PatientForm(request.POST)
+        form = AppointmentForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')

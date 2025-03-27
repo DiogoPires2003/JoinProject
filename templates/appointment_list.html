@@ -4,6 +4,10 @@
     <title>Solicitar Cita Médica</title>
     {% load bootstrap5 %}
     {% bootstrap_css %}
+    <!-- Incluir jQuery y select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 </head>
 <body>
 <section class="h-100 gradient-form" style="background-color: #f4f4f9;">
@@ -15,7 +19,7 @@
                         <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
                             <div class="text-white px-3 py-4 p-md-5 mx-md-4">
                                 <h4 class="mb-4">Solicite su Cita Médica</h4>
-                                <p class="small mb-0">En nuestra clínica, la salud de nuestros pacientes es nuestra prioridad. Complete el siguiente formulario para agendar su cita médica con uno de nuestros profesionales.</p>
+                                <p class="small mb-0">Por favor, seleccione la fecha para su cita y el tipo de servicio médico que desea recibir.</p>
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -26,24 +30,19 @@
                                 </div>
                                 <form method="post">
                                     {% csrf_token %}
+                                    <!-- Selección de tipo de servicio con búsqueda -->
                                     <div class="mb-3 form-floating {% if error_message %}has-danger{% endif %}">
-                                        <input type="text" name="nombre" required=""
-                                               class="form-control {% if error_message %}is-invalid{% endif %}"
-                                               id="nombreInput" placeholder="Juan Pérez">
-                                        <label for="nombreInput">Nombre Completo</label>
+                                        <select class="form-control {% if error_message %}is-invalid{% endif %}" name="servicio" id="servicioInput" required>
+                                            <option value="" disabled selected>Seleccione el tipo de servicio</option>
+                                            <option value="Consulta General">Consulta General</option>
+                                            <option value="Examenes de Laboratorio">Exámenes de Laboratorio</option>
+                                            <option value="Consulta con Especialista">Consulta con Especialista</option>
+                                            <option value="Revisión Médica">Revisión Médica</option>
+                                        </select>
+                                        <label for="servicioInput"></label>
                                     </div>
-                                    <div class="mb-3 form-floating {% if error_message %}has-danger{% endif %}">
-                                        <input type="email" name="email" required=""
-                                               class="form-control {% if error_message %}is-invalid{% endif %}"
-                                               id="emailInput" placeholder="juan@example.com">
-                                        <label for="emailInput">Correo Electrónico</label>
-                                    </div>
-                                    <div class="mb-3 form-floating {% if error_message %}has-danger{% endif %}">
-                                        <input type="tel" name="telefono" required=""
-                                               class="form-control {% if error_message %}is-invalid{% endif %}"
-                                               id="telefonoInput" placeholder="123-456-7890">
-                                        <label for="telefonoInput">Número de Teléfono</label>
-                                    </div>
+
+                                    <!-- Selección de fecha y hora -->
                                     <div class="mb-4 form-floating {% if error_message %}has-danger{% endif %}">
                                         <input type="datetime-local" name="fecha" required=""
                                                class="form-control {% if error_message %}is-invalid{% endif %}"
@@ -55,13 +54,6 @@
                                         <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3"
                                                 type="submit">Solicitar Cita
                                         </button>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-center pb-4 flex-column">
-                                        <p class="mb-0 me-2">¿Ya tienes una cuenta?</p>
-                                        <a href="{% url 'login' %}" class="btn btn-outline-danger mt-2">
-                                            Iniciar sesión
-                                        </a>
-                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -71,6 +63,17 @@
         </div>
     </div>
 </section>
+
+<!-- Inicializar select2 -->
+<script>
+    $(document).ready(function() {
+        $('#servicioInput').select2({
+            placeholder: "Seleccione el tipo de servicio",
+            allowClear: true
+        });
+    });
+</script>
+
 </body>
 <style>
     .gradient-custom-2 {
