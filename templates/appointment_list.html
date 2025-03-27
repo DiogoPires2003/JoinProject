@@ -39,13 +39,18 @@
                                         <label for="servicioInput"></label>
                                     </div>
 
-                                    <!-- Selección de fecha y hora -->
+                                    <!-- Selección de fecha -->
                                     <div class="mb-4 form-floating {% if error_message %}has-danger{% endif %}">
                                         <input type="date" name="fecha" required=""
-                                           class="form-control {% if error_message %}is-invalid{% endif %}"
-                                           id="fechaInput">
+                                               class="form-control {% if error_message %}is-invalid{% endif %}"
+                                               id="fechaInput">
 
-                                        <label for="fechaInput">Fecha y Hora de la Cita</label>
+                                        <label for="fechaInput">Fecha de la Cita</label>
+                                    </div>
+
+                                    <!-- Botones de selección de hora -->
+                                    <div id="horaDisponibles" class="mb-3">
+                                        <!-- Aquí se mostrarán las horas disponibles -->
                                     </div>
 
                                     <div class="text-center pt-1 mb-5 pb-1">
@@ -88,23 +93,66 @@
                 alert("Error al cargar los servicios.");
             }
         });
-    });
-</script>
 
-<script>
-    // Verificar el valor de la fecha antes de enviar el formulario
-    $('form').on('submit', function(event) {
-        var fecha = $('#fechaInput').val();
-        console.log('Fecha seleccionada:', fecha);
+        // Función para cargar las horas disponibles
+        function cargarHorasDisponibles(servicioId, fecha, intervalo = 30) {
+            // Limpiar los botones de horas previas
+            $('#horaDisponibles').empty();
 
-        if (!fecha) {
-            event.preventDefault();  // Prevenir el envío si la fecha no está seleccionada
-            alert("Por favor, seleccione una fecha.");
+            // Hora de inicio y fin
+            var horaInicio = 8;  // 8 AM
+            var horaFin = 20;    // 8 PM
+
+            // Generar horas dinámicamente
+            for (var hora = horaInicio; hora < horaFin; hora++) {
+                for (var minuto = 0; minuto < 60; minuto += intervalo) {
+                    // Formatear hora de inicio
+                    var horaInicioFormateada =
+                        (hora < 10 ? '0' : '') + hora + ':' +
+                        (minuto === 0 ? '00' : minuto);
+
+                    // Calcular hora de fin
+                    var horaFinal = hora;
+                    var minutoFinal = minuto + intervalo;
+
+                    if (minutoFinal >= 60) {
+                        horaFinal++;
+                        minutoFinal -= 60;
+                    }
+
+                    // Formatear hora de fin
+                    var horaFinFormateada =
+                        (horaFinal < 10 ? '0' : '') + horaFinal + ':' +
+                        (minutoFinal === 0 ? '00' :
+                         (minutoFinal < 10 ? '0' + minutoFinal : minutoFinal));
+
+                    // Crear el botón
+                    var button = $('<button type="button" class="btn btn-secondary hora-btn" data-hora="' + horaInicioFormateada + '">' +
+                                   horaInicioFormateada + ' a ' + horaFinFormateada + '</button>');
+
+                    button.on('click', function() {
+                        $('.hora-btn').removeClass('btn-primary').addClass('btn-secondary'); // Resetear todos
+                        $(this).removeClass('btn-secondary').addClass('btn-primary'); // Marcar el seleccionado
+                    });
+
+                    $('#horaDisponibles').append(button);
+                }
+            }
         }
+
+        // Cuando se seleccione un servicio y una fecha, cargar las horas disponibles
+        $('#servicioInput, #fechaInput').on('change', function() {
+            var servicioId = $('#servicioInput').val();
+            var fecha = $('#fechaInput').val();
+            var intervalo = 30; // Intervalo de 40 minutos como ejemplo
+
+            if (servicioId && fecha) {
+                // Cargar las horas disponibles con intervalo de 40 minutos
+                cargarHorasDisponibles(servicioId, fecha, intervalo);
+            }
+        });
     });
-
 </script>
-
 
 
 </body>
@@ -124,6 +172,19 @@
             border-top-right-radius: .3rem;
             border-bottom-right-radius: .3rem;
         }
+    }
+
+    .hora-btn {
+        margin: 5px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
     }
 </style>
 </html>
