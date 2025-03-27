@@ -41,9 +41,10 @@
 
                                     <!-- Selección de fecha y hora -->
                                     <div class="mb-4 form-floating {% if error_message %}has-danger{% endif %}">
-                                        <input type="datetime-local" name="fecha" required=""
-                                               class="form-control {% if error_message %}is-invalid{% endif %}"
-                                               id="fechaInput">
+                                        <input type="date" name="fecha" required=""
+                                           class="form-control {% if error_message %}is-invalid{% endif %}"
+                                           id="fechaInput">
+
                                         <label for="fechaInput">Fecha y Hora de la Cita</label>
                                     </div>
 
@@ -89,6 +90,21 @@
         });
     });
 </script>
+
+<script>
+    // Verificar el valor de la fecha antes de enviar el formulario
+    $('form').on('submit', function(event) {
+        var fecha = $('#fechaInput').val();
+        console.log('Fecha seleccionada:', fecha);
+
+        if (!fecha) {
+            event.preventDefault();  // Prevenir el envío si la fecha no está seleccionada
+            alert("Por favor, seleccione una fecha.");
+        }
+    });
+
+</script>
+
 
 
 </body>

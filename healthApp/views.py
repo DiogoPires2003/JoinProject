@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import check_password
 from .models import Appointment
 import requests
 from django.http import JsonResponse
+from datetime import datetime
 
 
 def login_view(request):
@@ -90,3 +91,28 @@ def get_services(request):
             return JsonResponse({"error": "No se pudieron obtener los servicios"}, status=services_response.status_code)
     else:
         return JsonResponse({"error": "No se pudo obtener el token"}, status=response.status_code)
+
+
+def solicitar_cita(request):
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        servicio = request.POST.get('servicio')
+        fecha = request.POST.get('fecha')  # Obtener la fecha seleccionada
+
+        # Verificar si la fecha está vacía
+        if not fecha:
+            return JsonResponse({"error": "La fecha es requerida"}, status=400)
+
+        # Convertir la fecha a un objeto datetime si es necesario
+        try:
+            fecha_datetime = datetime.strptime(fecha, '%Y-%m-%dT%H:%M')
+        except ValueError:
+            return JsonResponse({"error": "Fecha inválida"}, status=400)
+
+        # Aquí puedes hacer lo que necesites con los datos
+        # Por ejemplo, guardar la cita en la base de datos
+        # ...
+
+        return JsonResponse({"success": "Cita solicitada correctamente"})
+
+    return render(request, 'appointment_list.html')
