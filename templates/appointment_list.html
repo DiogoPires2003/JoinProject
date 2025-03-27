@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitar Cita Médica</title>
     {% load bootstrap5 %}
     {% bootstrap_css %}
@@ -8,83 +10,177 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #1e3c72;
+            --secondary-color: #2a5298;
+            --text-color: #333;
+            --background-color: #f4f4f9;
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: 'Arial', sans-serif;
+            color: var(--text-color);
+        }
+
+        .appointment-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .gradient-custom-2 {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .form-section {
+            padding: 2rem;
+        }
+
+        .logo {
+            max-width: 150px;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-floating > label {
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .available-hours {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 0.5rem 0;
+        }
+
+        .hour-btn {
+            flex: 0 1 calc(33.333% - 0.5rem);
+            margin: 0;
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .hour-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .hour-btn.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .submit-btn {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            transition: transform 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 17px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                flex-direction: column;
+            }
+
+            .hour-btn {
+                flex: 0 1 calc(50% - 0.5rem);
+            }
+        }
+    </style>
 </head>
 <body>
-<section class="h-100 gradient-form" style="background-color: #f4f4f9;">
-    <div class="container py-5 h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-xl-8 col-lg-10">
-                <div class="card rounded-3 shadow-lg text-black">
-                    <div class="row g-0">
-                        <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
-                            <div class="text-white px-3 py-4 p-md-5 mx-md-4">
-                                <h4 class="mb-4">Solicite su Cita Médica</h4>
-                                <p class="small mb-0">Por favor, seleccione la fecha para su cita y el tipo de servicio médico que desea recibir.</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="card-body p-md-5 mx-md-4">
-                                <div class="text-center">
-                                    <img src="https://yourlogo.com/logo.png" alt="Logo de la Clínica" style="width: 150px;">
-                                    <h5 class="mt-1 mb-5 pb-1">Cita Médica en Clínica Salud y Bienestar</h5>
-                                </div>
-                                <form method="post">
-                                    {% csrf_token %}
-                                    <!-- Selección de tipo de servicio con búsqueda -->
-                                    <div class="mb-3 form-floating {% if error_message %}has-danger{% endif %}">
-                                        <select class="form-control {% if error_message %}is-invalid{% endif %}" name="servicio" id="servicioInput" required>
-                                            <option value="" disabled selected>Seleccione el tipo de servicio</option>
-                                            <!-- Las opciones se cargarán dinámicamente -->
-                                        </select>
-                                        <label for="servicioInput"></label>
-                                    </div>
-
-                                    <!-- Selección de fecha -->
-                                    <div class="mb-4 form-floating {% if error_message %}has-danger{% endif %}">
-                                        <input type="date" name="fecha" required=""
-                                               class="form-control {% if error_message %}is-invalid{% endif %}"
-                                               id="fechaInput">
-
-                                        <label for="fechaInput">Fecha de la Cita</label>
-                                    </div>
-
-                                    <!-- Botones de selección de hora -->
-                                    <div id="horaDisponibles" class="mb-3">
-                                        <!-- Aquí se mostrarán las horas disponibles -->
-                                    </div>
-
-                                    <div class="text-center pt-1 mb-5 pb-1">
-                                        <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3"
-                                                type="submit">Solicitar Cita
-                                        </button>
-                                </form>
-                            </div>
-                        </div>
+    <div class="container appointment-container">
+        <div class="card rounded-3 shadow-lg">
+            <div class="row g-0">
+                <!-- Left Side - Information -->
+                <div class="col-lg-6 gradient-custom-2">
+                    <div class="p-4">
+                        <h3 class="mb-4">Solicite su Cita Médica</h3>
+                        <p class="mb-0">Por favor, seleccione la fecha para su cita y el tipo de servicio médico que desea recibir. Nuestro sistema le mostrará las horas disponibles para su conveniencia.</p>
                     </div>
+                </div>
+
+                <!-- Right Side - Form -->
+                <div class="col-lg-6 form-section">
+                    <div class="text-center mb-4">
+                        <img src="https://via.placeholder.com/150" alt="Logo de la Clínica" class="logo">
+                        <h4 class="mt-2">Clínica Salud y Bienestar</h4>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <!-- Service Selection -->
+                        <div class="mb-3 form-floating">
+                            <select class="form-control" name="servicio" id="servicioInput" required>
+                                <option value="" disabled selected>Seleccione el tipo de servicio</option>
+                            </select>
+                            <label for="servicioInput"></label>
+                        </div>
+
+                        <!-- Date Selection -->
+                        <div class="mb-3 form-floating">
+                            <input type="date" name="fecha" required class="form-control" id="fechaInput">
+                            <label for="fechaInput">Fecha de la Cita</label>
+                        </div>
+
+                        <!-- Available Hours -->
+                        <div class="mb-3">
+                            <label class="form-label">Horas Disponibles:</label>
+                            <div id="horaDisponibles" class="available-hours">
+                                <!-- Hours will be dynamically loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary submit-btn w-100 py-2">
+                                Solicitar Cita
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-</section>
 
-<!-- Inicializar select2 -->
-<script>
+    <script>
     $(document).ready(function() {
-        // Inicializar select2
+        // Initialize select2
         $('#servicioInput').select2({
             placeholder: "Seleccione el tipo de servicio",
             allowClear: true
         });
 
-        // Hacer la solicitud AJAX para obtener los servicios
+        // Fetch services via AJAX
         $.ajax({
-            url: "/api/servicios/",  // URL que devuelve los servicios
+            url: "/api/servicios/",
             method: "GET",
             success: function(response) {
-                // Limpiar el desplegable antes de llenarlo
                 $('#servicioInput').empty().append('<option value="" disabled selected>Seleccione el tipo de servicio</option>');
-
-                // Llenar el desplegable con los servicios obtenidos
                 response.forEach(function(service) {
                     $('#servicioInput').append(new Option(service.nombre, service.id));
                 });
@@ -94,24 +190,19 @@
             }
         });
 
-        // Función para cargar las horas disponibles
+        // Function to load available hours
         function cargarHorasDisponibles(servicioId, fecha, intervalo = 30) {
-            // Limpiar los botones de horas previas
             $('#horaDisponibles').empty();
 
-            // Hora de inicio y fin
             var horaInicio = 8;  // 8 AM
             var horaFin = 20;    // 8 PM
 
-            // Generar horas dinámicamente
             for (var hora = horaInicio; hora < horaFin; hora++) {
                 for (var minuto = 0; minuto < 60; minuto += intervalo) {
-                    // Formatear hora de inicio
                     var horaInicioFormateada =
                         (hora < 10 ? '0' : '') + hora + ':' +
                         (minuto === 0 ? '00' : minuto);
 
-                    // Calcular hora de fin
                     var horaFinal = hora;
                     var minutoFinal = minuto + intervalo;
 
@@ -120,19 +211,17 @@
                         minutoFinal -= 60;
                     }
 
-                    // Formatear hora de fin
                     var horaFinFormateada =
                         (horaFinal < 10 ? '0' : '') + horaFinal + ':' +
                         (minutoFinal === 0 ? '00' :
                          (minutoFinal < 10 ? '0' + minutoFinal : minutoFinal));
 
-                    // Crear el botón
-                    var button = $('<button type="button" class="btn btn-secondary hora-btn" data-hora="' + horaInicioFormateada + '">' +
+                    var button = $('<button type="button" class="btn hour-btn" data-hora="' + horaInicioFormateada + '">' +
                                    horaInicioFormateada + ' a ' + horaFinFormateada + '</button>');
 
                     button.on('click', function() {
-                        $('.hora-btn').removeClass('btn-primary').addClass('btn-secondary'); // Resetear todos
-                        $(this).removeClass('btn-secondary').addClass('btn-primary'); // Marcar el seleccionado
+                        $('.hour-btn').removeClass('selected');
+                        $(this).addClass('selected');
                     });
 
                     $('#horaDisponibles').append(button);
@@ -140,51 +229,16 @@
             }
         }
 
-        // Cuando se seleccione un servicio y una fecha, cargar las horas disponibles
+        // Load available hours when service and date are selected
         $('#servicioInput, #fechaInput').on('change', function() {
             var servicioId = $('#servicioInput').val();
             var fecha = $('#fechaInput').val();
-            var intervalo = 30; // Intervalo de 40 minutos como ejemplo
 
             if (servicioId && fecha) {
-                // Cargar las horas disponibles con intervalo de 40 minutos
-                cargarHorasDisponibles(servicioId, fecha, intervalo);
+                cargarHorasDisponibles(servicioId, fecha);
             }
         });
     });
-</script>
-
-
+    </script>
 </body>
-<style>
-    .gradient-custom-2 {
-        background: #64b3f4;
-        background: -webkit-linear-gradient(to right, #1e3c72, #2a5298);
-        background: linear-gradient(to right, #1e3c72, #2a5298);
-    }
-    @media (min-width: 768px) {
-        .gradient-form {
-            height: 100vh !important;
-        }
-    }
-    @media (min-width: 769px) {
-        .gradient-custom-2 {
-            border-top-right-radius: .3rem;
-            border-bottom-right-radius: .3rem;
-        }
-    }
-
-    .hora-btn {
-        margin: 5px;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-    .btn-secondary {
-        background-color: #6c757d;
-        border-color: #6c757d;
-    }
-</style>
 </html>
