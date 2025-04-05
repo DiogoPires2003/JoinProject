@@ -9,17 +9,24 @@ def login_view(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
+        print(f"Received POST request with email: {email} and password: {password}")
+
         try:
             patient = Patient.objects.get(email=email)
+            print(f"Patient found: {patient}")
             if check_password(password, patient.password):
+                print("Password is correct")
                 request.session['patient_id'] = patient.id
                 return redirect('home')
             else:
-                return render(request, 'login.html', {'error': 'Invalid password'})
+                print("Password is incorrect")
+                return render(request, 'login.html', {'error': 'Contraseña incorrecta'})
 
         except Patient.DoesNotExist:
-            return render(request, 'login.html', {'error': 'Invalid email'})
+            print("Patient does not exist")
+            return render(request, 'login.html', {'error': 'Correo no encontrado'})
 
+    print("Rendering login page")
     return render(request, 'login.html')
 
 
