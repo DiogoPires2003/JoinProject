@@ -22,7 +22,6 @@ def login_view(request):
 
     return render(request, 'login.html')
 
-
 def home(request):
     if request.method == 'POST' and 'patient_id' in request.session:
         del request.session['patient_id']
