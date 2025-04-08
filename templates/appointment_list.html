@@ -245,13 +245,20 @@
                         (minutoFinal === 0 ? '00' :
                          (minutoFinal < 10 ? '0' + minutoFinal : minutoFinal));
 
-                    var button = $('<button type="button" class="btn hour-btn" data-hora="' + horaInicioFormateada + '">' +
+                    var button = $('<button type="button" class="btn hour-btn" data-hora-inicio="' + horaInicioFormateada + '" data-hora-fin="' + horaFinFormateada + '">' +
                                    horaInicioFormateada + ' a ' + horaFinFormateada + '</button>');
 
                     button.on('click', function() {
+                        // Establecer la hora de inicio
+                        var startHour = $(this).data('hora-inicio');
+                        var endHour = $(this).data('hora-fin');
+
+                        $('#selectedHour').val(startHour);
+                        $('#selectedEndHour').val(endHour);
+
+                        // Seleccionar el botón
                         $('.hour-btn').removeClass('selected');
                         $(this).addClass('selected');
-                        $('#selectedHour').val($(this).data('hora'));
                     });
 
                     $('#horaDisponibles').append(button);
