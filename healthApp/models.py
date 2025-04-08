@@ -7,7 +7,7 @@ class Patient(models.Model):
         validators=[
             RegexValidator(
                 regex=r'^[A-Za-z\s]+$',
-                message='Name must contain only letters'
+                message='El nombre debe contener solo letras'
             )
         ]
     )
@@ -16,7 +16,7 @@ class Patient(models.Model):
         validators=[
             RegexValidator(
                 regex=r'^[A-Za-z\s]+$',
-                message='Name must contain only letters'
+                message='El apellido debe contener solo letras'
             )
         ]
     )
@@ -25,7 +25,7 @@ class Patient(models.Model):
         validators=[
             RegexValidator(
                 regex=r'^\d{8}[A-Z]$',
-                message='DNI must be 8 digits followed by a letter'
+                message='El DNI debe tener 8 dígitos seguidos de una letra'
             )
         ],
         unique=True
@@ -39,7 +39,7 @@ class Patient(models.Model):
         validators=[
             RegexValidator(
                 regex=r'^\d{9}$',
-                message='Phone number must be 9 digits'
+                message='El número de teléfono debe tener 9 dígitos'
             )
         ]
     )
@@ -50,19 +50,22 @@ class Patient(models.Model):
         null=True,
         validators=[
             RegexValidator(
-                regex=r'^\d+$',
-                message='Insurance number must contain only digits'
+                regex=r'^[A-Za-z]\d{5}$',
+                message='El número de seguro debe comenzar con una letra seguida de 5 dígitos'
             )
         ]
     )
     password = models.CharField(
         max_length=128,
-        validators=[MinLengthValidator(8)]
+        validators=[
+            MinLengthValidator(8, message="La contraseña debe tener al menos 8 caracteres.")
+        ]
+
     )
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
     class Meta:
-        verbose_name = 'Patient'
-        verbose_name_plural = 'Patients'
+        verbose_name = 'Paciente'
+        verbose_name_plural = 'Pacientes'
