@@ -131,6 +131,16 @@
                         <h4 class="mt-2">Clínica Salud y Bienestar</h4>
                     </div>
 
+                    {% if messages %}
+                        <div class="alert alert-info">
+                            <ul>
+                                {% for message in messages %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
                     <form method="post">
                         {% csrf_token %}
                         <!-- Service Selection -->
@@ -162,6 +172,16 @@
                             </button>
                         </div>
                     </form>
+
+                    <script>
+                        $(document).ready(function() {
+                            // Update hidden input when an hour is selected
+                            $('.hour-btn').on('click', function() {
+                                $('#selectedHour').val($(this).data('hora'));
+                            });
+                        });
+                    </script>
+
                 </div>
             </div>
         </div>

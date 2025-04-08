@@ -31,7 +31,7 @@ class EmailAuthenticationForm(AuthenticationForm):
 class AppointmentForm(forms.ModelForm):
     class Meta:
         model = Appointment
-        fields = ['patient', 'service', 'start_date', 'end_date']
+        fields = ['patient', 'service', 'date', 'start_hour', 'end_hour']
         widgets = {
             'fecha_cita': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }

@@ -1,11 +1,11 @@
 from .forms import PatientForm, AppointmentForm
 from django.shortcuts import render, redirect
-from .models import Patient
 from django.contrib.auth.hashers import check_password
-from .models import Appointment
 import requests
 from django.http import JsonResponse
 from datetime import datetime
+from .models import Appointment, Patient, Service
+from django.contrib import messages
 
 
 def login_view(request):
@@ -53,11 +53,11 @@ def register(request):
         form = PatientForm()
 
     return render(request, 'register.html', {'form': form})
-
+"""
 def appointment_list(request):
     citas = Appointment.objects.all()
     return render(request, 'appointment_list.html', {'citas': citas})
-
+"""
 
 def get_services(request):
     # Paso 1: Solicitar el token
@@ -93,26 +93,43 @@ def get_services(request):
         return JsonResponse({"error": "No se pudo obtener el token"}, status=response.status_code)
 
 
-def solicitar_cita(request):
+
+
+
+def appointment_list(request):
     if request.method == 'POST':
-        # Obtener los datos del formulario
-        servicio = request.POST.get('servicio')
-        fecha = request.POST.get('fecha')  # Obtener la fecha seleccionada
+        patient_id = request.POST.get('patient_id')  # Replace with actual patient identification logic
+        service_id = request.POST.get('servicio')
+        date = request.POST.get('fecha')
+        start_time = request.POST.get('hora')
 
-        # Verificar si la fecha está vacía
-        if not fecha:
-            return JsonResponse({"error": "La fecha es requerida"}, status=400)
+        # Debugging prints
+        print(f"Patient ID: {patient_id}")
+        print(f"Service ID: {service_id}")
+        print(f"Date: {date}")
+        print(f"Start Time: {start_time}")
 
-        # Convertir la fecha a un objeto datetime si es necesario
         try:
-            fecha_datetime = datetime.strptime(fecha, '%Y-%m-%dT%H:%M')
-        except ValueError:
-            return JsonResponse({"error": "Fecha inválida"}, status=400)
+            patient = Patient.objects.get(id=patient_id)
+            service = Service.objects.get(id=service_id)
+            start_datetime = f"{date} {start_time}"
 
-        # Aquí puedes hacer lo que necesites con los datos
-        # Por ejemplo, guardar la cita en la base de datos
-        # ...
+            # Calculate end time (e.g., 30 minutes after start time)
+            from datetime import datetime, timedelta
+            start_datetime_obj = datetime.strptime(start_datetime, '%Y-%m-%d %H:%M')
+            end_datetime_obj = start_datetime_obj + timedelta(minutes=30)
 
-        return JsonResponse({"success": "Cita solicitada correctamente"})
-
+            # Save the appointment
+            print("Guardando cita en la base de datos...")
+            Appointment.objects.create(
+                patient=patient,
+                service=service,
+                start_date=start_datetime_obj,
+                end_date=end_datetime_obj
+            )
+            print("Cita guardada correctamente.")
+            messages.success(request, "Appointment created successfully!")
+            return redirect('home.html')  # Replace with your desired redirect URL
+        except (Patient.DoesNotExist, Service.DoesNotExist):
+            messages.error(request, "Invalid patient or service selected.")
     return render(request, 'appointment_list.html')
