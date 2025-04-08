@@ -144,9 +144,12 @@
                     <form method="post">
                         {% csrf_token %}
                         <!-- Service Selection -->
-                        <div class="mb-3 form-floating">
-                            <select class="form-control" name="servicio" id="servicioInput" required>
+                       <div class="mb-3 form-floating">
+                            <select class="form-control" name="service_id" id="servicioInput" required>
                                 <option value="" disabled selected>Seleccione el tipo de servicio</option>
+                                {% for service in services %}
+                                    <option value="{{ service.id }}">{{ service.name }}</option>
+                                {% endfor %}
                             </select>
                             <label for="servicioInput"></label>
                         </div>

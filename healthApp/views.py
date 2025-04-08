@@ -96,40 +96,59 @@ def get_services(request):
 
 
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from datetime import datetime, timedelta
+from .forms import AppointmentForm
+from .models import Patient, Appointment, Service
+
 def appointment_list(request):
     if request.method == 'POST':
-        patient_id = request.POST.get('patient_id')  # Replace with actual patient identification logic
-        service_id = request.POST.get('servicio')
-        date = request.POST.get('fecha')
-        start_time = request.POST.get('hora')
+        # Obtener los datos del formulario
+        patient_id = request.POST.get('patient_id')  # ID del paciente
+        service_id = request.POST.get('service_id')  # ID del servicio
+        date = request.POST.get('fecha')  # Fecha de la cita
+        start_time = request.POST.get('hora_inicio')  # Hora de inicio
 
-        # Debugging prints
-        print(f"Patient ID: {patient_id}")
-        print(f"Service ID: {service_id}")
-        print(f"Date: {date}")
-        print(f"Start Time: {start_time}")
+        # Mostrar los valores recibidos para depuración
+        print(f"Patient ID from form: {patient_id}")
+        print(f"Service ID from form: {service_id}")
+        print(f"Date from form: {date}")
+        print(f"Start Time from form: {start_time}")
 
+        # Buscar paciente y servicio en la base de datos
         try:
             patient = Patient.objects.get(id=patient_id)
             service = Service.objects.get(id=service_id)
-            start_datetime = f"{date} {start_time}"
 
-            # Calculate end time (e.g., 30 minutes after start time)
-            from datetime import datetime, timedelta
+            # Concatenar fecha y hora de inicio para convertirlos en un objeto datetime
+            start_datetime = f"{date} {start_time}"
             start_datetime_obj = datetime.strptime(start_datetime, '%Y-%m-%d %H:%M')
+
+            # Calcular la hora de finalización (por ejemplo, 30 minutos después de la hora de inicio)
             end_datetime_obj = start_datetime_obj + timedelta(minutes=30)
 
-            # Save the appointment
+            # Guardar la cita en la base de datos
             print("Guardando cita en la base de datos...")
             Appointment.objects.create(
                 patient=patient,
                 service=service,
-                start_date=start_datetime_obj,
-                end_date=end_datetime_obj
+                start_hour=start_datetime_obj.time(),
+                end_hour=end_datetime_obj.time(),
+                date=start_datetime_obj.date()
             )
-            print("Cita guardada correctamente.")
+
+            # Mensaje de éxito
             messages.success(request, "Appointment created successfully!")
-            return redirect('home.html')  # Replace with your desired redirect URL
-        except (Patient.DoesNotExist, Service.DoesNotExist):
-            messages.error(request, "Invalid patient or service selected.")
+            return redirect('home')  # Redirigir a la página de inicio u otra vista deseada
+
+        except Patient.DoesNotExist:
+            print("Patient does not exist.")
+            messages.error(request, "Invalid patient selected.")
+        except Service.DoesNotExist:
+            print("Service does not exist.")
+            messages.error(request, "Invalid service selected.")
+    else:
+        form = AppointmentForm()  # Si no es un POST, crear el formulario vacío
+
     return render(request, 'appointment_list.html')

@@ -31,13 +31,15 @@ class EmailAuthenticationForm(AuthenticationForm):
 class AppointmentForm(forms.ModelForm):
     class Meta:
         model = Appointment
-        fields = ['patient', 'service', 'date', 'start_hour', 'end_hour']
+        fields = ['patient', 'service', 'start_hour', 'end_hour', 'date']
         widgets = {
-            'fecha_cita': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'start_hour': forms.TimeInput(attrs={'type': 'time'}),
+            'end_hour': forms.TimeInput(attrs={'type': 'time'}),
+            'date': forms.DateInput(attrs={'type': 'date'})
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Filtrar opciones en los campos del formulario
-        self.fields['patient'].queryset = Patient.objects.all()  # Lista de pacientes
+        # Filtrar las opciones de pacientes y servicios
+        self.fields['patient'].queryset = Patient.objects.all()
         self.fields['service'].queryset = Service.objects.all()
