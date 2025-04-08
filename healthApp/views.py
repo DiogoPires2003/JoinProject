@@ -108,7 +108,7 @@ def appointment_list(request):
         patient_id = request.POST.get('patient_id')  # ID del paciente
         service_id = request.POST.get('service_id')  # ID del servicio
         date = request.POST.get('fecha')  # Fecha de la cita
-        start_time = request.POST.get('hora_inicio')  # Hora de inicio
+        start_time = request.POST.get('start_hour')  # Hora de inicio
 
         # Mostrar los valores recibidos para depuración
         print(f"Patient ID from form: {patient_id}")

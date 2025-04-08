@@ -168,6 +168,12 @@
                             </div>
                         </div>
 
+                        <!-- Hidden input for selected hour -->
+                        <input type="hidden" id="selectedHour" name="start_hour" />
+
+                        <!-- Hora de fin -->
+                        <input type="hidden" id="selectedEndHour" name="end_hour" />
+
                         <!-- Submit Button -->
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary submit-btn w-100 py-2">
@@ -245,6 +251,7 @@
                     button.on('click', function() {
                         $('.hour-btn').removeClass('selected');
                         $(this).addClass('selected');
+                        $('#selectedHour').val($(this).data('hora'));
                     });
 
                     $('#horaDisponibles').append(button);
