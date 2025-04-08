@@ -24,8 +24,8 @@ class PatientForm(forms.ModelForm):
 
         auth_url = "https://example-mutua.onrender.com/token"
         auth_data = {
-            "username": "gei2025",
-            "password": "gei2025",
+            "username": config("API_USERNAME"),
+            "password": config("API_PASSWORD"),
         }
 
         try:

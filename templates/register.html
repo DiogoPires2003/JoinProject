@@ -8,11 +8,13 @@
     <script>
         function toggleInsuranceNumber() {
             var hasInsuranceCheckbox = document.getElementById('id_has_insurance');
-            var insuranceNumberField = document.getElementById('id_insurance_number');
+            var insuranceNumberField = document.getElementById('insuranceNumberContainer');
             if (hasInsuranceCheckbox.checked) {
-                insuranceNumberField.setAttribute('required', 'required');
+                insuranceNumberField.style.display = 'block';
+                document.getElementById('id_insurance_number').setAttribute('required', 'required');
             } else {
-                insuranceNumberField.removeAttribute('required');
+                insuranceNumberField.style.display = 'none';
+                document.getElementById('id_insurance_number').removeAttribute('required');
             }
         }
 
@@ -37,7 +39,7 @@
                                          style="width: 30%; margin-top: -5% " alt="logo">
                                     <h4 class=" mb-5 pb-1">Tu bienestar, nuestra prioridad.</h4>
                                 </div>
-                                <form  method="post">
+                                <form method="post">
                                     {% csrf_token %}
                                     {% if form.errors %}
                                         <div class="alert alert-danger">
@@ -50,7 +52,7 @@
                                                class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
                                                id="firstNameInput" placeholder="First Name"
                                                value="{{ form.first_name.value|default:'' }}">
-                                        <label  for="firstNameInput">Nombre</label>
+                                        <label for="firstNameInput">Nombre</label>
                                         {% for error in form.first_name.errors %}
                                             <div class="invalid-feedback">{{ error }}</div>
                                         {% endfor %}
@@ -128,17 +130,18 @@
                                         <input type="checkbox" name="has_insurance" class="form-check-input"
                                                id="id_has_insurance"
                                                {% if form.has_insurance.value %}checked{% endif %}>
-                                        <label class="form-check-label"  for="id_has_insurance">Tienes mutua?</label>
+                                        <label class="form-check-label" for="id_has_insurance">Tienes mutua?</label>
                                     </div>
-                                    <div class="mb-3 form-floating {% if form.insurance_number.errors %}has-danger{% endif %}">
+                                    <div id="insuranceNumberContainer" style="display: none;"
+                                         class="mb-3 form-floating {% if form.insurance_number.errors %}has-danger{% endif %}">
                                         <input type="text" name="insurance_number"
                                                class="form-control {% if form.insurance_number.errors %}is-invalid{% endif %}"
                                                id="id_insurance_number" placeholder="Insurance Number"
                                                value="{{ form.insurance_number.value|default:'' }}">
                                         <label for="id_insurance_number">Número de mutua</label>
                                         {% for error in form.insurance_number.errors %}
-                                            <div class="invalid-feedback">{{ error }}</div>
                                         {% endfor %}
+                                        <div class="invalid-feedback">{{ error }}</div>
                                     </div>
                                     <div class="text-center pt-1 mb-7 pb-1">
                                         <button data-mdb-button-init data-mdb-ripple-init

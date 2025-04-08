@@ -53,7 +53,11 @@ class Patient(models.Model):
                 regex=r'^[A-Za-z]\d{5}$',
                 message='El número de seguro debe comenzar con una letra seguida de 5 dígitos'
             )
-        ]
+        ],
+        unique=True,
+        error_messages={
+            'unique': "Ya existe un paciente con este número de seguro."
+        }
     )
     password = models.CharField(
         max_length=128,
