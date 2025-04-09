@@ -16,6 +16,33 @@ body {
     line-height: 1.5;
 }
 
+.brand-logo {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #fff;
+}
+.navbar-toggler-icon {
+  filter: invert(1);
+}
+
+/* Colores de botones */
+.btn-primary {
+  background-color: #005F99;
+  border: none;
+}
+
+.btn-secondary {
+  border: 1px solid #005F99;
+  color: #005F99;
+  background-color: transparent;
+}
+
+.btn-success {
+  background-color: #4ACF50;
+  border: none;
+}
+
+
 /* Tipografía según la guía */
 h1 { font-size: 36px; font-weight: 700; }
 h2 { font-size: 28px; font-weight: 600; }
@@ -231,3 +258,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     font-style: italic;
     margin-top: 4px;
 }
+footer {
+  background-color: #03222F;
+  color: #fff;
+  padding: 2rem 0;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex-grow: 1;
+}
+
+
+

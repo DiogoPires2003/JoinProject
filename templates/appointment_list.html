@@ -7,6 +7,7 @@
     <title>Solicitar Cita Médica | Better Health</title>
     {% load bootstrap5 %}
     {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
     <!-- Incluir jQuery y select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -15,6 +16,44 @@
     <link rel="stylesheet" href="{% static 'css/appointments.css' %}">
 </head>
 <body>
+    <div class="page-wrapper d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg" style="background-color: #005F99;">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+          <img src="{% static 'images/LogoBetterHealthPetit.png' %}" alt="Logo" class="me-2" style="border-radius:50%; width: 50px; height: 50px;">
+          <span class="brand-logo">Better Health</span>
+        </a>
+        <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+          <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item me-3">
+              <a class="nav-link text-white" href="#">Nosotros</a>
+            </li>
+            <li class="nav-item me-3">
+              <a class="nav-link text-white" href="#">Centros</a>
+            </li>
+            <li class="nav-item me-3">
+              <a class="nav-link text-white" href="#">Servicios de salud</a>
+            </li>
+            <li class="nav-item me-3">
+              <a class="nav-link text-white" href="#">Información útil</a>
+            </li>
+            <li class="nav-item me-3">
+              <a class="nav-link text-white" href="#">Contacto</a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-success" href="#">Pedir Cita</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main class="flex-grow-1">
+    <br><br>
     <div class="container appointment-container">
         <div class="card rounded-3 shadow-lg">
             <div class="row g-0">
@@ -30,7 +69,7 @@
                 <div class="col-lg-6 form-section">
                     <div class="text-center mb-4">
                         {% load static %}
-                        <img src="{% static 'LogoBetterHealth.png' %}" alt="Logo de la Clínica" class="logo">
+                        <img src="{% static 'images/LogoBetterHealth.png' %}" alt="Logo de la Clínica" class="logo">
                         <h4 class="mt-2">Clínica Salud y Bienestar</h4>
                     </div>
 
@@ -98,10 +137,19 @@
             </div>
         </div>
     </div>
+    <br><br>
+    <footer>
+      <div class="container text-center">
+        <p class="mb-0">&copy; 2025 Better Health. Todos los derechos reservados.</p>
+        <small>Información legal | Política de privacidad | Cookies</small>
+      </div>
+    </footer>
 
     <script>
     var bookedAppointments = {{ booked_appointments|safe }};
     </script>
     <script src="{% static 'js/appointments.js' %}"></script>
+    </main>
+    </div>
 </body>
 </html>
