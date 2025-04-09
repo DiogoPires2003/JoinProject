@@ -104,7 +104,6 @@ from .models import Patient, Appointment, Service
 
 
 def appointment_list(request):
-
     if request.method == 'POST':
         # Obtener datos del formulario
         patient_id = request.POST.get('patient_id')
@@ -117,8 +116,8 @@ def appointment_list(request):
         print(f"Patient ID: {patient_id}")
         print(f"Service ID: {service_id}")
         print(f"Date: {date}")
-        print(f"Start Time: {start_time}")
-        print(f"End Time: {end_time}")
+        print(f"Start Time: {start_time}")  # Aquí debería aparecer la hora de inicio
+        print(f"End Time: {end_time}")  # Y aquí la hora de finalización
 
         try:
             patient = Patient.objects.get(id=patient_id)
@@ -141,17 +140,12 @@ def appointment_list(request):
                 date=start_datetime_obj.date()
             )
 
-            # Mensaje de éxito
-            messages.success(request, "Appointment created successfully!")
-            return redirect('home')  # Redirigir a la página de inicio u otra vista deseada
-
+            messages.success(request, "Cita creada correctamente.")
+            return redirect('home.html')  # O cualquier otra redirección que desees
         except Patient.DoesNotExist:
-            print("Patient does not exist.")
-            messages.error(request, "Invalid patient selected.")
+            messages.error(request, "Paciente no encontrado.")
         except Service.DoesNotExist:
-            print("Service does not exist.")
-            messages.error(request, "Invalid service selected.")
-    else:
-        form = AppointmentForm()  # Si no es un POST, crear el formulario vacío
+            messages.error(request, "Servicio no válido.")
 
     return render(request, 'appointment_list.html')
+

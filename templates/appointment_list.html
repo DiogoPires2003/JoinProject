@@ -245,13 +245,21 @@
                         (minutoFinal === 0 ? '00' :
                          (minutoFinal < 10 ? '0' + minutoFinal : minutoFinal));
 
-                    var button = $('<button type="button" class="btn hour-btn" data-hora="' + horaInicioFormateada + '">' +
+                    var button = $('<button type="button" class="btn hour-btn" data-hora-inicio="' + horaInicioFormateada + '" data-hora-fin="' + horaFinFormateada + '">' +
                                    horaInicioFormateada + ' a ' + horaFinFormateada + '</button>');
 
                     button.on('click', function() {
+                        // Actualizar los campos ocultos con las horas seleccionadas
+                        var startHour = $(this).data('hora-inicio');
+                        var endHour = $(this).data('hora-fin');
+
+                        // Asegúrate de que los valores se están asignando correctamente
+                        $('#selectedHour').val(startHour);
+                        $('#selectedEndHour').val(endHour);
+
+                        // Resaltar el botón seleccionado
                         $('.hour-btn').removeClass('selected');
                         $(this).addClass('selected');
-                        $('#selectedHour').val($(this).data('hora'));
                     });
 
                     $('#horaDisponibles').append(button);
@@ -259,7 +267,7 @@
             }
         }
 
-        // Load available hours when service and date are selected
+        // Cargar las horas disponibles cuando se selecciona un servicio o una fecha
         $('#servicioInput, #fechaInput').on('change', function() {
             var servicioId = $('#servicioInput').val();
             var fecha = $('#fechaInput').val();
