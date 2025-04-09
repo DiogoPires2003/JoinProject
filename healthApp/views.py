@@ -139,10 +139,13 @@ def appointment_list(request):
             )
 
             messages.success(request, "Cita creada correctamente.")
-            return redirect('home.html')  # Or any redirect you want
+            return redirect('booking-success/')  # Or any redirect you want
         except Exception as e:
             messages.error(request, f"Error al crear la cita: {str(e)}")
             print(f"Error creating appointment: {str(e)}")
 
     return render(request, 'appointment_list.html')
+
+def booking_success(request):
+    return render(request, 'booking_success.html')
 
