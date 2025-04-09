@@ -6,6 +6,9 @@ from django.http import JsonResponse
 from datetime import datetime
 from .models import Appointment, Patient, Service
 from django.contrib import messages
+import json
+from datetime import datetime
+
 
 
 def login_view(request):
@@ -121,7 +124,7 @@ def appointment_list(request):
                 # Use get_or_create to avoid errors
                 service, created = Service.objects.get_or_create(id=service_id, defaults={'name': f'Service {service_id}'})
 
-            from datetime import datetime
+
 
             start_datetime = f"{date} {start_time}"
             end_datetime = f"{date} {end_time}"
@@ -144,7 +147,30 @@ def appointment_list(request):
             messages.error(request, f"Error al crear la cita: {str(e)}")
             print(f"Error creating appointment: {str(e)}")
 
+    if request.method == 'GET':
+        services = Service.objects.all()
+
+        # Get all appointments
+        appointments = Appointment.objects.all()
+
+        # Convert to JSON for JavaScript
+        booked_appointments_json = []
+        for appointment in appointments:
+            booked_appointments_json.append({
+                'date': appointment.date.strftime('%Y-%m-%d'),
+                'service_id': appointment.service_id,
+                'start': appointment.start_hour.strftime('%H:%M'),
+                'end': appointment.end_hour.strftime('%H:%M')
+            })
+
+        return render(request, 'appointment_list.html', {
+            'services': services,
+            'booked_appointments': json.dumps(booked_appointments_json)
+        })
+
     return render(request, 'appointment_list.html')
+
+
 
 def booking_success(request):
     return render(request, 'booking_success.html')

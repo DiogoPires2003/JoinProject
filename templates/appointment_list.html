@@ -197,6 +197,9 @@
     </div>
 
     <script>
+    // Add this at the beginning of your script
+    var bookedAppointments = {{ booked_appointments|safe }};
+
     $(document).ready(function() {
         // Initialize select2
         $('#servicioInput').select2({
@@ -245,24 +248,44 @@
                         (minutoFinal === 0 ? '00' :
                          (minutoFinal < 10 ? '0' + minutoFinal : minutoFinal));
 
-                    var button = $('<button type="button" class="btn hour-btn" data-hora-inicio="' + horaInicioFormateada + '" data-hora-fin="' + horaFinFormateada + '">' +
-                                   horaInicioFormateada + ' a ' + horaFinFormateada + '</button>');
+                    // Check if this time slot is already booked
+                    var isBooked = false;
 
-                    button.on('click', function() {
-                        // Actualizar los campos ocultos con las horas seleccionadas
-                        var startHour = $(this).data('hora-inicio');
-                        var endHour = $(this).data('hora-fin');
+                    // Loop through booked appointments
+                    for (var i = 0; i < bookedAppointments.length; i++) {
+                        var appointment = bookedAppointments[i];
 
-                        // Asegúrate de que los valores se están asignando correctamente
-                        $('#selectedHour').val(startHour);
-                        $('#selectedEndHour').val(endHour);
+                        // Only check appointments for the selected date and service
+                        if (appointment.date === fecha && appointment.service_id == servicioId) {
+                            // If start time matches, this slot is booked
+                            if (appointment.start === horaInicioFormateada) {
+                                isBooked = true;
+                                break;
+                            }
+                        }
+                    }
 
-                        // Resaltar el botón seleccionado
-                        $('.hour-btn').removeClass('selected');
-                        $(this).addClass('selected');
-                    });
+                    // Only create button if time slot is not booked
+                    if (!isBooked) {
+                        var button = $('<button type="button" class="btn hour-btn" data-hora-inicio="' + horaInicioFormateada + '" data-hora-fin="' + horaFinFormateada + '">' +
+                                       horaInicioFormateada + ' a ' + horaFinFormateada + '</button>');
 
-                    $('#horaDisponibles').append(button);
+                        button.on('click', function() {
+                            // Actualizar los campos ocultos con las horas seleccionadas
+                            var startHour = $(this).data('hora-inicio');
+                            var endHour = $(this).data('hora-fin');
+
+                            // Asegúrate de que los valores se están asignando correctamente
+                            $('#selectedHour').val(startHour);
+                            $('#selectedEndHour').val(endHour);
+
+                            // Resaltar el botón seleccionado
+                            $('.hour-btn').removeClass('selected');
+                            $(this).addClass('selected');
+                        });
+
+                        $('#horaDisponibles').append(button);
+                    }
                 }
             }
         }
