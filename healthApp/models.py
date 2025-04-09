@@ -87,8 +87,10 @@ class Patient(models.Model):
         verbose_name = 'Patient'
         verbose_name_plural = 'Patients'
 
+
 class Service(models.Model):
     name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -98,8 +100,6 @@ class Service(models.Model):
         verbose_name_plural = 'Services'
 
 
-
-
 class Appointment(models.Model):
     patient = models.ForeignKey('Patient', on_delete=models.CASCADE)
     service = models.ForeignKey('Service', on_delete=models.CASCADE, null=True, blank=True)
@@ -107,6 +107,7 @@ class Appointment(models.Model):
     start_hour = models.TimeField(default=time(9, 0))  # 09:00 por defecto
     end_hour = models.TimeField(default=time(10, 0))
 
-def __str__(self):
-        return f"{self.patient} - {self.start_date.strftime('%Y-%m-%d %H:%M')} - {self.service or 'No service'}"
+    def __str__(self):
+        return f"{self.patient} - {self.date.strftime('%Y-%m-%d')} {self.start_hour.strftime('%H:%M')} - {self.service or 'No service'}"
+
 
