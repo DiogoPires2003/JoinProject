@@ -107,21 +107,23 @@ def appointment_list(request):
 
     if request.method == 'POST':
         # Obtener datos del formulario
-        patient_id = request.POST.get('patient_id')
+
+        patient = request.user.patient
+        #patient_id = request.POST.get('patient_id')
         service_id = request.POST.get('service_id')
         date = request.POST.get('fecha')
         start_time = request.POST.get('start_hour')  # Hora de inicio
         end_time = request.POST.get('end_hour')  # Hora de finalización
 
         # Imprimir para depuración
-        print(f"Patient ID: {patient_id}")
+        print(f"Patient ID: {patient}")
         print(f"Service ID: {service_id}")
         print(f"Date: {date}")
         print(f"Start Time: {start_time}")
         print(f"End Time: {end_time}")
 
         try:
-            patient = Patient.objects.get(id=patient_id)
+            #patient = Patient.objects.get(id=patient_id)
             service = Service.objects.get(id=service_id)
 
             start_datetime = f"{date} {start_time}"
