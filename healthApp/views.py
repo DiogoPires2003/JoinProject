@@ -102,36 +102,37 @@ from datetime import datetime, timedelta
 from .forms import AppointmentForm
 from .models import Patient, Appointment, Service
 
+
 def appointment_list(request):
+
     if request.method == 'POST':
-        # Obtener los datos del formulario
-        patient_id = request.POST.get('patient_id')  # ID del paciente
-        service_id = request.POST.get('service_id')  # ID del servicio
-        date = request.POST.get('fecha')  # Fecha de la cita
+        # Obtener datos del formulario
+        patient_id = request.POST.get('patient_id')
+        service_id = request.POST.get('service_id')
+        date = request.POST.get('fecha')
         start_time = request.POST.get('start_hour')  # Hora de inicio
+        end_time = request.POST.get('end_hour')  # Hora de finalización
 
+        # Imprimir para depuración
+        print(f"Patient ID: {patient_id}")
+        print(f"Service ID: {service_id}")
+        print(f"Date: {date}")
+        print(f"Start Time: {start_time}")
+        print(f"End Time: {end_time}")
 
-        # Mostrar los valores recibidos para depuración
-        print(f"Patient ID from form: {patient_id}")
-        print(f"Service ID from form: {service_id}")
-        print(f"Date from form: {date}")
-        print(f"Start Time from form: {start_time}")
-
-
-        # Buscar paciente y servicio en la base de datos
         try:
-            #patient = Patient.objects.get(id=patient_id)
+            patient = Patient.objects.get(id=patient_id)
             service = Service.objects.get(id=service_id)
 
-            # Concatenar fecha y hora de inicio para convertirlos en un objeto datetime
             start_datetime = f"{date} {start_time}"
-            start_datetime_obj = datetime.strptime(start_datetime, '%Y-%m-%d %H:%M')
+            end_datetime = f"{date} {end_time}"
 
-            # Calcular la hora de finalización (por ejemplo, 30 minutos después de la hora de inicio)
-            end_datetime_obj = start_datetime_obj + timedelta(minutes=30)
+            from datetime import datetime
+
+            start_datetime_obj = datetime.strptime(start_datetime, '%Y-%m-%d %H:%M')
+            end_datetime_obj = datetime.strptime(end_datetime, '%Y-%m-%d %H:%M')
 
             # Guardar la cita en la base de datos
-            print("Guardando cita en la base de datos...")
             Appointment.objects.create(
                 patient=patient,
                 service=service,
