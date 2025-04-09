@@ -3,11 +3,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import check_password
 import requests
 from django.http import JsonResponse
-from datetime import datetime
 from .models import Appointment, Patient, Service
 from django.contrib import messages
 import json
 from datetime import datetime
+from django.utils import timezone
 
 
 
@@ -131,6 +131,11 @@ def appointment_list(request):
 
             start_datetime_obj = datetime.strptime(start_datetime, '%Y-%m-%d %H:%M')
             end_datetime_obj = datetime.strptime(end_datetime, '%Y-%m-%d %H:%M')
+
+            # Validate if the appointment is in the past
+            if start_datetime_obj < timezone.now():
+                messages.error(request, "No puedes pedir una cita en el pasado.")
+                return redirect('appointment_list')
 
             # Save appointment
             Appointment.objects.create(

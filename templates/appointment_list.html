@@ -222,6 +222,18 @@
             }
         });
 
+        // Validate if the selected date is in the past
+        $('#fechaInput').on('change', function() {
+            var selectedDate = $(this).val();
+            var currentDate = new Date();
+            var formattedCurrentDate = currentDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+
+            if (selectedDate < formattedCurrentDate) {
+                alert("No se puede seleccionar una fecha que ya ha pasado.");
+                $(this).val('');  // Clear the selected date field
+            }
+        });
+
         // Function to load available hours
         function cargarHorasDisponibles(servicioId, fecha, intervalo = 30) {
             $('#horaDisponibles').empty();
