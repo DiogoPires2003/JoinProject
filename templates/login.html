@@ -2,23 +2,25 @@
 <html>
 <head>
     <title>LogIn</title>
+    <meta charset="UTF-8">
+
+    {% load static %}
     {% load bootstrap5 %}
     {% bootstrap_css %}
 </head>
 <body>
-<section class="h-100 gradient-form" style="background-color: #eee;">
+<section class="h-100 gradient-form" style="background-color:#F5F5F5;">
     <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col-xl-10">
                 <div class="card rounded-3 text-black">
-                    <div class="row g-0">
+                    <div class="row g-0 ">
                         <div class="col-lg-6">
                             <div class="card-body p-md-5 mx-md-4">
 
                                 <div class="text-center">
-                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
-                                         style="width: 185px;" alt="logo">
-                                    <h4 class="mt-1 mb-5 pb-1">We are Better Health</h4>
+                                    <img src="{% static 'img/logo.png' %}"
+                                         style="width: 50%;" alt="logo">
                                 </div>
                                 <form class="text-center" method="post">
                                     {% csrf_token %}
@@ -26,7 +28,7 @@
                                         <input type="email" name="email" required=""
                                                class="form-control {% if error_message %}is-invalid{% endif %}"
                                                id="emailInput" placeholder="name@example.com">
-                                        <label for="emailInput">Email</label>
+                                        <label for="emailInput">Correo electrónico</label>
                                     </div>
                                     <div class="mb-4 form-floating {% if error_message %}has-danger{% endif %}">
                                         <input type="password" name="password" required=""
@@ -37,15 +39,15 @@
 
                                     <div class="text-center pt-1 mb-5 pb-1">
                                         <button data-mdb-button-init data-mdb-ripple-init
-                                                class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3"
-                                                type="submit">Log in
+                                                class="btn btn-primary btn-block fa-lg color:#005F99"
+                                                type="submit">Acceder
                                         </button>
                                     </div>
                                     <div class="d-flex align-items-center justify-content-center pb-4 flex-column">
-                                        <p class="mb-0 me-2">Don't have an account?</p>
-                                        <a href="{% url 'register' %}" class="btn btn-outline-danger mt-2"
+                                        <p class="mb-0 me-2">¿No tienes cuenta?</p>
+                                        <a href="{% url 'register' %}" class="btn btn-outline-primary mt-2"
                                            data-mdb-button-init data-mdb-ripple-init>
-                                            Create new
+                                            Registrarse
                                         </a>
                                     </div>
                                 </form>
@@ -53,12 +55,13 @@
                             </div>
                         </div>
                         <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
-                            <div class="text-white px-3 py-4 p-md-5 mx-md-4">
-                                <h4 class="mb-4">We are more than just a company</h4>
-                                <p class="small mb-0">Welcome to Better Health Clinic, where your well-being is our top
-                                    priority. Our team of experienced professionals is dedicated to providing
-                                    personalized care and advanced medical treatments. Join us on the journey to better
-                                    health and experience the difference at our state-of-the-art facility.</p>
+                            <div class="text-content px-3 py-4 p-md-5 mx-md-4">
+                                <h4 class="mb-4">Tu bienestar, nuestra prioridad.</h4>
+                                <p class="small mb-0">Bienvenido a Better Health Clinic, donde tu bienestar es nuestra
+                                    máxima prioridad. Nuestro equipo de profesionales experimentados está dedicado a
+                                    proporcionar atención personalizada y tratamientos médicos avanzados. Únete a
+                                    nosotros en el camino hacia una mejor salud y experimenta la diferencia en nuestras
+                                    instalaciones de vanguardia.</p>
                             </div>
                         </div>
                     </div>
@@ -69,15 +72,17 @@
 </section>
 </body>
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;600;700&display=swap');
+
     .gradient-custom-2 {
         /* fallback for old browsers */
         background: #fccb90;
 
         /* Chrome 10-25, Safari 5.1-6 */
-        background: -webkit-linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593);
+        background: linear-gradient(to left, #4CAF50, #4CAF7A, #47A89E, rgb(43, 169, 165));
 
         /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-        background: linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593);
+        background: linear-gradient(to left, #4CAF50, #4CAF7A, #47A89E, rgb(43, 169, 165));
     }
 
     @media (min-width: 768px) {
@@ -91,6 +96,45 @@
             border-top-right-radius: .3rem;
             border-bottom-right-radius: .3rem;
         }
+    }
+
+    body {
+        font-family: 'Inter', 'Open Sans', 'Roboto', sans-serif;
+        color: #333333;
+    }
+
+    h1 {
+        font-size: 36px;
+        font-weight: bold;
+        color: #333333;
+    }
+
+    h2 {
+        font-size: 28px;
+        font-weight: 600; /* semi-bold */
+        color: #333333;
+    }
+
+    h3 {
+        font-size: 22px;
+        font-weight: 600; /* semi-bold */
+        color: #333333;
+    }
+
+    body, p {
+        font-size: 16px;
+        font-weight: 400; /* regular */
+        color: #333333;
+    }
+
+    small {
+        font-size: 14px;
+        font-weight: 400; /* regular */
+        color: #333333;
+    }
+
+    .text-content {
+        color: #333333;
     }
 </style>
 </html>
