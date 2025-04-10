@@ -3,6 +3,7 @@ from django import forms
 from .models import Patient
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import AuthenticationForm
+from .models import Appointment, Patient, Service
 import requests, time
 from decouple import config
 
@@ -85,4 +86,21 @@ class PatientForm(forms.ModelForm):
 
 
 class EmailAuthenticationForm(AuthenticationForm):
+    username = forms.EmailField(label='Email', max_length=254)
+
+class AppointmentForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ['patient', 'service', 'start_hour', 'end_hour', 'date']
+        widgets = {
+            'start_hour': forms.TimeInput(attrs={'type': 'time'}),
+            'end_hour': forms.TimeInput(attrs={'type': 'time'}),
+            'date': forms.DateInput(attrs={'type': 'date'})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filtrar las opciones de pacientes y servicios
+        self.fields['patient'].queryset = Patient.objects.all()
+        self.fields['service'].queryset = Service.objects.all()
     username = forms.EmailField(label='Correo electrónico', max_length=254)
