@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-#hola
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,10 +23,17 @@ SECRET_KEY = 'django-insecure-jb39^p(19get(nrqk6w(5mv5hboy)jb(x$u-(qd*n66+3*@fsp
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+AUTHENTICATION_BACKENDS = [
+    'healthApp.backends.PatientAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+MIDDLEWARE = [
+    # ... other middleware
+    'healthApp.middleware.PatientAuthenticationMiddleware',
+]
 
 ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'healthApp',
+    'bootstrap5'
 ]
 
 MIDDLEWARE = [
@@ -54,7 +62,7 @@ ROOT_URLCONF = 'betterHealth.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,7 +124,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
