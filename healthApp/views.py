@@ -8,6 +8,7 @@ from django.contrib import messages
 import json
 from datetime import datetime
 from django.utils import timezone
+from .models import Patient
 
 
 
@@ -110,7 +111,12 @@ def get_services(request):
 def appointment_list(request):
     if request.method == 'POST':
         # Get the first patient (as dummy)
-        patient = Patient.objects.first()
+        #patient = Patient.objects.first()
+
+        patient_id = request.session.get('patient_id')
+        patient = Patient.objects.get(id=patient_id)
+
+        print(f"Usuario logueado: {patient}")
 
         service_id = request.POST.get('service_id')
         date = request.POST.get('fecha')
