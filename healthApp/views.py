@@ -118,7 +118,7 @@ def appointment_list(request):
         end_time = request.POST.get('end_hour')
 
         # Debug prints
-        print(f"Patient ID: {patient.dni}")
+        #print(f"Patient ID: {patient.dni}")
         print(f"Service ID: {service_id}")
         print(f"Date: {date}")
         print(f"Start Time: {start_time}")
@@ -136,8 +136,8 @@ def appointment_list(request):
             start_datetime = f"{date} {start_time}"
             end_datetime = f"{date} {end_time}"
 
-            start_datetime_obj = datetime.strptime(start_datetime, '%Y-%m-%d %H:%M')
-            end_datetime_obj = datetime.strptime(end_datetime, '%Y-%m-%d %H:%M')
+            start_datetime_obj = timezone.make_aware(datetime.strptime(start_datetime, '%Y-%m-%d %H:%M'))
+            end_datetime_obj = timezone.make_aware(datetime.strptime(end_datetime, '%Y-%m-%d %H:%M'))
 
             # Validate if the appointment is in the past
             if start_datetime_obj < timezone.now():
