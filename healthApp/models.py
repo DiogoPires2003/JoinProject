@@ -18,8 +18,6 @@ def create_patient_for_user(sender, instance, created, **kwargs):
 
 class Patient(models.Model):
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='patient', null=True, blank=True)
-
     def get_default_user(self):
         return User.objects.first()
     first_name = models.CharField(
@@ -117,7 +115,7 @@ class Appointment(models.Model):
     def __str__(self):
         return f"{self.patient} - {self.date.strftime('%Y-%m-%d')} {self.start_hour.strftime('%H:%M')} - {self.service or 'No service'}"
 
-
-
-        verbose_name = 'Paciente'
-        verbose_name_plural = 'Pacientes'
+    class Meta:
+        verbose_name = 'Appointment'
+        verbose_name_plural = 'Appointments'
+        unique_together = ('patient', 'date', 'start_hour', 'end_hour')
