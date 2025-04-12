@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator, MinLengthValidator
+from django.core.mail import send_mail
+from django.conf import settings
 
 class Patient(models.Model):
     first_name = models.CharField(
@@ -69,8 +71,17 @@ class Patient(models.Model):
 
     )
     def save(self, *args, **kwargs):
+        is_new = self.pk is None  # Check if this is a new patient
         self.full_clean()
         super().save(*args, **kwargs)
+        if is_new:  # Send email only for new registrations
+            self.send_confirmation_email()
+
+    def send_confirmation_email(self):
+        subject = "Confirmación de Registro"
+        message = f"Estimado/a {self.first_name} {self.last_name},\n\nGracias por registrarse con nosotros. Su registro se ha completado con éxito."
+        recipient_list = [self.email]
+        send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
