@@ -12,6 +12,7 @@ from .models import Patient
 
 
 
+
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -104,18 +105,29 @@ def get_services(request):
         return JsonResponse({"error": "No se pudo obtener el token"}, status=response.status_code)
 
 
-
-
-
-
 def appointment_list(request):
+    # Primero comprobamos si hay una sesión de paciente activa
+    patient_id = request.session.get('patient_id')
+
+    # Si no hay ID de paciente en la sesión, pero hay usuario autenticado en Django
+    # podemos intentar obtenerlo por ahí
+    if not patient_id and request.user.is_authenticated:
+        try:
+            # Asumiendo que hay una relación entre User y Patient
+            patient = Patient.objects.get(user=request.user)
+            # Guardamos el ID en la sesión para futuros accesos
+            request.session['patient_id'] = patient.id
+            patient_id = patient.id
+        except Patient.DoesNotExist:
+            pass
+
+    # Si aún no tenemos patient_id, redirigir a login
+    if not patient_id:
+        return redirect('login')
+
     if request.method == 'POST':
-        # Get the first patient (as dummy)
-        #patient = Patient.objects.first()
-
-        patient_id = request.session.get('patient_id')
+        # Ahora sabemos que tenemos un patient_id válido
         patient = Patient.objects.get(id=patient_id)
-
         print(f"Usuario logueado: {patient}")
 
         service_id = request.POST.get('service_id')
@@ -123,8 +135,6 @@ def appointment_list(request):
         start_time = request.POST.get('start_hour')
         end_time = request.POST.get('end_hour')
 
-        # Debug prints
-        #print(f"Patient ID: {patient.dni}")
         print(f"Service ID: {service_id}")
         print(f"Date: {date}")
         print(f"Start Time: {start_time}")
@@ -135,9 +145,8 @@ def appointment_list(request):
             service = None
             if service_id:
                 # Use get_or_create to avoid errors
-                service, created = Service.objects.get_or_create(id=service_id, defaults={'name': f'Service {service_id}'})
-
-
+                service, created = Service.objects.get_or_create(id=service_id,
+                                                                 defaults={'name': f'Service {service_id}'})
 
             start_datetime = f"{date} {start_time}"
             end_datetime = f"{date} {end_time}"
@@ -165,28 +174,28 @@ def appointment_list(request):
             messages.error(request, f"Error al crear la cita: {str(e)}")
             print(f"Error creating appointment: {str(e)}")
 
-    if request.method == 'GET':
-        services = Service.objects.all()
+    # GET request processing
+    patient = Patient.objects.get(id=patient_id)
+    services = Service.objects.all()
 
-        # Get all appointments
-        appointments = Appointment.objects.all()
+    # Get all appointments
+    appointments = Appointment.objects.all()
 
-        # Convert to JSON for JavaScript
-        booked_appointments_json = []
-        for appointment in appointments:
-            booked_appointments_json.append({
-                'date': appointment.date.strftime('%Y-%m-%d'),
-                'service_id': appointment.service_id,
-                'start': appointment.start_hour.strftime('%H:%M'),
-                'end': appointment.end_hour.strftime('%H:%M')
-            })
-
-        return render(request, 'appointment_list.html', {
-            'services': services,
-            'booked_appointments': json.dumps(booked_appointments_json)
+    # Convert to JSON for JavaScript
+    booked_appointments_json = []
+    for appointment in appointments:
+        booked_appointments_json.append({
+            'date': appointment.date.strftime('%Y-%m-%d'),
+            'service_id': appointment.service_id if appointment.service else None,
+            'start': appointment.start_hour.strftime('%H:%M'),
+            'end': appointment.end_hour.strftime('%H:%M')
         })
 
-    return render(request, 'appointment_list.html')
+    return render(request, 'appointment_list.html', {
+        'services': services,
+        'patient': patient,  # Pasar el paciente al template puede ser útil
+        'booked_appointments': json.dumps(booked_appointments_json)
+    })
 
 
 
