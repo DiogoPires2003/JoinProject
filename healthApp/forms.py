@@ -46,11 +46,23 @@ class PatientForm(forms.ModelForm):
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
 
+        # Check if passwords match
         if password != confirm_password:
             raise forms.ValidationError("Las contraseñas no coinciden")
 
+        # Check password length
+        if password and len(password) < 8:
+            raise forms.ValidationError("La contraseña debe tener al menos 8 caracteres.")
+
+        # Hash the password
         cleaned_data["password"] = make_password(password)
         return cleaned_data
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if Patient.objects.filter(email=email).exists():
+            raise forms.ValidationError("Ya existe un paciente con este correo electrónico.")
+        return email
 
     def clean_insurance_number(self):
         insurance_number = self.cleaned_data.get("insurance_number")
@@ -59,6 +71,9 @@ class PatientForm(forms.ModelForm):
 
         if not insurance_number[0].isalpha() or not insurance_number[1:].isdigit() or len(insurance_number) != 6:
             raise forms.ValidationError("El número de seguro debe comenzar con una letra seguida de 5 dígitos.")
+
+        if Patient.objects.filter(insurance_number=insurance_number).exists():
+            raise forms.ValidationError("Ya existe un paciente con este número de seguro.")
 
         try:
             token = self.get_api_token()

@@ -51,12 +51,14 @@ class Patient(models.Model):
         validators=[
             RegexValidator(
                 regex=r'^[A-Za-z]\d{5}$',
-                message='El número de seguro debe comenzar con una letra seguida de 5 dígitos'
+                message='El número de seguro debe comenzar con una letra seguida de 5 dígitos.'
             )
         ],
         unique=True,
         error_messages={
-            'unique': "Ya existe un paciente con este número de seguro."
+            'unique': "Ya existe un paciente con este número de seguro.",
+            'null': "El número de seguro no puede estar vacío.",
+            'blank': "El número de seguro no puede estar en blanco.",
         }
     )
     password = models.CharField(
@@ -66,6 +68,9 @@ class Patient(models.Model):
         ]
 
     )
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
