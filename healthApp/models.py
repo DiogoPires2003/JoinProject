@@ -82,6 +82,11 @@ class Patient(models.Model):
         message = f"Estimado/a {self.first_name} {self.last_name},\n\nGracias por registrarse con nosotros. Su registro se ha completado con éxito."
         recipient_list = [self.email]
         send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
+        try:
+            send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
+            print("Email sent successfully!")
+        except Exception as e:
+            print(f"Error sending email: {e}")
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
