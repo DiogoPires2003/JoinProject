@@ -1,118 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reserva Exitosa</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #2196F3;
-            --secondary-color: #1976D2;
-            --background-color: #f8f9fa;
-            --text-color: #333;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            padding: 1rem;
-        }
-
-        .success-container {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px var(--shadow-color);
-            text-align: center;
-            max-width: 500px;
-            width: 100%;
-            padding: 3rem 2rem;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .success-icon {
-            color: var(--primary-color);
-            font-size: 5rem;
-            margin-bottom: 1rem;
-        }
-
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        p {
-            color: #666;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-
-        .home-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            font-size: 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            text-decoration: none;
-            display: inline-block;
-            font-weight: 500;
-        }
-
-        .home-btn:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-
-        .home-btn:active {
-            transform: translateY(0);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 576px) {
-            .success-container {
-                padding: 2rem 1rem;
-            }
-            .success-icon {
-                font-size: 4rem;
-            }
-            h1 {
-                font-size: 1.5rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/booking_succes.css' %}">
 </head>
 <body>
-    <div class="success-container">
-        <div class="success-icon">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <h1>¡Reserva Realizada con Éxito!</h1>
-        <p>Su cita médica ha sido registrada correctamente en nuestro sistema. Le enviaremos un recordatorio por correo electrónico antes de la fecha programada.</p>
-        <a href="{% url 'home' %}" class="home-btn">
-            <i class="fas fa-home"></i> Volver al Inicio
-        </a>
+    <div class="page-wrapper d-flex flex-column min-vh-100">
+        <!-- Incluir la navbar -->
+        {% include 'navbar.html' %}
+
+        <main>
+            <div class="success-container">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h1>¡Reserva Realizada con Éxito!</h1>
+                <p>Su cita médica ha sido registrada correctamente en nuestro sistema. Le enviaremos un recordatorio por correo electrónico antes de la fecha programada.</p>
+                <a href="{% url 'home' %}" class="home-btn">
+                    <i class="fas fa-home"></i> Volver al Inicio
+                </a>
+            </div>
+        </main>
+
+        <!-- Incluir el footer -->
+        {% include 'footer.html' %}
     </div>
+
+    <!-- Scripts necesarios para Bootstrap -->
+    {% bootstrap_javascript %}
 </body>
 </html>
