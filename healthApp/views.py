@@ -187,3 +187,15 @@ def appointment_list(request):
 def booking_success(request):
     return render(request, 'booking_success.html')
 
+def my_appointments(request):
+    patient_id = request.session.get('patient_id')
+    if not patient_id:
+        return redirect('login')
+
+    try:
+        patient = Patient.objects.get(id=patient_id)
+        appointments = Appointment.objects.filter(patient=patient)
+        return render(request, 'my_appointments.html', {'appointments': appointments})
+    except Patient.DoesNotExist:
+        return redirect('login')
+
