@@ -1,8 +1,7 @@
 from .forms import PatientForm
 from django.shortcuts import render, redirect
 from .models import Patient
-from django.contrib.auth.hashers import check_password
-
+from django.contrib.auth.hashers import check_password, make_password
 
 def login_view(request):
     if request.method == 'POST':
@@ -15,10 +14,9 @@ def login_view(request):
                 request.session['patient_id'] = patient.id
                 return redirect('home')
             else:
-                return render(request, 'login.html', {'error': 'Invalid password'})
-
+                return render(request, 'login.html', {'error': 'Contraseña incorrecta'})
         except Patient.DoesNotExist:
-            return render(request, 'login.html', {'error': 'Invalid email'})
+            return render(request, 'login.html', {'error': 'Correo no registrado'})
 
     return render(request, 'login.html')
 
@@ -37,19 +35,37 @@ def home(request):
     except Patient.DoesNotExist:
         return redirect('login')
 
-
 def register(request):
     if request.method == 'POST':
         form = PatientForm(request.POST)
         if form.is_valid():
-            form.save()
+            patient = form.save(commit=False)
+            patient.password = make_password(form.cleaned_data['password'])
+            patient.save()
             return redirect('login')
     else:
         form = PatientForm()
 
     return render(request, 'register.html', {'form': form})
 
-from django.shortcuts import render
-
 def pedir_cita(request):
+    if request.method == 'POST':
+        return redirect('home')
     return render(request, 'pedir_cita.html')
+
+def nosotros(request):
+    return render(request, 'nosotros.html')
+
+def centros(request):
+    return render(request, 'centros.html')
+
+def servicios_salud(request):
+    return render(request, 'servicios_salud.html')
+
+def informacion_util(request):
+    return render(request, 'informacion_util.html')
+
+def contacto(request):
+    if request.method == 'POST':
+        return redirect('home')
+    return render(request, 'contacto.html')

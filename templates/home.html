@@ -69,11 +69,13 @@
       object-fit: cover;
     }
     footer {
-      background-color: #03222F;
-      color: #fff;
-      padding: 2rem 0;
-    }
-    /* Asegura que el icono y el texto en cada enlace estén en línea */
+     background-color: #03222F;
+     color: #fff;
+     padding: 2rem 0;
+      text-align: center;
+      margin-top: auto; 
+}
+    /* Asegura que el icono y el texto de cada enlace estén en línea */
     .navbar .nav-link {
       white-space: nowrap;
       display: flex;
@@ -112,36 +114,35 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg" style="background-color: #005F99;">
   <div class="container-fluid">
-    <a class="navbar-brand d-flex align-items-center" href="#">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
       <img src="{% static 'images/logo.png' %}" alt="Logo Better Health" class="me-2" style="border-radius:50%; width: 100px; height: 75px;">
       <span class="brand-logo">Better Health</span>
     </a>
-    <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-label="Toggle navigation">
+    <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
+            aria-label="Toggle navigation">
       <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarContent">
       <!-- Menú alineado junto al logo -->
       <ul class="navbar-nav align-items-lg-center" style="margin-left: 10px;">
         <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#"><i class="fas fa-users"></i>Nosotros</a>
+          <a class="nav-link text-white" href="{% url 'nosotros' %}"><i class="fas fa-users"></i>Nosotros</a>
         </li>
         <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#"><i class="fas fa-hospital"></i>Centros</a>
+          <a class="nav-link text-white" href="{% url 'centros' %}"><i class="fas fa-hospital"></i>Centros</a>
         </li>
         <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#"><i class="fas fa-stethoscope"></i>Servicios de salud</a>
+          <a class="nav-link text-white" href="{% url 'servicios_salud' %}"><i class="fas fa-stethoscope"></i>Servicios de salud</a>
         </li>
         <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#"><i class="fas fa-info-circle"></i>Información útil</a>
+          <a class="nav-link text-white" href="{% url 'informacion_util' %}"><i class="fas fa-info-circle"></i>Información útil</a>
         </li>
         <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#"><i class="fas fa-envelope"></i>Contacto</a>
+          <a class="nav-link text-white" href="{% url 'contacto' %}"><i class="fas fa-envelope"></i>Contacto</a>
         </li>
         <li class="nav-item">
           <a class="btn-area-privada" href="{% url 'login' %}"><i class="fas fa-user-lock"></i>Área Privada</a>
         </li>
-
-        <!-- Mostrar botón "Pedir Cita" solo si el usuario está autenticado -->
         {% if user.is_authenticated %}
         <li class="nav-item">
           <a class="btn-info" href="{% url 'pedir_cita' %}"><i class="fas fa-calendar-check"></i> Pedir Cita</a>
@@ -153,7 +154,6 @@
 </nav>
 
 <main>
-
   <!-- Hero -->
   <section class="hero">
     <div class="container">
@@ -215,7 +215,6 @@
       </div>
     </div>
   </section>
-
 </main>
 
 <!-- Footer -->
