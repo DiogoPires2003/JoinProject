@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Cita Médica | Better Health</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <!-- Incluir jQuery y select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/appointments.css' %}">
+</head>
+<body>
+    <div class="page-wrapper d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+    {% include 'navbar.html' %}
+
+    <main class="flex-grow-1">
+    <br><br>
+    <div class="container appointment-container">
+        <div class="card rounded-3 shadow-lg">
+            <div class="row g-0">
+                <!-- Left Side - Information -->
+                <div class="col-lg-6 gradient-custom-2">
+                    <div class="p-4">
+                        <h3 class="mb-4">Solicite su Cita Médica</h3>
+                        <p class="mb-0">Por favor, seleccione la fecha para su cita y el tipo de servicio médico que desea recibir. Nuestro sistema le mostrará las horas disponibles para su conveniencia.</p>
+                    </div>
+                </div>
+
+                <!-- Right Side - Form -->
+                <div class="col-lg-6 form-section">
+                    <div class="text-center mb-4">
+                        {% load static %}
+                        <img src="{% static 'images/LogoBetterHealth.png' %}" alt="Logo de la Clínica" class="logo">
+                        <h4 class="mt-2">Clínica Salud y Bienestar</h4>
+                    </div>
+
+                    {% if messages %}
+                        <div class="alert alert-info">
+                            <ul>
+                                {% for message in messages %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <!-- Service Selection -->
+                       <div class="mb-3 form-floating">
+                            <select class="form-control" name="service_id" id="servicioInput" required>
+                                <option value="" disabled selected>Seleccione el tipo de servicio</option>
+                                {% for service in services %}
+                                    <option value="{{ service.id }}">{{ service.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="servicioInput"></label>
+                        </div>
+
+                        <!-- Date Selection -->
+                        <div class="mb-3 form-floating">
+                            <input type="date" name="fecha" required class="form-control" id="fechaInput">
+                            <label for="fechaInput">Fecha de la Cita</label>
+                        </div>
+
+                        <!-- Available Hours -->
+                        <div class="mb-3">
+                            <label class="form-label">Horas Disponibles:</label>
+                            <div id="horaDisponibles" class="available-hours">
+                                <!-- Hours will be dynamically loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Hidden input for selected hour -->
+                        <input type="hidden" id="selectedHour" name="start_hour" />
+
+                        <!-- Hora de fin -->
+                        <input type="hidden" id="selectedEndHour" name="end_hour" />
+
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary submit-btn w-100 py-2">
+                                Solicitar Cita
+                            </button>
+                        </div>
+                    </form>
+
+                    <script>
+                        $(document).ready(function() {
+                            // Update hidden input when an hour is selected
+                            $('.hour-btn').on('click', function() {
+                                $('#selectedHour').val($(this).data('hora'));
+                            });
+                        });
+                    </script>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    {% include 'footer.html' %}
+
+    <script>
+    var bookedAppointments = {{ booked_appointments|safe }};
+    </script>
+    <script src="{% static 'js/appointments.js' %}"></script>
+    </main>
+    </div>
+</body>
+</html>

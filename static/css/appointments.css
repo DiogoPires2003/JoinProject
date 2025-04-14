@@ -1,0 +1,282 @@
+:root {
+    /* Colores de la guía de estilos Better Health */
+    --azul-profesional: #005F99;  /* Color primario */
+    --verde-salud: #4CAF50;       /* Énfasis, elementos relacionados a éxito o salud */
+    --gris-claro: #F5F5F5;        /* Fondo de páginas, tarjetas y formularios */
+    --gris-oscuro: #333333;       /* Texto principal */
+    --blanco: #FFFFFF;            /* Fondo y contrastes */
+    --rojo-alerta: #D32F2F;       /* Errores, alertas o atención médica urgente */
+}
+
+body {
+    background-color: var(--gris-claro);
+    font-family: 'Inter', 'Open Sans', sans-serif;
+    color: var(--gris-oscuro);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.brand-logo {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #fff;
+}
+.navbar-toggler-icon {
+  filter: invert(1);
+}
+
+/* Colores de botones */
+.btn-primary {
+  background-color: #005F99;
+  border: none;
+}
+
+.btn-secondary {
+  border: 1px solid #005F99;
+  color: #005F99;
+  background-color: transparent;
+}
+
+.btn-success {
+  background-color: #4ACF50;
+  border: none;
+}
+
+
+/* Tipografía según la guía */
+h1 { font-size: 36px; font-weight: 700; }
+h2 { font-size: 28px; font-weight: 600; }
+h3 { font-size: 22px; font-weight: 600; }
+p, .form-label { font-size: 16px; font-weight: 400; }
+small { font-size: 14px; font-weight: 400; }
+
+.appointment-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background-color: var(--blanco);
+}
+
+/* Sección izquierda */
+.gradient-custom-2 {
+    background-color: var(--azul-profesional);
+    color: var(--blanco);
+    display: flex;
+    align-items: center;
+    padding: 2rem;
+}
+
+/* Sección de formulario */
+.form-section {
+    padding: 24px;
+    background-color: var(--blanco);
+}
+
+/* Encabezado del formulario */
+.form-section .text-center {
+    margin-bottom: 28px;
+}
+
+.logo {
+    max-width: 150px;
+    margin-bottom: 1rem;
+}
+
+/* Estilos de formulario */
+.form-floating {
+    margin-bottom: 20px;
+}
+
+.form-floating > .form-control {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+    height: calc(3.5rem + 2px);
+}
+
+.form-floating > .form-control:focus {
+    border-color: var(--azul-profesional);
+    box-shadow: 0 0 0 0.2rem rgba(0, 95, 153, 0.25);
+}
+
+.form-floating > label {
+    padding: 12px;
+}
+
+/* Select2 personalizado */
+.select2-container .select2-selection--single {
+    height: 42px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 42px;
+    padding-left: 12px;
+    color: var(--gris-oscuro);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 40px;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--azul-profesional);
+}
+
+.select2-dropdown {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para los botones de hora */
+.available-hours {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 8px 0;
+    margin-bottom: 24px;
+}
+
+.hour-btn {
+    flex: 0 1 calc(33.333% - 8px);
+    margin: 0;
+    padding: 12px 24px;
+    text-align: center;
+    border: 1px solid #dee2e6;
+    background-color: var(--gris-claro);
+    color: var(--gris-oscuro);
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.hour-btn:hover {
+    background-color: #e9ecef;
+}
+
+.hour-btn.selected {
+    background-color: var(--azul-profesional);
+    color: var(--blanco);
+    border-color: var(--azul-profesional);
+}
+
+/* Botón de envío siguiendo la guía */
+.submit-btn {
+    background-color: var(--azul-profesional);
+    color: var(--blanco);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    font-size: 16px;
+}
+
+.submit-btn:hover {
+    background-color: #004d7a; /* Versión más oscura del azul principal */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Alertas y mensajes */
+.alert {
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.alert-info {
+    background-color: rgba(0, 95, 153, 0.1);
+    border-left: 4px solid var(--azul-profesional);
+    color: var(--gris-oscuro);
+}
+
+.alert-info ul {
+    margin-bottom: 0;
+    padding-left: 20px;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .card {
+        margin: 0 15px;
+    }
+
+    .hour-btn {
+        flex: 0 1 calc(50% - 8px);
+    }
+
+    .gradient-custom-2 {
+        border-radius: 12px 12px 0 0;
+    }
+}
+
+/* Estilos adicionales para inputs de fecha */
+input[type="date"] {
+    cursor: pointer;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    background-color: transparent;
+    cursor: pointer;
+    color: var(--azul-profesional);
+}
+
+/* Estilos para labels de form-floating cuando tiene focus o hay contenido */
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--azul-profesional);
+    opacity: 1;
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+/* Estilos para validación */
+.form-control:valid {
+    border-color: var(--verde-salud);
+}
+
+.form-control:invalid {
+    border-color: var(--rojo-alerta);
+}
+
+.error-message {
+    color: var(--rojo-alerta);
+    font-size: 12px;
+    font-style: italic;
+    margin-top: 4px;
+}
+footer {
+  background-color: #03222F;
+  color: #fff;
+  padding: 2rem 0;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex-grow: 1;
+}
+
+
+

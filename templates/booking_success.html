@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva Exitosa</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/booking_succes.css' %}">
+</head>
+<body>
+    <div class="page-wrapper d-flex flex-column min-vh-100">
+        <!-- Incluir la navbar -->
+        {% include 'navbar.html' %}
+
+        <main>
+            <div class="success-container">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h1>¡Reserva Realizada con Éxito!</h1>
+                <p>Su cita médica ha sido registrada correctamente en nuestro sistema. Le enviaremos un recordatorio por correo electrónico antes de la fecha programada.</p>
+                <a href="{% url 'home' %}" class="home-btn">
+                    <i class="fas fa-home"></i> Volver al Inicio
+                </a>
+            </div>
+        </main>
+
+        <!-- Incluir el footer -->
+        {% include 'footer.html' %}
+    </div>
+
+    <!-- Scripts necesarios para Bootstrap -->
+    {% bootstrap_javascript %}
+</body>
+</html>
