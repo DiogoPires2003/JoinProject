@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from django.db import models
 from django.core.validators import RegexValidator, MinLengthValidator
 from django.contrib.auth.models import User
@@ -5,6 +6,9 @@ from django.utils.timezone import now
 from datetime import time
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+
+from betterHealth import settings
+
 
 class Patient(models.Model):
     first_name = models.CharField(

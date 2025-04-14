@@ -57,7 +57,7 @@ def home(request):
 
 def register(request):
     if request.method == 'POST':
-        form = AppointmentForm(request.POST)
+        form = PatientForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')
