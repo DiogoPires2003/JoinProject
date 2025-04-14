@@ -1,20 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>My Appointments</title>
+  <title>Mis Citas</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 50px;
+      margin: 50px auto;
+      max-width: 800px;
+      background-color: #f4f4f4;
     }
+
     h1 {
       color: #333;
+      margin-bottom: 30px;
+    }
+
+    .appointment {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 15px auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      text-align: left;
+    }
+
+    .appointment p {
+      margin: 6px 0;
+    }
+
+    .no-appointments {
+      font-size: 18px;
+      color: #888;
     }
   </style>
 </head>
 <body>
-  <h1>My Appointments</h1>
+  <h1>Mis Citas</h1>
+
+  {% if appointments %}
+    {% for appointment in appointments %}
+      <div class="appointment">
+        <p><strong>Fecha:</strong> {{ appointment.date }}</p>
+        <p><strong>Hora:</strong> {{ appointment.start_hour|time:"H:i" }} - {{ appointment.end_hour|time:"H:i" }}</p>
+        <p><strong>Servicio:</strong>
+          {% if appointment.service %}
+            {{ appointment.service.name }}
+          {% else %}
+            <em>No asignado</em>
+          {% endif %}
+        </p>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="no-appointments">No tienes citas registradas.</p>
+  {% endif %}
+
 </body>
 </html>
