@@ -4,12 +4,15 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Better Health - Home</title>
   {% bootstrap_css %}
-  <!-- Carga de fuentes desde Google Fonts -->
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  
   <style>
-    /* Tipografía y colores base */
     body {
       font-family: 'Open Sans', sans-serif;
       background-color: #F5F5F5;
@@ -25,21 +28,14 @@
       font-size: 1.5rem;
       color: #fff;
     }
-    /* Colores de botones */
     .btn-primary {
       background-color: #005F99;
       border: none;
-    }
-    .btn-secondary {
-      border: 1px solid #005F99;
-      color: #005F99;
-      background-color: transparent;
     }
     .btn-success {
       background-color: #4ACF50;
       border: none;
     }
-    /* Hero (portada) */
     .hero {
       background-color: #005F99;
       color: #fff;
@@ -57,7 +53,6 @@
       max-width: 100%;
       height: auto;
     }
-    /* Sección de servicios / información */
     .info-section {
       padding: 3rem 0;
       background-color: #F5F5F5;
@@ -73,11 +68,42 @@
       height: 200px;
       object-fit: cover;
     }
-    /* Footer */
     footer {
       background-color: #03222F;
       color: #fff;
       padding: 2rem 0;
+    }
+    /* Asegura que el icono y el texto en cada enlace estén en línea */
+    .navbar .nav-link {
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+    .navbar .nav-link i {
+      margin-right: 6px;
+    }
+    /* Botones para Área Privada y Más información */
+    .btn-area-privada, .btn-info {
+      display: inline-flex;
+      align-items: center;
+      background-color: #4ACF50;
+      border: none;
+      padding: 6px 12px;
+      color: #fff;
+      font-size: 14px;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .btn-area-privada i, .btn-info i {
+      margin-right: 8px;
+    }
+    /* Ajuste para el logo y para el menú */
+    .navbar .navbar-brand {
+      margin-left: 120px; /* Logo y texto movidos a la derecha */
+    }
+    /* En lugar de centrar con mx-auto, aplicamos margen al menú */
+    .navbar .navbar-nav {
+      margin-left: 30px; /* Ajusta este valor para unir el menú al logo */
     }
   </style>
 </head>
@@ -85,137 +111,125 @@
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg" style="background-color: #005F99;">
-  <div class="container">
+  <div class="container-fluid">
     <a class="navbar-brand d-flex align-items-center" href="#">
-      <img src="{% static 'images/logo.png' %}" alt="Logo" class="me-2" style="border-radius:50%; width: 100px; height: 75px;">
+      <img src="{% static 'images/logo.png' %}" alt="Logo Better Health" class="me-2" style="border-radius:50%; width: 100px; height: 75px;">
       <span class="brand-logo">Better Health</span>
     </a>
-    <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+    <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarContent">
-      <ul class="navbar-nav ms-auto">
+      <!-- Menú alineado junto al logo -->
+      <ul class="navbar-nav align-items-lg-center" style="margin-left: 10px;">
         <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#">Nosotros</a>
+          <a class="nav-link text-white" href="#"><i class="fas fa-users"></i>Nosotros</a>
         </li>
         <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#">Centros</a>
+          <a class="nav-link text-white" href="#"><i class="fas fa-hospital"></i>Centros</a>
         </li>
         <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#">Servicios de salud</a>
+          <a class="nav-link text-white" href="#"><i class="fas fa-stethoscope"></i>Servicios de salud</a>
         </li>
         <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#">Información útil</a>
+          <a class="nav-link text-white" href="#"><i class="fas fa-info-circle"></i>Información útil</a>
         </li>
         <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#">Contacto</a>
+          <a class="nav-link text-white" href="#"><i class="fas fa-envelope"></i>Contacto</a>
         </li>
         <li class="nav-item">
-          <a class="btn btn-success" href="#">Pedir Cita</a>
+          <a class="btn-area-privada" href="{% url 'login' %}"><i class="fas fa-user-lock"></i>Área Privada</a>
         </li>
+
+        <!-- Mostrar botón "Pedir Cita" solo si el usuario está autenticado -->
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="btn-info" href="{% url 'pedir_cita' %}"><i class="fas fa-calendar-check"></i> Pedir Cita</a>
+        </li>
+        {% endif %}
       </ul>
     </div>
   </div>
 </nav>
 
-<!-- Hero -->
-<section class="hero">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-md-6">
-        <h1 class="hero-title">Bienvenido a Better Health</h1>
-        <p class="hero-subtitle">
-          Descubre cómo acceder a tus resultados y gestiona tus citas en un solo lugar.
-        </p>
-        <div class="mb-4">
-          <a href="#" class="btn btn-secondary me-2">Más información</a>
-          <a href="#" class="btn btn-light">Área Privada</a>
-        </div>
-      </div>
-      <div class="col-md-6 text-center">
-        <img src="{% static 'images/hero-image.jpg' %}" alt="Persona con móvil" class="hero-img">
-      </div>
-    </div>
-  </div>
-</section>
+<main>
 
-<!-- Sección de información / servicios -->
-<section class="info-section">
-  <div class="container">
-    <div class="text-center mb-5">
-      <h2>¿Qué podemos ofrecerte?</h2>
-      <p>Servicios de salud integrales para ti y tu familia</p>
-    </div>
-    <div class="row g-4">
-      <!-- Card 1 -->
-      <div class="col-md-4">
-        <div class="card info-card p-3">
-          <img 
-            src="{% static 'images/servicio1.jpg' %}" 
-            class="card-img-top" 
-            alt="Servicio 1">
-          <div class="card-body">
-            <h5 class="card-title">Consulta Médica</h5>
-            <p class="card-text">
-              Realiza consultas presenciales u online con nuestros especialistas.
-            </p>
-            <a href="#" class="btn btn-primary">Saber más</a>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h1 class="hero-title">Bienvenido a Better Health</h1>
+          <p class="hero-subtitle">
+            Descubre cómo acceder a tus resultados y gestiona tus citas en un solo lugar.
+          </p>
+          <div class="mb-4">
+            <a href="#" class="btn-info">Más información</a>
           </div>
         </div>
-      </div>
-      <!-- Card 2 -->
-      <div class="col-md-4">
-        <div class="card info-card p-3">
-          <img 
-            src="{% static 'images/servicio2.jpg' %}" 
-            class="card-img-top" 
-            alt="Servicio 2">
-          <div class="card-body">
-            <h5 class="card-title">Pruebas Diagnósticas</h5>
-            <p class="card-text">
-              Accede a análisis clínicos, radiografías y otros servicios de diagnóstico.
-            </p>
-            <a href="#" class="btn btn-primary">Saber más</a>
-          </div>
-        </div>
-      </div>
-      <!-- Card 3 -->
-      <div class="col-md-4">
-        <div class="card info-card p-3">
-          <img 
-            src="{% static 'images/servicio3.jpg' %}" 
-            class="card-img-top" 
-            alt="Servicio 3">
-          <div class="card-body">
-            <h5 class="card-title">Atención 24/7</h5>
-            <p class="card-text">
-              Recibe asistencia médica de urgencia en nuestros centros disponibles.
-            </p>
-            <a href="#" class="btn btn-primary">Saber más</a>
-          </div>
+        <div class="col-md-6 text-center">
+          <img src="{% static 'images/hero-image.jpg' %}" alt="Persona usando móvil para gestionar salud" class="hero-img">
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Sección de llamada a la acción (CTA) -->
-<section style="background-color: #03222F; color: #fff; padding: 3rem 0;">
-  <div class="container text-center">
-    <h3>¿Listo para gestionar tu salud de manera fácil y segura?</h3>
-    <p class="mb-4">Crea tu cuenta o inicia sesión en el Área Privada y obtén acceso a todos nuestros servicios.</p>
-    <a href="#" class="btn btn-success btn-lg me-2">Crear Cuenta</a>
-    <a href="#" class="btn btn-light btn-lg">Iniciar Sesión</a>
-  </div>
-</section>
+  <!-- Servicios -->
+  <section class="info-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2>¿Qué podemos ofrecerte?</h2>
+        <p>Servicios de salud integrales para ti y tu familia</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card info-card p-3">
+            <img src="{% static 'images/servicio1.jpg' %}" class="card-img-top" alt="Consulta médica">
+            <div class="card-body">
+              <h5 class="card-title">Consulta Médica</h5>
+              <p class="card-text">Realiza consultas presenciales u online con nuestros especialistas.</p>
+              <a href="#" class="btn btn-primary">Saber más</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card info-card p-3">
+            <img src="{% static 'images/servicio2.jpg' %}" class="card-img-top" alt="Pruebas diagnósticas">
+            <div class="card-body">
+              <h5 class="card-title">Pruebas Diagnósticas</h5>
+              <p class="card-text">Accede a análisis clínicos, radiografías y otros servicios de diagnóstico.</p>
+              <a href="#" class="btn btn-primary">Saber más</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card info-card p-3">
+            <img src="{% static 'images/servicio3.jpg' %}" class="card-img-top" alt="Atención médica 24 horas">
+            <div class="card-body">
+              <h5 class="card-title">Atención 24/7</h5>
+              <p class="card-text">Recibe asistencia médica de urgencia en nuestros centros disponibles.</p>
+              <a href="#" class="btn btn-primary">Saber más</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
 
 <!-- Footer -->
 <footer>
   <div class="container text-center">
     <p class="mb-0">&copy; 2025 Better Health. Todos los derechos reservados.</p>
-    <small>Información legal | Política de privacidad | Cookies</small>
+    <small>
+      <a href="#" class="text-white text-decoration-underline">Información legal</a> | 
+      <a href="#" class="text-white text-decoration-underline">Política de privacidad</a> | 
+      <a href="#" class="text-white text-decoration-underline">Cookies</a>
+    </small>
   </div>
 </footer>
 
+{% bootstrap_javascript %}
 </body>
 </html>

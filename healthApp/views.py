@@ -48,3 +48,8 @@ def register(request):
         form = PatientForm()
 
     return render(request, 'register.html', {'form': form})
+
+from django.shortcuts import render
+
+def pedir_cita(request):
+    return render(request, 'pedir_cita.html')
