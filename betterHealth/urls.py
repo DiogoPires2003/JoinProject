@@ -28,7 +28,6 @@ urlpatterns = [
     path('api/servicios/', get_services, name='get_services'),
     path('appointments/booking-success/', booking_success, name='booking_success'),
 
-    path('admin/', admin.site.urls),
     path('nosotros/', nosotros, name='nosotros'),
     path('centros/', centros, name='centros'),
     path('servicios-salud/', servicios_salud, name='servicios_salud'),
