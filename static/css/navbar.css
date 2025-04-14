@@ -1,0 +1,20 @@
+.navbar {
+    background-color: #005F99;
+}
+
+.brand-logo {
+    color: white;
+    font-weight: 600;
+}
+
+.navbar-nav .nav-link {
+    color: white;
+}
+
+.navbar-toggler {
+    color: white;
+}
+
+.navbar-toggler-icon {
+    filter: invert(1);
+}

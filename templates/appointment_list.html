@@ -18,39 +18,7 @@
 <body>
     <div class="page-wrapper d-flex flex-column min-vh-100">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg" style="background-color: #005F99;">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="#">
-          <img src="{% static 'images/LogoBetterHealthPetit.png' %}" alt="Logo" class="me-2" style="border-radius:50%; width: 50px; height: 50px;">
-          <span class="brand-logo">Better Health</span>
-        </a>
-        <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-          <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarContent">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item me-3">
-              <a class="nav-link text-white" href="#">Nosotros</a>
-            </li>
-            <li class="nav-item me-3">
-              <a class="nav-link text-white" href="#">Centros</a>
-            </li>
-            <li class="nav-item me-3">
-              <a class="nav-link text-white" href="#">Servicios de salud</a>
-            </li>
-            <li class="nav-item me-3">
-              <a class="nav-link text-white" href="#">Información útil</a>
-            </li>
-            <li class="nav-item me-3">
-              <a class="nav-link text-white" href="#">Contacto</a>
-            </li>
-            <li class="nav-item">
-              <a class="btn btn-success" href="#">Pedir Cita</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    {% include 'navbar.html' %}
 
     <main class="flex-grow-1">
     <br><br>
@@ -138,12 +106,7 @@
         </div>
     </div>
     <br><br>
-    <footer>
-      <div class="container text-center">
-        <p class="mb-0">&copy; 2025 Better Health. Todos los derechos reservados.</p>
-        <small>Información legal | Política de privacidad | Cookies</small>
-      </div>
-    </footer>
+    {% include 'footer.html' %}
 
     <script>
     var bookedAppointments = {{ booked_appointments|safe }};

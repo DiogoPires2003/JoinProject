@@ -8,6 +8,8 @@ from django.contrib import messages
 import json
 from datetime import datetime
 from django.utils import timezone
+from .models import Patient
+
 
 
 
@@ -55,7 +57,7 @@ def home(request):
 
 def register(request):
     if request.method == 'POST':
-        form = AppointmentForm(request.POST)
+        form = PatientForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')
@@ -103,22 +105,36 @@ def get_services(request):
         return JsonResponse({"error": "No se pudo obtener el token"}, status=response.status_code)
 
 
-
-
-
-
 def appointment_list(request):
+    # Primero comprobamos si hay una sesión de paciente activa
+    patient_id = request.session.get('patient_id')
+
+    # Si no hay ID de paciente en la sesión, pero hay usuario autenticado en Django
+    # podemos intentar obtenerlo por ahí
+    if not patient_id and request.user.is_authenticated:
+        try:
+            # Asumiendo que hay una relación entre User y Patient
+            patient = Patient.objects.get(user=request.user)
+            # Guardamos el ID en la sesión para futuros accesos
+            request.session['patient_id'] = patient.id
+            patient_id = patient.id
+        except Patient.DoesNotExist:
+            pass
+
+    # Si aún no tenemos patient_id, redirigir a login
+    if not patient_id:
+        return redirect('login')
+
     if request.method == 'POST':
-        # Get the first patient (as dummy)
-        patient = Patient.objects.first()
+        # Ahora sabemos que tenemos un patient_id válido
+        patient = Patient.objects.get(id=patient_id)
+        print(f"Usuario logueado: {patient}")
 
         service_id = request.POST.get('service_id')
         date = request.POST.get('fecha')
         start_time = request.POST.get('start_hour')
         end_time = request.POST.get('end_hour')
 
-        # Debug prints
-        print(f"Patient ID: {patient.dni}")
         print(f"Service ID: {service_id}")
         print(f"Date: {date}")
         print(f"Start Time: {start_time}")
@@ -129,15 +145,14 @@ def appointment_list(request):
             service = None
             if service_id:
                 # Use get_or_create to avoid errors
-                service, created = Service.objects.get_or_create(id=service_id, defaults={'name': f'Service {service_id}'})
-
-
+                service, created = Service.objects.get_or_create(id=service_id,
+                                                                 defaults={'name': f'Service {service_id}'})
 
             start_datetime = f"{date} {start_time}"
             end_datetime = f"{date} {end_time}"
 
-            start_datetime_obj = datetime.strptime(start_datetime, '%Y-%m-%d %H:%M')
-            end_datetime_obj = datetime.strptime(end_datetime, '%Y-%m-%d %H:%M')
+            start_datetime_obj = timezone.make_aware(datetime.strptime(start_datetime, '%Y-%m-%d %H:%M'))
+            end_datetime_obj = timezone.make_aware(datetime.strptime(end_datetime, '%Y-%m-%d %H:%M'))
 
             # Validate if the appointment is in the past
             if start_datetime_obj < timezone.now():
@@ -187,6 +202,55 @@ def appointment_list(request):
 def booking_success(request):
     return render(request, 'booking_success.html')
 
+def home(request):
+    if request.method == 'POST' and 'patient_id' in request.session:
+        del request.session['patient_id']
+        return redirect('login')
+
+    patient_id = request.session.get('patient_id')
+    if not patient_id:
+        return redirect('login')
+
+    try:
+        patient = Patient.objects.get(id=patient_id)
+        return render(request, 'home.html', {'patient': patient})
+    except Patient.DoesNotExist:
+        return redirect('login')
+
+def register(request):
+    if request.method == 'POST':
+        form = PatientForm(request.POST)
+        if form.is_valid():
+            patient = form.save(commit=False)
+            patient.password = make_password(form.cleaned_data['password'])
+            patient.save()
+            return redirect('login')
+    else:
+        form = PatientForm()
+
+    return render(request, 'register.html', {'form': form})
+
+def pedir_cita(request):
+    if request.method == 'POST':
+        return redirect('home')
+    return render(request, 'pedir_cita.html')
+
+def nosotros(request):
+    return render(request, 'nosotros.html')
+
+def centros(request):
+    return render(request, 'centros.html')
+
+def servicios_salud(request):
+    return render(request, 'servicios_salud.html')
+
+def informacion_util(request):
+    return render(request, 'informacion_util.html')
+
+def contacto(request):
+    if request.method == 'POST':
+        return redirect('home')
+    return render(request, 'contacto.html')
 def my_appointments(request):
     patient_id = request.session.get('patient_id')
     if not patient_id:

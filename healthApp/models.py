@@ -1,25 +1,16 @@
-from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.db import models
 from django.core.validators import RegexValidator, MinLengthValidator
+from django.contrib.auth.models import User
 from django.utils.timezone import now
 from datetime import time
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
-
-def get_default_user():
-    return User.objects.first()
-
-@receiver(post_save, sender=User)
-def create_patient_for_user(sender, instance, created, **kwargs):
-    if created:
-        Patient.objects.create(user=instance)
+from betterHealth import settings
 
 
 class Patient(models.Model):
-
-    def get_default_user(self):
-        return User.objects.first()
     first_name = models.CharField(
         max_length=50,
         validators=[
@@ -69,12 +60,14 @@ class Patient(models.Model):
         validators=[
             RegexValidator(
                 regex=r'^[A-Za-z]\d{5}$',
-                message='El número de seguro debe comenzar con una letra seguida de 5 dígitos'
+                message='El número de seguro debe comenzar con una letra seguida de 5 dígitos.'
             )
         ],
         unique=True,
         error_messages={
-            'unique': "Ya existe un paciente con este número de seguro."
+            'unique': "Ya existe un paciente con este número de seguro.",
+            'null': "El número de seguro no puede estar vacío.",
+            'blank': "El número de seguro no puede estar en blanco.",
         }
     )
     password = models.CharField(
@@ -84,6 +77,22 @@ class Patient(models.Model):
         ]
 
     )
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None  # Check if this is a new patient
+        self.full_clean()
+        super().save(*args, **kwargs)
+        if is_new:  # Send email only for new registrations
+            self.send_confirmation_email()
+
+    def send_confirmation_email(self):
+        subject = "Confirmación de Registro"
+        message = f"Estimado/a {self.first_name} {self.last_name},\n\nGracias por registrarse con nosotros. Su registro se ha completado con éxito."
+        recipient_list = [self.email]
+        try:
+            send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
+            print("Email sent successfully!")
+        except Exception as e:
+            print(f"Error sending email: {e}")
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

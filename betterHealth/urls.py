@@ -17,14 +17,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from healthApp.views import login_view, register, home, appointment_list, get_services, booking_success, my_appointments
+from healthApp.views import login_view, register, home,appointment_list, get_services, booking_success
+from healthApp.views import pedir_cita, nosotros, centros, servicios_salud, informacion_util, contacto
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', login_view, name='login'),
+    path('login/', login_view, name='login'),
     path('register/', register,name='register'),
-    path('home/', home,name='home'),
+    path('', home,name='home'),
     path('appointments/', appointment_list, name='appointment_list'),
     path('api/servicios/', get_services, name='get_services'),
     path('appointments/booking-success/', booking_success, name='booking_success'),
     path('my-appointments/', my_appointments, name='my_appointments'),
+    path('nosotros/', nosotros, name='nosotros'),
+    path('centros/', centros, name='centros'),
+    path('servicios-salud/', servicios_salud, name='servicios_salud'),
+    path('informacion-util/', informacion_util, name='informacion_util'),
+    path('contacto/', contacto, name='contacto'),
+    path('area-privada/', login_view , name='area_privada'),
 ]
