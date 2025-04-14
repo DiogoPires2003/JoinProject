@@ -21,13 +21,12 @@ from healthApp.views import pedir_cita, nosotros, centros, servicios_salud, info
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', login_view, name='login'),
+    path('login/', login_view, name='login'),
     path('register/', register,name='register'),
-    path('home/', home,name='home'),
+    path('', home,name='home'),
     path('appointments/', appointment_list, name='appointment_list'),
     path('api/servicios/', get_services, name='get_services'),
     path('appointments/booking-success/', booking_success, name='booking_success'),
-
     path('nosotros/', nosotros, name='nosotros'),
     path('centros/', centros, name='centros'),
     path('servicios-salud/', servicios_salud, name='servicios_salud'),
