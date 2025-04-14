@@ -1,0 +1,47 @@
+name: "📖 User Story"
+description: Create a new user story.
+title: "📖 [USER STORY] - <title>"
+labels: [
+  "user story"
+]
+body:
+  - type: textarea
+    id: name
+    attributes:
+      label: "Name"
+      description: Please specify the type of user
+      placeholder: ex. As a [type of user]...
+    validations:
+      required: true
+  - type: textarea
+    id: desctiption
+    attributes:
+      label: "Description"
+      description: Please specify the user's goal
+      placeholder: ex. I want [some goal]...
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: "Motivation"
+      description: Please specify the reason for the goal
+      placeholder: ex. so that [some reason]...
+    validations:
+      required: true
+  - type: textarea
+    id: fit_criterion
+    attributes:
+      label: "Fit criterion"
+      description: Please specify the acceptance criteria
+      placeholder: ex. 1. Given [some context], when [some action is taken], then [a particular set of observable outcomes should occur].
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: "Notes"
+      description: Please add any additional information or context
+      placeholder: ex. Any additional information or context...
+    validations:
+      required: false
