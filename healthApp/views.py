@@ -284,8 +284,11 @@ def my_appointments(request):
 
     try:
         patient = Patient.objects.get(id=patient_id)
-        appointments = Appointment.objects.filter(patient=patient)
 
+        # Ordenar las citas de más recientes a más antiguas (por fecha y hora de inicio)
+        appointments = Appointment.objects.filter(patient=patient).order_by('date', 'start_hour')
+
+        # Obtener los nombres de los servicios
         service_names = get_service_names()
 
         # Enriquecer cada cita con el nombre del servicio
