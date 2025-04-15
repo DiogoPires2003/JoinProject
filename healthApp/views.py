@@ -170,33 +170,32 @@ def appointment_list(request):
 
             messages.success(request, "Cita creada correctamente.")
             return render(request, 'appointment_list.html', {'reserva_exitosa': True})
-  # Or any redirect you want
         except Exception as e:
             messages.error(request, f"Error al crear la cita: {str(e)}")
             print(f"Error creating appointment: {str(e)}")
 
-    if request.method == 'GET':
-        services = Service.objects.all()
+    # GET request processing
+    patient = Patient.objects.get(id=patient_id)
+    services = Service.objects.all()
 
-        # Get all appointments
-        appointments = Appointment.objects.all()
+    # Get all appointments
+    appointments = Appointment.objects.all()
 
-        # Convert to JSON for JavaScript
-        booked_appointments_json = []
-        for appointment in appointments:
-            booked_appointments_json.append({
-                'date': appointment.date.strftime('%Y-%m-%d'),
-                'service_id': appointment.service_id,
-                'start': appointment.start_hour.strftime('%H:%M'),
-                'end': appointment.end_hour.strftime('%H:%M')
-            })
-
-        return render(request, 'appointment_list.html', {
-            'services': services,
-            'booked_appointments': json.dumps(booked_appointments_json)
+    # Convert to JSON for JavaScript
+    booked_appointments_json = []
+    for appointment in appointments:
+        booked_appointments_json.append({
+            'date': appointment.date.strftime('%Y-%m-%d'),
+            'service_id': appointment.service_id if appointment.service else None,
+            'start': appointment.start_hour.strftime('%H:%M'),
+            'end': appointment.end_hour.strftime('%H:%M')
         })
 
-    return render(request, 'appointment_list.html')
+    return render(request, 'appointment_list.html', {
+        'services': services,
+        'patient': patient,  # Pasar el paciente al template puede ser útil
+        'booked_appointments': json.dumps(booked_appointments_json)
+    })
 
 
 
@@ -252,6 +251,7 @@ def contacto(request):
     if request.method == 'POST':
         return redirect('home')
     return render(request, 'contacto.html')
+
 def my_appointments(request):
     patient_id = request.session.get('patient_id')
     if not patient_id:
@@ -263,4 +263,3 @@ def my_appointments(request):
         return render(request, 'my_appointments.html', {'appointments': appointments})
     except Patient.DoesNotExist:
         return redirect('login')
-
