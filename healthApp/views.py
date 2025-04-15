@@ -320,6 +320,29 @@ def modify_appointment(request, appointment_id):
     # Obtener la cita de la base de datos
     appointment = get_object_or_404(Appointment, id=appointment_id, patient_id=patient_id)
 
+    # Obtener servicio y sus detalles
+    service = appointment.service
+
+    # Cálculo mejorado de la duración del servicio (en minutos)
+    start_time = appointment.start_hour
+    end_time = appointment.end_hour
+
+    # Convertir a minutos para calcular la diferencia
+    start_minutes = start_time.hour * 60 + start_time.minute
+    end_minutes = end_time.hour * 60 + end_time.minute
+
+    # Si end_minutes es menor que start_minutes, significa que cruza la medianoche
+    if end_minutes < start_minutes:
+        end_minutes += 24 * 60  # Añadimos 24 horas en minutos
+
+    service_duration = end_minutes - start_minutes
+
+    # Si la duración es 0 o negativa, usamos un valor predeterminado de 30 minutos
+    if service_duration <= 0:
+        service_duration = 30
+
+    print(f"Duración calculada del servicio: {service_duration} minutos")
+
     service_names = get_service_names()
 
     # Si el servicio asociado a la cita está en el diccionario de servicios, lo asignamos
@@ -331,8 +354,52 @@ def modify_appointment(request, appointment_id):
     if request.method == 'POST':
         form = ModifyAppointmentsForm(request.POST, instance=appointment)
         if form.is_valid():
+            # Obtener la hora de inicio seleccionada
+            start_time = form.cleaned_data['start_hour']
+            date = form.cleaned_data['date']
+
+            # Calcular end_time basado en start_time y la duración del servicio
+            start_minutes = start_time.hour * 60 + start_time.minute
+            end_minutes = start_minutes + service_duration
+            end_hour = end_minutes // 60
+            end_minute = end_minutes % 60
+
+            # Manejar el caso donde la hora excede las 24 horas
+            if end_hour >= 24:
+                end_hour = end_hour % 24
+
+            from datetime import time as dt_time
+            end_time = dt_time(hour=end_hour, minute=end_minute)
+
+            # Asignar el end_time calculado
+            form.instance.end_hour = end_time
+
+            # Verificar solapamientos
+            overlapping_appointments = Appointment.objects.filter(
+                date=date,
+                service=service,
+            ).exclude(id=appointment_id)
+
+            overlap_found = False
+            for appt in overlapping_appointments:
+                # Convertir tiempos a minutos para comparación
+                appt_start = appt.start_hour.hour * 60 + appt.start_hour.minute
+                appt_end = appt.end_hour.hour * 60 + appt.end_hour.minute
+                new_start = start_time.hour * 60 + start_time.minute
+                new_end = end_time.hour * 60 + end_time.minute
+
+                # Verificar solapamiento
+                if (new_start < appt_end and new_end > appt_start):
+                    overlap_found = True
+                    break
+
+            if overlap_found:
+                messages.error(request, "La hora seleccionada se solapa con otra cita existente.")
+                return redirect('modify_appointment', appointment_id=appointment_id)
+
             form.save()
-            return redirect('my_appointments')  # Redirigir después de guardar
+            messages.success(request, "Cita modificada correctamente.")
+            return redirect('my_appointments')
     else:
         form = ModifyAppointmentsForm(instance=appointment)
 
@@ -354,5 +421,6 @@ def modify_appointment(request, appointment_id):
         'form': form,
         'appointment': appointment,
         'appointment_service_name': appointment_service_name,
-        'booked_appointments': json.dumps(booked_appointments_json)
+        'booked_appointments': json.dumps(booked_appointments_json),
+        'service_duration': service_duration  # Pasamos la duración del servicio al template
     })
