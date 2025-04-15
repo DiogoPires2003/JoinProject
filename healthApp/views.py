@@ -1,5 +1,5 @@
 from .forms import PatientForm, AppointmentForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import check_password
 import requests
 from django.http import JsonResponse
@@ -9,6 +9,7 @@ import json
 from datetime import datetime
 from django.utils import timezone
 from .models import Patient
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -300,3 +301,33 @@ def my_appointments(request):
 
     except Patient.DoesNotExist:
         return redirect('login')
+
+
+def modify_appointment(request, appointment_id):
+    # Obtener patient_id de sesión o usuario
+    patient_id = request.session.get('patient_id')
+
+    if not patient_id and request.user.is_authenticated:
+        try:
+            patient = Patient.objects.get(user=request.user)
+            request.session['patient_id'] = patient.id
+            patient_id = patient.id
+        except Patient.DoesNotExist:
+            pass
+
+    # Redirigir si no hay patient_id
+    if not patient_id:
+        return redirect('login')
+
+    # Obtener la cita usando el patient_id correcto
+    appointment = get_object_or_404(Appointment, id=appointment_id, patient_id=patient_id)
+
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST, instance=appointment)
+        if form.is_valid():
+            form.save()
+            return redirect('my_appointments')
+    else:
+        form = AppointmentForm(instance=appointment)
+
+    return render(request, 'modify_appointment.html', {'form': form})

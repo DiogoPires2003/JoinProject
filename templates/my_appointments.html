@@ -35,7 +35,7 @@
                     <p><strong>Detalles:</strong> Esta es tu cita para el servicio de {{ appointment.service_name }}. Si necesitas cambiarla, por favor contacta a nuestro soporte.</p>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <button class="btn-modify">Modificar Cita</button>
+                    <a href="{% url 'modify_appointment' appointment.id %}" class="btn btn-outline-primary">Modificar Cita</a>
                 </div>
             </div>
         {% endfor %}
