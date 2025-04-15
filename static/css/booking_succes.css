@@ -1,102 +1,126 @@
-:root {
-    --primary-color: #2196F3;
-    --secondary-color: #1976D2;
-    --background-color: #f8f9fa;
-    --text-color: #333;
-    --shadow-color: rgba(0, 0, 0, 0.1);
+/* Reset general para todos los elementos dialog */
+dialog {
+    border: none !important;
+    padding: 0 !important;
+    background: none !important;
+    outline: none !important;
 }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
+/* Dialog general - estilo minimalista con bordes redondeados */
+.reserva-dialog {
+    border: none !important;
+    outline: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    max-width: 500px;
+    margin: auto;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.reserva-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+}
+
+/* Contenedor del contenido - estilo minimalista */
+.dialog-content {
+    background-color: #fff;
+    border-radius: 20px;
+    /* Cambio a borde blanco más sutil */
+    border: 1px solid #f0f0f0;
+    padding: 40px 30px;
+    width: 100%;
+    /* Sombra más sutil para aspecto minimalista */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
     display: flex;
     flex-direction: column;
-}
-
-main {
-    flex: 1;
-    display: flex;
-    justify-content: center;
     align-items: center;
-    padding: 2rem 1rem;
 }
 
-.success-container {
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 10px 25px var(--shadow-color);
-    text-align: center;
-    max-width: 500px;
-    width: 100%;
-    padding: 3rem 2rem;
-    animation: fadeIn 0.5s ease-in-out;
-}
-
+/* Ícono de éxito */
 .success-icon {
-    color: var(--primary-color);
-    font-size: 5rem;
-    margin-bottom: 1rem;
+    font-size: 70px;
+    color: #28a745;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-h1 {
-    color: var(--primary-color);
-    margin-bottom: 1rem;
+/* Título */
+.dialog-title {
+    font-size: 1.8rem;
     font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+    text-align: center;
+    width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.success-container p {
-    color: #666;
-    margin-bottom: 2rem;
-    font-size: 1.1rem;
-    line-height: 1.6;
+/* Contenedor de botones */
+.dialog-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 25px;
+    width: 100%;
 }
 
-.home-btn {
-    background-color: var(--primary-color);
+/* Estilos específicos para los botones */
+.dialog-buttons .btn {
+    min-width: 200px;
+    display: block;
+    margin: 0 auto;
+    border-radius: 10px; /* Botones con bordes más redondeados */
+}
+
+/* Estilos específicos para el botón primario */
+.dialog-buttons .btn-primary {
+    background-color: #005F99;
+    border-color: transparent;
     color: white;
-    border: none;
-    padding: 0.8rem 2rem;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
     text-decoration: none;
-    display: inline-block;
-    font-weight: 500;
+    box-shadow: none;
 }
 
-.home-btn:hover {
-    background-color: var(--secondary-color);
-    transform: translateY(-2px);
+/* Estado hover para el botón primario */
+.dialog-buttons .btn-primary:hover {
+    background-color: #004d7a;
+    border-color: transparent;
 }
 
-.home-btn:active {
-    transform: translateY(0);
+/* Estado active para el botón primario */
+.dialog-buttons .btn-primary:active,
+.dialog-buttons .btn-primary:focus {
+    background-color: #00436b;
+    border-color: transparent;
+    box-shadow: 0 0 0 0.25rem rgba(0, 95, 153, 0.3);
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Estilo para el botón secundario más minimalista */
+.dialog-buttons .btn-secondary {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    color: #495057;
 }
 
-@media (max-width: 576px) {
-    .success-container {
-        padding: 2rem 1rem;
-    }
-    .success-icon {
-        font-size: 4rem;
-    }
-    h1 {
-        font-size: 1.5rem;
-    }
+.dialog-buttons .btn-secondary:hover {
+    background-color: #e9ecef;
+}
+
+/* Estilo para el formulario que contiene el botón Cerrar */
+.dialog-buttons form {
+    width: 100%;
+    text-align: center;
+}
+
+.dialog-buttons form button {
+    margin: 0 auto;
+    display: block;
 }

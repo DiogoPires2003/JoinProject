@@ -169,7 +169,7 @@ def appointment_list(request):
             )
 
             messages.success(request, "Cita creada correctamente.")
-            return redirect('booking-success/')  # Or any redirect you want
+            return render(request, 'appointment_list.html', {'reserva_exitosa': True})
         except Exception as e:
             messages.error(request, f"Error al crear la cita: {str(e)}")
             print(f"Error creating appointment: {str(e)}")
@@ -251,3 +251,52 @@ def contacto(request):
     if request.method == 'POST':
         return redirect('home')
     return render(request, 'contacto.html')
+
+def get_service_names():
+    token_url = "https://example-mutua.onrender.com/token"
+    payload = {
+        "username": "gei2025",
+        "password": "gei2025",
+    }
+
+    response = requests.post(token_url, data=payload)
+    if response.status_code != 200:
+        return {}
+
+    access_token = response.json().get("access_token")
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    services_response = requests.get("https://example-mutua.onrender.com/servicios-clinica/", headers=headers)
+    if services_response.status_code != 200:
+        return {}
+
+    services = services_response.json()
+    # Convertimos la lista en un diccionario: id -> nombre
+    return {service["id"]: service["nombre"] for service in services}
+
+
+def my_appointments(request):
+    patient_id = request.session.get('patient_id')
+    if not patient_id:
+        return redirect('login')
+
+    try:
+        patient = Patient.objects.get(id=patient_id)
+
+        # Ordenar las citas de más recientes a más antiguas (por fecha y hora de inicio)
+        appointments = Appointment.objects.filter(patient=patient).order_by('date', 'start_hour')
+
+        # Obtener los nombres de los servicios
+        service_names = get_service_names()
+
+        # Enriquecer cada cita con el nombre del servicio
+        for appointment in appointments:
+            service_id = getattr(appointment.service, 'id', None) if appointment.service else None
+            appointment.service_name = service_names.get(service_id, "No asignado")
+
+        return render(request, 'my_appointments.html', {'appointments': appointments})
+
+    except Patient.DoesNotExist:
+        return redirect('login')

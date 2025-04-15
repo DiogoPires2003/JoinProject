@@ -103,6 +103,7 @@ class Patient(models.Model):
 
 
 class Service(models.Model):
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
 
@@ -124,7 +125,7 @@ class Appointment(models.Model):
     def __str__(self):
         return f"{self.patient} - {self.date.strftime('%Y-%m-%d')} {self.start_hour.strftime('%H:%M')} - {self.service or 'No service'}"
 
-
-
-        verbose_name = 'Paciente'
-        verbose_name_plural = 'Pacientes'
+    class Meta:
+        verbose_name = 'Appointment'
+        verbose_name_plural = 'Appointments'
+        unique_together = ('patient', 'date', 'start_hour', 'end_hour')

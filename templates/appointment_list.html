@@ -113,6 +113,40 @@
     </script>
     <script src="{% static 'js/appointments.js' %}"></script>
     </main>
+     <dialog id="reservaExitosaDialog" class="reserva-dialog">
+            <div class="dialog-content">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h1 class="dialog-title" style="text-align: center; width: 100%; display: block; margin: 0 auto;">¡Reserva Realizada con Éxito!</h1>
+                <br>
+                <p>Tu cita médica ha sido registrada correctamente. Recibirás un recordatorio por correo electrónico antes de la fecha programada.</p>
+                <br>
+                <div class="dialog-buttons">
+                    <a href="{% url 'home' %}" class="btn btn-primary" style="display: block; margin: 0 auto; max-width: 200px; background-color: #005F99; border-color: #005F99; color: white; text-decoration: none; box-shadow: none;">
+                        <i class="fas fa-home me-1"></i> Volver al Inicio
+                    </a>
+                    
+                </div>
+            </div>
+        </dialog>
+
+
+
+
+
+
+
     </div>
 </body>
+    {% if reserva_exitosa %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dialog = document.getElementById('reservaExitosaDialog');
+            if (dialog) {
+                dialog.showModal();
+            }
+        });
+    </script>
+    {% endif %}
 </html>
