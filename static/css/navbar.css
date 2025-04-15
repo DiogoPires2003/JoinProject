@@ -1,20 +1,31 @@
 .navbar {
-    background-color: #005F99;
+    display: flex;
+    justify-content: center; /* Centers the navbar content horizontally */
+    align-items: center; /* Centers the navbar content vertically */
+    width: 100%; /* Ensures the navbar spans the full width of the page */
+    height: 100px; /* Adjust the height as needed */
+    margin: 0; /* Removes any default margins */
+    padding: 0; /* Removes any default paddings */
+    box-sizing: border-box; /* Ensures padding and borders are included in the width/height */
+}
+.navbar .navbar-brand {
+    margin-left: auto; /* Pushes the logo to the right */
+    display: flex;
+    align-items: center; /* Ensures the logo is vertically aligned */
+}
+.navbar .container {
+    display: flex;
+    justify-content: center; /* Centers the content inside the container */
+    align-items: center; /* Aligns the content vertically */
+    flex-wrap: wrap; /* Allows wrapping if content overflows */
 }
 
-.brand-logo {
-    color: white;
-    font-weight: 600;
+.navbar-nav {
+    display: flex;
+    justify-content: center; /* Centers the navigation items */
+    align-items: center;
+    gap: 1rem; /* Adds spacing between items */
 }
-
-.navbar-nav .nav-link {
-    color: white;
-}
-
-.navbar-toggler {
-    color: white;
-}
-
-.navbar-toggler-icon {
-    filter: invert(1);
+a.btn-success {
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
 }

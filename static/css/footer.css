@@ -1,13 +1,23 @@
+
+#wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 footer {
-    padding: 1.5rem 0;
-    background-color: #03222F;
-    border-top: 1px solid #e9ecef;
+    background: url('images/foot_bg.jpg') center no-repeat, url('images/foot_liq_bg.jpg') repeat;
+    margin-top: auto;
+    width: 100%;
+    height: 83px;
+    min-width: 450px;
 }
 
-footer p {
-    color: #e9ecef;
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
 }
 
-footer small {
-    color: #e9ecef;
-}
+

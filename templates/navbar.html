@@ -2,36 +2,50 @@
 
 <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 <!-- navbar.html -->
-<nav class="navbar navbar-expand-lg" style="background-color: #005F99;">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="#">
-      <img src="{% static 'images/LogoBetterHealthPetit.png' %}" alt="Logo" class="me-2" style="border-radius:50%; width: 50px; height: 50px;">
-      <span class="brand-logo">Better Health</span>
-    </a>
-    <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-      <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarContent">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#">Nosotros</a>
-        </li>
-        <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#">Centros</a>
-        </li>
-        <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#">Servicios de salud</a>
-        </li>
-        <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#">Información útil</a>
-        </li>
-        <li class="nav-item me-3">
-          <a class="nav-link text-white" href="#">Contacto</a>
-        </li>
-        <li class="nav-item">
-          <a class="btn btn-success" href="#">Pedir Cita</a>
-        </li>
-      </ul>
+<nav class="navbar navbar-expand-lg" style=" background-color: #005F99;">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+            <img src="{% static 'images/LogoBetterHealthPetit.png' %}" alt="Logo" class="me-2"
+                 style="border-radius:50%; width: 50px; height: 50px;">
+            <span class="brand-logo">Better Health</span>
+        </a>
+        <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item me-3">
+                    <a class="nav-link text-white" href="{% url 'nosotros' %}">Nosotros</a>
+                </li>
+                <li class="nav-item me-3">
+                    <a class="nav-link text-white" href="{% url 'centros' %}"> centros</a>
+                </li>
+                <li class="nav-item me-3">
+                    <a class="nav-link text-white" href="{% url 'informacion_util' %}">Información útil</a>
+                </li>
+                <li class="nav-item me-3">
+                    <a class="nav-link text-white" href="{% url 'servicios_salud' %}">Servicios de salus</a>
+                </li>
+                <li class="nav-item me-3">
+                    <a class="nav-link text-white" href="{% url 'contacto' %}">Contacto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href={% url 'my_appointments' %}>Mis Citas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-success" href={% url 'appointment_list' %}>Pedir Cita</a>
+                </li>
+
+                <li class="nav-item">
+                    {% if request.session.patient_id %}
+                        <a style="margin-left: 2%" class="btn btn-success" href="{% url 'logout' %}">Cerrar sesión</a>
+                    {% else %}
+                        <a style="margin-left: 2%" class="btn btn-success" href="{% url 'login' %}">Acceder
+                            Registrar-se</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
     </div>
-  </div>
 </nav>

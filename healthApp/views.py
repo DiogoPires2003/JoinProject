@@ -1,6 +1,6 @@
 from .forms import PatientForm, AppointmentForm
 from django.shortcuts import render, redirect
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import check_password, make_password
 import requests
 from django.http import JsonResponse
 from .models import Appointment, Patient, Service
@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 from django.utils import timezone
 from .models import Patient
-
+from decouple import config
 
 
 
@@ -40,20 +40,14 @@ def login_view(request):
 
 
 def home(request):
-    if request.method == 'POST' and 'patient_id' in request.session:
-        del request.session['patient_id']
-        return redirect('login')
+        return render(request, 'home.html')
 
-    patient_id = request.session.get('patient_id')
-    if not patient_id:
-        return redirect('login')
 
-    try:
-        patient = Patient.objects.get(id=patient_id)
-        return render(request, 'home.html', {'patient': patient})
-    except Patient.DoesNotExist:
-        return redirect('login')
-
+def patient_logout(request):
+    # Check if the patient is logged in by verifying the session
+    if 'patient_id' in request.session:
+        del request.session['patient_id']  # Remove the patient session data
+    return redirect('home')
 
 def register(request):
     if request.method == 'POST':
@@ -65,11 +59,7 @@ def register(request):
         form = PatientForm()
 
     return render(request, 'register.html', {'form': form})
-"""
-def appointment_list(request):
-    citas = Appointment.objects.all()
-    return render(request, 'appointment_list.html', {'citas': citas})
-"""
+
 
 def get_services(request):
     # Paso 1: Solicitar el token
@@ -202,21 +192,6 @@ def appointment_list(request):
 def booking_success(request):
     return render(request, 'booking_success.html')
 
-def home(request):
-    if request.method == 'POST' and 'patient_id' in request.session:
-        del request.session['patient_id']
-        return redirect('login')
-
-    patient_id = request.session.get('patient_id')
-    if not patient_id:
-        return redirect('login')
-
-    try:
-        patient = Patient.objects.get(id=patient_id)
-        return render(request, 'home.html', {'patient': patient})
-    except Patient.DoesNotExist:
-        return redirect('login')
-
 def register(request):
     if request.method == 'POST':
         form = PatientForm(request.POST)
@@ -255,8 +230,8 @@ def contacto(request):
 def get_service_names():
     token_url = "https://example-mutua.onrender.com/token"
     payload = {
-        "username": "gei2025",
-        "password": "gei2025",
+        "username": config("API_USERNAME"),
+        "password": config("API_PASSWORD"),
     }
 
     response = requests.post(token_url, data=payload)
