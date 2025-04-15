@@ -103,6 +103,7 @@ class Patient(models.Model):
 
 
 class Service(models.Model):
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
 

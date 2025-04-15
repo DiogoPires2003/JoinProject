@@ -42,17 +42,11 @@
 
   {% if appointments %}
     {% for appointment in appointments %}
-      <div class="appointment">
-        <p><strong>Fecha:</strong> {{ appointment.date }}</p>
-        <p><strong>Hora:</strong> {{ appointment.start_hour|time:"H:i" }} - {{ appointment.end_hour|time:"H:i" }}</p>
-        <p><strong>Servicio:</strong>
-          {% if appointment.service %}
-            {{ appointment.service.name }}
-          {% else %}
-            <em>No asignado</em>
-          {% endif %}
-        </p>
-      </div>
+     <div class="appointment">
+      <p><strong>Fecha:</strong> {{ appointment.date }}</p>
+      <p><strong>Hora:</strong> {{ appointment.start_hour|time:"H:i" }} - {{ appointment.end_hour|time:"H:i" }}</p>
+      <p><strong>Servicio:</strong> {{ appointment.service_name }}</p>
+    </div>
     {% endfor %}
   {% else %}
     <p class="no-appointments">No tienes citas registradas.</p>
