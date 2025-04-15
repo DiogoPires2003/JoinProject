@@ -18,7 +18,25 @@
 
         <form method="post" class="card p-4 shadow-sm">
             {% csrf_token %}
-            {{ form.as_p }}
+
+            <div class="mb-3">
+                <h3>{{ appointment_service_name }}</h3>  <!-- Muestra el nombre del servicio en lugar del ID -->
+            </div>
+
+            <div class="mb-3">
+                <label for="start_hour" class="form-label">Hora de inicio</label>
+                {{ form.start_hour }}  <!-- Renderiza el campo de hora de inicio -->
+            </div>
+
+            <div class="mb-3">
+                <label for="end_hour" class="form-label">Hora de fin</label>
+                {{ form.end_hour }}    <!-- Renderiza el campo de hora de fin -->
+            </div>
+
+            <div class="mb-3">
+                <label for="date" class="form-label">Fecha</label>
+                {{ form.date }}        <!-- Renderiza el campo de fecha -->
+            </div>
 
             <div class="d-flex justify-content-between mt-3">
                 <a href="{% url 'my_appointments' %}" class="btn btn-secondary">

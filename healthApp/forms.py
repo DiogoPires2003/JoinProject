@@ -119,3 +119,21 @@ class AppointmentForm(forms.ModelForm):
         self.fields['patient'].queryset = Patient.objects.all()
         self.fields['service'].queryset = Service.objects.all()
     username = forms.EmailField(label='Correo electrónico', max_length=254)
+
+class ModifyAppointmentsForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ['service', 'start_hour', 'end_hour', 'date']  # Solo los campos que se deben modificar
+        widgets = {
+            'start_hour': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'end_hour': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Hacer que el campo 'service' no sea editable, solo mostrar el título
+        self.fields['service'].widget = forms.TextInput(attrs={'readonly': 'readonly'})
+        if 'instance' in kwargs:
+            appointment = kwargs['instance']
+            self.fields['service'].initial = appointment.service.name

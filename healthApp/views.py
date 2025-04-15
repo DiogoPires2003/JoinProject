@@ -1,4 +1,4 @@
-from .forms import PatientForm, AppointmentForm
+from .forms import PatientForm, AppointmentForm, ModifyAppointmentsForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import check_password
 import requests
@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 from django.utils import timezone
 from .models import Patient
-from django.contrib.auth.decorators import login_required
+
 
 
 
@@ -304,7 +304,6 @@ def my_appointments(request):
 
 
 def modify_appointment(request, appointment_id):
-    # Obtener patient_id de sesión o usuario
     patient_id = request.session.get('patient_id')
 
     if not patient_id and request.user.is_authenticated:
@@ -315,19 +314,29 @@ def modify_appointment(request, appointment_id):
         except Patient.DoesNotExist:
             pass
 
-    # Redirigir si no hay patient_id
     if not patient_id:
         return redirect('login')
 
-    # Obtener la cita usando el patient_id correcto
+    # Obtener la cita de la base de datos
     appointment = get_object_or_404(Appointment, id=appointment_id, patient_id=patient_id)
 
+    service_names = get_service_names()
+
+    # Si el servicio asociado a la cita está en el diccionario de servicios, lo asignamos
+    if appointment.service_id in service_names:
+        appointment_service_name = service_names[appointment.service_id]
+    else:
+        appointment_service_name = "Servicio no disponible"
+
     if request.method == 'POST':
-        form = AppointmentForm(request.POST, instance=appointment)
+        form = ModifyAppointmentsForm(request.POST, instance=appointment)
         if form.is_valid():
             form.save()
-            return redirect('my_appointments')
+            return redirect('my_appointments')  # Redirigir después de guardar
     else:
-        form = AppointmentForm(instance=appointment)
+        form = ModifyAppointmentsForm(instance=appointment)
 
-    return render(request, 'modify_appointment.html', {'form': form})
+    return render(request, 'modify_appointment.html', {
+        'form': form,
+        'appointment_service_name': appointment_service_name  # Pasar el nombre del servicio
+    })
