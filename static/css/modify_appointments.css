@@ -1,0 +1,29 @@
+/* Additional styles for appointment modification */
+.available-hours {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.hour-btn {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hour-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #aaa;
+}
+
+.hour-btn.selected {
+    background-color: #005F99;
+    color: white;
+    border-color: #004c7a;
+}
+
+/* Add this to your existing appointments.css file */

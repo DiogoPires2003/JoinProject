@@ -336,7 +336,23 @@ def modify_appointment(request, appointment_id):
     else:
         form = ModifyAppointmentsForm(instance=appointment)
 
+    # Get all appointments for JavaScript
+    appointments = Appointment.objects.all()
+
+    # Convert to JSON for JavaScript
+    booked_appointments_json = []
+    for appt in appointments:
+        booked_appointments_json.append({
+            'id': appt.id,
+            'date': appt.date.strftime('%Y-%m-%d'),
+            'service_id': appt.service_id if appt.service else None,
+            'start': appt.start_hour.strftime('%H:%M'),
+            'end': appt.end_hour.strftime('%H:%M')
+        })
+
     return render(request, 'modify_appointment.html', {
         'form': form,
-        'appointment_service_name': appointment_service_name  # Pasar el nombre del servicio
+        'appointment': appointment,
+        'appointment_service_name': appointment_service_name,
+        'booked_appointments': json.dumps(booked_appointments_json)
     })
