@@ -7,10 +7,13 @@
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Agregar los íconos de Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
   <!-- Estilos personalizados -->
   <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
   <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+  <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
 
   <style>
     body {
@@ -21,51 +24,120 @@
     }
 
     .page-content {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 60px 24px;
+      padding: 60px 30px;
     }
 
     h1 {
       font-size: 36px;
-      font-weight: bold;
+      font-weight: 600;
       color: #005F99;
       margin-bottom: 40px;
       text-align: center;
     }
 
     .appointment-card {
-      background-color: #FFFFFF;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      background-color: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
       padding: 24px;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       color: #333333;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border: 1px solid #eee;
     }
 
-    .appointment-card p {
-      font-size: 16px;
-      margin: 8px 0;
+    .appointment-card .service-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #005f99;
+      margin-bottom: 8px;
     }
 
-    .label {
+    .appointment-card .appointment-time {
+      font-size: 1.1rem;
+      color: #555;
+      margin-top: 10px;
+    }
+
+    .appointment-card .appointment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .appointment-card .appointment-status {
+      font-size: 1.1rem;
       font-weight: 600;
+      color: #28a745; /* Color verde para "Confirmada" */
+      text-align: center;
+      padding: 10px;
+      background-color: #e7f9e7; /* Fondo suave verde */
+      border-radius: 8px;
+    }
+
+    .appointment-card .appointment-details {
+      margin-top: 15px;
+      font-size: 1rem;
+      color: #333;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+    }
+
+    .appointment-card .appointment-time p {
+      margin-bottom: 10px;
     }
 
     .no-appointments {
-      font-size: 18px;
+      font-size: 1.2rem;
       color: #888;
       text-align: center;
-      padding: 40px 0;
+      margin-top: 40px;
+      padding: 30px;
     }
 
-    @media (max-width: 600px) {
+    .bi {
+      color: #005f99;
+      margin-right: 8px;
+    }
+
+    .btn-modify {
+      background-color: #005f99;
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .btn-modify:hover {
+      background-color: #004080;
+    }
+
+    @media (max-width: 768px) {
       .appointment-card {
         padding: 18px;
       }
-
       h1 {
-        font-size: 28px;
+        font-size: 30px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page-content {
+        padding: 40px 20px;
+      }
+      .appointment-card {
+        padding: 15px;
+      }
+      h1 {
+        font-size: 26px;
       }
     }
   </style>
@@ -78,15 +150,35 @@
     <h1>Mis Citas</h1>
 
     {% if appointments %}
-      {% for appointment in appointments %}
-        <div class="appointment-card">
-          <p><span class="label">Servicio:</span> {{ appointment.service_name }}</p>
-          <p><span class="label">Fecha:</span> {{ appointment.date }}</p>
-          <p><span class="label">Hora:</span> {{ appointment.start_hour|time:"H:i" }} - {{ appointment.end_hour|time:"H:i" }}</p>
-        </div>
-      {% endfor %}
+        {% for appointment in appointments %}
+            <div class="appointment-card">
+                <!-- Encabezado de la tarjeta -->
+                <div class="appointment-header">
+                    <h5 class="service-name">{{ appointment.service_name }}</h5>
+                    <div class="appointment-time">
+                        <p><i class="bi bi-calendar-date"></i> {{ appointment.date|date:"d M Y" }}</p>
+                        <p><i class="bi bi-clock"></i> {{ appointment.start_hour|time:"H:i" }} - {{ appointment.end_hour|time:"H:i" }}</p>
+                    </div>
+                </div>
+
+                <!-- Estado de la cita -->
+                <div class="appointment-status">
+                    Confirmada
+                </div>
+
+                <!-- Detalles adicionales -->
+                <div class="appointment-details">
+                    <p><strong>Detalles:</strong> Esta es tu cita para el servicio de {{ appointment.service_name }}. Si necesitas cambiarla, por favor contacta a nuestro soporte.</p>
+                </div>
+
+                <!-- Botón de Modificar Cita -->
+                <div class="d-flex justify-content-end">
+                    <button class="btn-modify">Modificar Cita</button>
+                </div>
+            </div>
+        {% endfor %}
     {% else %}
-      <p class="no-appointments">No tienes citas registradas.</p>
+        <p class="no-appointments">No tienes citas registradas.</p>
     {% endif %}
   </div>
 
