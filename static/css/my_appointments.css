@@ -88,19 +88,29 @@ h1 {
   margin-right: 8px;
 }
 
-.btn-modify {
-  background-color: #005f99;
-  color: #fff;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.btn-available {
+    background-color: #005F99; /* Azul */
+    color: white;
+    border: 1px solid #004c7a;
 }
 
-.btn-modify:hover {
-  background-color: #004080;
+.btn-available.selected {
+    background-color: #003f73; /* Azul más oscuro al seleccionar */
+    border-color: #003359;
 }
+
+.btn-outline-danger {
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    background-color: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
 
 @media (max-width: 768px) {
   .appointment-card {

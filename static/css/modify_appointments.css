@@ -1,0 +1,79 @@
+.available-hours {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.hour-btn {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hour-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #aaa;
+}
+
+.hour-btn.selected {
+    background-color: #005F99;
+    color: white;
+    border-color: #004c7a;
+}
+
+.modify-title {
+    text-align: center;
+    color: #005F99;
+}
+
+.reserva-dialog {
+    padding: 0;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 500px;
+}
+
+.reserva-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.dialog-content {
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.success-icon {
+    margin-bottom: 20px;
+}
+
+.success-icon i {
+    font-size: 4rem;
+    color: #28a745;
+}
+
+.dialog-title {
+    color: #005F99;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.dialog-buttons {
+    margin-top: 20px;
+}
+
+.btn-available {
+    background-color: #005F99; /* Azul */
+    color: white;
+    border: 1px solid #004c7a;
+}
+
+.btn-available.selected {
+    background-color: #003f73; /* Azul más oscuro al seleccionar */
+    border-color: #003359;
+}
