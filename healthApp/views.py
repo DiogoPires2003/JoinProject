@@ -460,16 +460,41 @@ def appointment_history(request):
             patient=patient
         ).filter(
             date__lt=now.date()
-        ).order_by('-date', '-start_hour')
+        ) | Appointment.objects.filter(
+            patient=patient,
+            date=now.date(),
+            start_hour__lt=now.time()
+        )
 
-        service_names = get_service_names()
+        # Obtener citas futuras
+        future_appointments = Appointment.objects.filter(
+            patient=patient
+        ).filter(
+            date__gt=now.date()
+        ) | Appointment.objects.filter(
+            patient=patient,
+            date=now.date(),
+            start_hour__gte=now.time()
+        )
 
+        # Añadir etiquetas a las citas
         for appointment in past_appointments:
+            appointment.status_label = "Finalizada"
+        for appointment in future_appointments:
+            appointment.status_label = "Próxima"
+
+        # Combinar ambas listas y ordenarlas
+        all_appointments = list(past_appointments) + list(future_appointments)
+        all_appointments.sort(key=lambda x: (x.date, x.start_hour), reverse=True)
+
+        # Obtener nombres de servicios
+        service_names = get_service_names()
+        for appointment in all_appointments:
             service_id = getattr(appointment.service, 'id', None)
             appointment.service_name = service_names.get(service_id, "No asignado")
 
         return render(request, 'appointment_history.html', {
-            'appointments': past_appointments
+            'appointments': all_appointments
         })
 
     except Patient.DoesNotExist:
