@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mostrar mensaje de carga
         const horaDisponiblesContainer = document.getElementById('horaDisponibles');
         horaDisponiblesContainer.innerHTML = '<p class="text-center">Cargando horarios disponibles...</p>';
-        
+
         // Obtener información del servicio para verificar su duración
         $.ajax({
             url: "/api/servicios/",
@@ -43,20 +43,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 var servicioSeleccionado = servicios.find(function(servicio) {
                     return servicio.id == serviceId;
                 });
-                
+
                 if (!servicioSeleccionado) {
                     horaDisponiblesContainer.innerHTML = '<p class="text-center text-danger">Error: No se encontró información del servicio seleccionado.</p>';
                     return;
                 }
-                
+
                 // Obtener la duración en minutos del servicio
                 var duracionServicio = servicioSeleccionado.duracion_minutos;
-                
+
                 // Si la duración es 0 o no está definida, usar el valor del DOM o 30 minutos como predeterminado
                 if (!duracionServicio || duracionServicio <= 0) {
                     duracionServicio = serviceDuration || 30;
                 }
-                
+
                 // Determinar horas disponibles para la fecha seleccionada
                 const availableHours = getAvailableHours(selectedDate, serviceId, duracionServicio);
                 displayAvailableHours(availableHours, duracionServicio);
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Validación del formulario antes de enviarlo
+   // Validación del formulario antes de enviarlo
     $('form').on('submit', function(e) {
         var servicioId = $('[name="service_id"]').val();
         var fecha = $('[name="date"]').val();
@@ -288,6 +288,33 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
 
+        // Mostrar mensaje de éxito
+        alert("¡Cita modificada con éxito!");
+
         return true;
     });
+
+    // Verificar si venimos de un envío exitoso del formulario
+    if (sessionStorage.getItem('formSubmitted') === 'true' &&
+        document.querySelector('.alert-info') &&
+        document.querySelector('.alert-info').textContent.includes('Cita modificada correctamente')) {
+
+        // Obtener y mostrar el diálogo
+        const successDialog = document.getElementById('reservaExitosaDialog');
+        successDialog.showModal();
+
+        // Limpiar el indicador de envío de formulario
+        sessionStorage.removeItem('formSubmitted');
+
+        // Opcional: agregar cerrar el diálogo al hacer clic fuera
+        successDialog.addEventListener('click', function(event) {
+            const rect = successDialog.getBoundingClientRect();
+            const isInDialog = (rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
+                rect.left <= event.clientX && event.clientX <= rect.left + rect.width);
+            if (!isInDialog) {
+                successDialog.close();
+                window.location.href = '{% url "my_appointments" %}';
+            }
+        });
+    }
 });

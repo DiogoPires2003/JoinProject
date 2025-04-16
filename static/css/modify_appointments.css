@@ -29,3 +29,40 @@
     text-align: center;
     color: #005F99;
 }
+
+.reserva-dialog {
+    padding: 0;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 500px;
+}
+
+.reserva-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.dialog-content {
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.success-icon {
+    margin-bottom: 20px;
+}
+
+.success-icon i {
+    font-size: 4rem;
+    color: #28a745;
+}
+
+.dialog-title {
+    color: #005F99;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.dialog-buttons {
+    margin-top: 20px;
+}
