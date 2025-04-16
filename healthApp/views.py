@@ -323,6 +323,15 @@ def modify_appointment(request, appointment_id):
     # Obtener servicio y sus detalles
     service = appointment.service
 
+    # Guardar datos originales de la cita para el log
+    original_date = appointment.date
+    original_start_hour = appointment.start_hour
+    original_end_hour = appointment.end_hour
+    patient_name = appointment.patient.nombre if hasattr(appointment.patient,
+                                                         'nombre') else appointment.patient.user.username if hasattr(
+        appointment.patient, 'user') else str(appointment.patient)
+    service_name = service.name if hasattr(service, 'name') else str(service)
+
     # Cálculo mejorado de la duración del servicio (en minutos)
     start_time = appointment.start_hour
     end_time = appointment.end_hour
@@ -340,8 +349,6 @@ def modify_appointment(request, appointment_id):
     # Si la duración es 0 o negativa, usamos un valor predeterminado de 30 minutos
     if service_duration <= 0:
         service_duration = 30
-
-    print(f"Duración calculada del servicio: {service_duration} minutos")
 
     service_names = get_service_names()
 
@@ -391,13 +398,18 @@ def modify_appointment(request, appointment_id):
                 # Verificar solapamiento
                 if (new_start < appt_end and new_end > appt_start):
                     overlap_found = True
+                    print(f"SOLAPAMIENTO DETECTADO con cita ID: {appt.id}")
+                    print(f"Cita existente: {appt.date} de {appt.start_hour} a {appt.end_hour}")
                     break
 
             if overlap_found:
                 messages.error(request, "La hora seleccionada se solapa con otra cita existente.")
                 return redirect('modify_appointment', appointment_id=appointment_id)
 
+            # Si llegamos aquí, no hay solapamientos y podemos guardar la cita
             form.save()
+            print("CITA MODIFICADA CORRECTAMENTE")
+
             messages.success(request, "Cita modificada correctamente.")
             return redirect('my_appointments')
     else:
