@@ -11,10 +11,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/booking_succes.css' %}">
 </head>
+<div class="navbar-wrapper">
+    {% include 'navbar.html' %}
+</div>
 <body>
     <div class="page-wrapper d-flex flex-column min-vh-100">
-        <!-- Incluir la navbar -->
-        {% include 'navbar.html' %}
 
         <main>
             <div class="success-container">

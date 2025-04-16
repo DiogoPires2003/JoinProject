@@ -16,61 +16,13 @@
     .info-section { padding: 3rem 0; background-color: #F5F5F5; }
     .content { padding: 2rem 120px; }
     footer { background-color: #03222F; color: #fff; padding: 2rem 0; }
-    .navbar .nav-link { white-space: nowrap; display: flex; align-items: center; }
-    .navbar .nav-link i { margin-right: 6px; }
-    .btn-area-privada, .btn-info {
-      display: inline-flex; align-items: center;
-      background-color: #4ACF50; border: none; padding: 6px 12px;
-      color: #fff; font-size: 14px; border-radius: 4px; text-decoration: none;
-    }
-    .btn-area-privada i, .btn-info i { margin-right: 8px; }
-    .navbar .navbar-brand { margin-left: 120px; }
-    .navbar .navbar-nav { margin-left: 30px; }
+
   </style>
 </head>
+<div class="navbar-wrapper">
+    {% include 'navbar.html' %}
+</div>
 <body>
-
-<!-- Navbar (igual que en home.html) -->
-<nav class="navbar navbar-expand-lg" style="background-color: #005F99;">
-  <div class="container-fluid">
-    <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-      <img src="{% static 'images/logo.png' %}" alt="Logo Better Health" class="me-2"
-           style="border-radius:50%; width: 100px; height: 75px;">
-      <span class="brand-logo">Better Health</span>
-    </a>
-    <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarContent" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarContent">
-      <ul class="navbar-nav align-items-lg-center" style="margin-left: 10px;">
-        <li class="nav-item me-3">
-          <a class="nav-link text-white" href="{% url 'nosotros' %}"><i class="fas fa-users"></i>Nosotros</a>
-        </li>
-        <li class="nav-item me-3">
-          <a class="nav-link text-white" href="{% url 'centros' %}"><i class="fas fa-hospital"></i>Centros</a>
-        </li>
-        <li class="nav-item me-3">
-          <a class="nav-link text-white" href="{% url 'servicios_salud' %}"><i class="fas fa-stethoscope"></i>Servicios de salud</a>
-        </li>
-        <li class="nav-item me-3">
-          <a class="nav-link text-white" href="{% url 'informacion_util' %}"><i class="fas fa-info-circle"></i>Información útil</a>
-        </li>
-        <li class="nav-item me-3">
-          <a class="nav-link text-white" href="{% url 'contacto' %}"><i class="fas fa-envelope"></i>Contacto</a>
-        </li>
-        <li class="nav-item">
-          <a class="btn-area-privada" href="{% url 'login' %}"><i class="fas fa-user-lock"></i>Área Privada</a>
-        </li>
-        {% if user.is_authenticated %}
-        <li class="nav-item">
-          <a class="btn-info" href="{% url 'pedir_cita' %}"><i class="fas fa-calendar-check"></i> Pedir Cita</a>
-        </li>
-        {% endif %}
-      </ul>
-    </div>
-  </div>
-</nav>
 
 <!-- Contenido de Servicios de Salud -->
 <main>
@@ -90,17 +42,8 @@
   </section>
 </main>
 
-<!-- Footer -->
-<footer>
-  <div class="container text-center">
-    <p class="mb-0">&copy; 2025 Better Health. Todos los derechos reservados.</p>
-    <small>
-      <a href="#" class="text-white text-decoration-underline">Información legal</a> |
-      <a href="#" class="text-white text-decoration-underline">Política de privacidad</a> |
-      <a href="#" class="text-white text-decoration-underline">Cookies</a>
-    </small>
-  </div>
-</footer>
+{% include 'footer.html' %}
+
 
 {% bootstrap_javascript %}
 </body>

@@ -11,8 +11,10 @@
   <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
   <link rel="stylesheet" href="{% static 'css/my_appointments.css' %}">
 </head>
+<div class="navbar-wrapper">
+    {% include 'navbar.html' %}
+</div>
 <body>
-  {% include 'navbar.html' %}
 
   <div class="page-content">
     <h1>Mis Citas</h1>
