@@ -31,5 +31,5 @@ urlpatterns = [
     path('contacto/', contacto, name='contacto'),
     path('area-privada/', login_view , name='area_privada'),
     path('logout/', patient_logout, name='logout'),
-
+    path('api/servicios/', get_services, name='get_services'),
 ]
