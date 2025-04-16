@@ -6,7 +6,7 @@ from django.http import JsonResponse, HttpResponseNotAllowed
 from .models import Appointment, Patient, Service
 from django.contrib import messages
 import json
-from datetime import datetime
+from datetime import datetime, time
 from django.utils import timezone
 from .models import Patient
 from django.views.decorators.http import require_POST
@@ -279,6 +279,12 @@ def get_service_names():
     return {service["id"]: service["nombre"] for service in services}
 
 
+from datetime import datetime
+from django.utils import timezone
+
+from datetime import datetime
+from django.utils import timezone
+
 def my_appointments(request):
     patient_id = request.session.get('patient_id')
     if not patient_id:
@@ -290,18 +296,27 @@ def my_appointments(request):
         # Ordenar las citas de más recientes a más antiguas (por fecha y hora de inicio)
         appointments = Appointment.objects.filter(patient=patient).order_by('date', 'start_hour')
 
+        # Obtener las citas futuras
+        now = timezone.now()  # Obtener la hora actual "aware"
+        future_appointments = [
+            appointment for appointment in appointments
+            if timezone.make_aware(datetime.combine(appointment.date, appointment.start_hour)) >= now
+        ]
+
         # Obtener los nombres de los servicios
         service_names = get_service_names()
 
         # Enriquecer cada cita con el nombre del servicio
-        for appointment in appointments:
+        for appointment in future_appointments:
             service_id = getattr(appointment.service, 'id', None) if appointment.service else None
             appointment.service_name = service_names.get(service_id, "No asignado")
 
-        return render(request, 'my_appointments.html', {'appointments': appointments})
+        return render(request, 'my_appointments.html', {'appointments': future_appointments})
 
     except Patient.DoesNotExist:
         return redirect('login')
+
+
 
 
 def modify_appointment(request, appointment_id):
