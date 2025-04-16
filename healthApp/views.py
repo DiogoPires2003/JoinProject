@@ -15,10 +15,6 @@ from .models import Patient
 from decouple import config
 from django.views.decorators.http import require_POST
 
-
-
-
-
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -224,9 +220,6 @@ def centros(request):
 
 def servicios_salud(request):
     return render(request, 'servicios_salud.html')
-
-def informacion_util(request):
-    return render(request, 'informacion_util.html')
 
 def contacto(request):
     if request.method == 'POST':

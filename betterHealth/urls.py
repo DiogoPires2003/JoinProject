@@ -20,7 +20,7 @@ from healthApp.views import *
 from healthApp.views import login_view, register, home, appointment_list, get_services, my_appointments, \
     cancel_appointment
 from healthApp.views import login_view, register, home,appointment_list, get_services, modify_appointment
-from healthApp.views import pedir_cita, nosotros, centros, servicios_salud, informacion_util, contacto
+from healthApp.views import pedir_cita, nosotros, centros, servicios_salud, contacto
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,7 +34,6 @@ urlpatterns = [
     path('nosotros/', nosotros, name='nosotros'),
     path('centros/', centros, name='centros'),
     path('servicios-salud/', servicios_salud, name='servicios_salud'),
-    path('informacion-util/', informacion_util, name='informacion_util'),
     path('contacto/', contacto, name='contacto'),
     path('area-privada/', login_view , name='area_privada'),
     path('logout/', patient_logout, name='logout'),

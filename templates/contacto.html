@@ -7,57 +7,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Better Health - Contacto</title>
   {% bootstrap_css %}
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <style>
-    body { font-family: 'Open Sans', sans-serif; background-color: #F5F5F5; color: #03222F; margin: 0; padding: 0; }
-    h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-    .brand-logo { font-weight: bold; font-size: 1.5rem; color: #fff; }
-    .info-section { padding: 3rem 0; background-color: #F5F5F5; }
-    .content { padding: 2rem 120px; }
-    footer { background-color: #03222F; color: #fff; padding: 2rem 0; }
-
-    form { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-    form div { margin-bottom: 15px; }
-    form label { display: block; margin-bottom: 5px; font-weight: bold; }
-    form input, form textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-    form button { background-color: #4ACF50; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
-  </style>
+  <!-- CSS específico para Contacto -->
+  <link rel="stylesheet" href="{% static 'css/contacto.css' %}">
 </head>
-<div class="navbar-wrapper">
-    {% include 'navbar.html' %}
-</div>
 <body>
+  <div class="navbar-wrapper">
+    {% include 'navbar.html' %}
+  </div>
 
-<!-- Contenido de Contacto -->
-<main>
-  <section class="info-section">
-    <div class="container content">
-      <h1>Contacto</h1>
-      <p>Si tienes alguna pregunta o deseas más información, completa el siguiente formulario y nos pondremos en contacto contigo.</p>
+  <main>
+    <section class="contact-section">
+      <div class="container content">
+        <h1>Contacto</h1>
+        <p>
+          ¿Tienes alguna pregunta o necesitas más información? Completa el siguiente formulario y nos pondremos en contacto contigo lo antes posible.
+        </p>
+        <form method="post" action="">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre completo" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Correo electrónico:</label>
+            <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" required>
+          </div>
+          <div class="form-group">
+            <label for="mensaje">Mensaje:</label>
+            <textarea id="mensaje" name="mensaje" rows="5" placeholder="Escribe tu mensaje aquí" required></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Enviar</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Información de contacto -->
+    <section class="contact-info-section">
+      <div class="container content">
+        <h2>Información de Contacto</h2>
+        <p><i class="fas fa-phone-alt"></i> Teléfono: <strong>+34 973 000 123</strong></p>
+        <p><i class="fas fa-envelope"></i> Correo electrónico: <strong>contacto@betterhealthclinic.es</strong></p>
+        <p><i class="fas fa-clock"></i> Horario de atención: <strong>08:00 a 20:00</strong></p>
+      </div>
+    </section>
+
+    <!-- Botón flotante para solicitar llamada -->
+    <div class="call-request">
+      <p>¿Prefieres que te llamemos?</p>
       <form method="post" action="">
         {% csrf_token %}
-        <div>
-          <label for="nombre">Nombre:</label>
-          <input type="text" id="nombre" name="nombre" required>
-        </div>
-        <div>
-          <label for="email">Correo electrónico:</label>
-          <input type="email" id="email" name="email" required>
-        </div>
-        <div>
-          <label for="mensaje">Mensaje:</label>
-          <textarea id="mensaje" name="mensaje" rows="5" required></textarea>
-        </div>
-        <button type="submit">Enviar</button>
+        <input type="tel" name="telefono" placeholder="Tu número de teléfono" required>
+        <button type="submit">Solicitar llamada</button>
       </form>
     </div>
-  </section>
-</main>
+  </main>
 
-{% include 'footer.html' %}
-
-
-{% bootstrap_javascript %}
+  {% include 'footer.html' %}
+  {% bootstrap_javascript %}
 </body>
 </html>
