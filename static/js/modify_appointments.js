@@ -113,11 +113,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentAppointmentDate = getCurrentAppointmentDate();
 
         // Crear slots cada 'duracionServicio' minutos
-        for (let hour = 8; hour < 18; hour++) {
+        for (let hour = 8; hour < 20; hour++) {
             for (let minute = 0; minute < 60; minute += duracionServicio) {
                 // Verificar que no creamos slots que terminen después de las 18:00
                 const endMinutes = hour * 60 + minute + duracionServicio;
-                if (endMinutes <= 18 * 60) {
+                if (endMinutes <= 20 * 60) {
                     // Formato de hora correctamente
                     const formattedHour = hour.toString().padStart(2, '0');
                     const formattedMinute = minute.toString().padStart(2, '0');
