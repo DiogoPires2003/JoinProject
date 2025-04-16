@@ -9,7 +9,7 @@ from django.http import JsonResponse, HttpResponseNotAllowed
 from .models import Appointment, Patient, Service
 from django.contrib import messages
 import json
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from django.utils import timezone
 from .models import Patient
 from decouple import config
@@ -66,134 +66,179 @@ def register(request):
 
     return render(request, 'register.html', {'form': form})
 
+def get_available_hours(request):
+    if request.method == 'GET':
+        service_id = request.GET.get('service_id')
+        date = request.GET.get('date')
 
-def get_services(request):
-    # Paso 1: Solicitar el token
-    token_url = "https://example-mutua.onrender.com/token"
-    payload = {
-        "username": "gei2025",
-        "password": "gei2025",
-    }
+        if not service_id or not date:
+            return JsonResponse({'error': 'Service ID and date are required.'}, status=400)
 
-    # Realiza la solicitud POST para obtener el token
-    response = requests.post(token_url, data=payload)
-
-    # Verificar si la solicitud fue exitosa
-    if response.status_code == 200:
-        token_data = response.json()
-        access_token = token_data.get("access_token")
-
-        # Paso 2: Usar el token para obtener los servicios
-        services_url = "https://example-mutua.onrender.com/servicios-clinica/"
-        headers = {
-            "Authorization": f"Bearer {access_token}"
+        # Fetch the service duration from the API
+        token_url = "https://example-mutua.onrender.com/token"
+        payload = {
+            "username": config("API_USERNAME"),
+            "password": config("API_PASSWORD"),
         }
 
+        token_response = requests.post(token_url, data=payload)
+        if token_response.status_code != 200:
+            return JsonResponse({'error': 'Failed to fetch API token.'}, status=500)
+
+        access_token = token_response.json().get("access_token")
+        headers = {"Authorization": f"Bearer {access_token}"}
+
+        services_url = "https://example-mutua.onrender.com/servicios-clinica/"
         services_response = requests.get(services_url, headers=headers)
+        if services_response.status_code != 200:
+            return JsonResponse({'error': 'Failed to fetch services from the API.'}, status=500)
 
-        # Verificar si la solicitud para obtener los servicios fue exitosa
-        if services_response.status_code == 200:
-            services = services_response.json()
-            return JsonResponse(services, safe=False)
-        else:
-            return JsonResponse({"error": "No se pudieron obtener los servicios"}, status=services_response.status_code)
-    else:
-        return JsonResponse({"error": "No se pudo obtener el token"}, status=response.status_code)
+        services = services_response.json()
+        service = next((s for s in services if s["id"] == int(service_id)), None)
+        if not service:
+            return JsonResponse({'error': 'Service not found.'}, status=404)
 
+        duration = service.get("duracion_minutos", 30)  # Default to 30 minutes if not provided
+
+        # Define working hours (e.g., 9:00 AM to 5:00 PM)
+        start_time = time(9, 0)
+        end_time = time(17, 0)
+
+        # Fetch existing appointments for the selected service and date
+        existing_appointments = Appointment.objects.filter(
+            service_id=service_id,
+            date=date
+        )
+
+        # Generate all possible time slots
+        available_hours = []
+        current_time = datetime.combine(datetime.strptime(date, '%Y-%m-%d'), start_time)
+        end_datetime = datetime.combine(datetime.strptime(date, '%Y-%m-%d'), end_time)
+
+        while current_time + timedelta(minutes=duration) <= end_datetime:
+            slot_start = current_time.time()
+            slot_end = (current_time + timedelta(minutes=duration)).time()
+
+            # Check for overlaps
+            overlap = any(
+                appt.start_hour <= slot_start < appt.end_hour or
+                appt.start_hour < slot_end <= appt.end_hour
+                for appt in existing_appointments
+            )
+
+            if not overlap:
+                available_hours.append({
+                    'start': slot_start.strftime('%H:%M'),
+                    'end': slot_end.strftime('%H:%M')
+                })
+
+            current_time += timedelta(minutes=15)  # Increment by 15 minutes
+
+        return JsonResponse({'available_hours': available_hours})
+    return JsonResponse({'error': 'Invalid request method.'}, status=405)
+from django.utils.timezone import now
+
+from django.utils.timezone import now
 
 def appointment_list(request):
-    # Primero comprobamos si hay una sesión de paciente activa
+    # Check if the patient is logged in
     patient_id = request.session.get('patient_id')
-
-    # Si no hay ID de paciente en la sesión, pero hay usuario autenticado en Django
-    # podemos intentar obtenerlo por ahí
-    if not patient_id and request.user.is_authenticated:
-        try:
-            # Asumiendo que hay una relación entre User y Patient
-            patient = Patient.objects.get(user=request.user)
-            # Guardamos el ID en la sesión para futuros accesos
-            request.session['patient_id'] = patient.id
-            patient_id = patient.id
-        except Patient.DoesNotExist:
-            pass
-
-    # Si aún no tenemos patient_id, redirigir a login
     if not patient_id:
         return redirect('login')
 
-    if request.method == 'POST':
-        # Ahora sabemos que tenemos un patient_id válido
-        patient = Patient.objects.get(id=patient_id)
-        print(f"Usuario logueado: {patient}")
+    # Fetch the patient
+    patient = Patient.objects.get(id=patient_id)
 
+    # Fetch services from the API
+    token_url = "https://example-mutua.onrender.com/token"
+    payload = {
+        "username": config("API_USERNAME"),
+        "password": config("API_PASSWORD"),
+    }
+
+    token_response = requests.post(token_url, data=payload)
+    if token_response.status_code == 200:
+        access_token = token_response.json().get("access_token")
+        headers = {"Authorization": f"Bearer {access_token}"}
+
+        services_url = "https://example-mutua.onrender.com/servicios-clinica/"
+        services_response = requests.get(services_url, headers=headers)
+        if services_response.status_code == 200:
+            services = [
+                {
+                    "id": service["id"],
+                    "name": service["nombre"],
+                    "description": service["descripcion"],
+                    "type": service["tipo_servicio"],
+                    "price": service["precio"],
+                    "included_in_insurance": service["incluido_mutua"],
+                    "duration": service["duracion_minutos"]
+                }
+                for service in services_response.json()
+            ]
+        else:
+            services = []
+            messages.error(request, "Error fetching services from the API.")
+    else:
+        services = []
+        messages.error(request, "Error fetching token from the API.")
+
+    # Handle POST request for creating an appointment
+    reserva_exitosa = False
+    if request.method == 'POST':
         service_id = request.POST.get('service_id')
         date = request.POST.get('fecha')
         start_time = request.POST.get('start_hour')
         end_time = request.POST.get('end_hour')
 
-        print(f"Service ID: {service_id}")
-        print(f"Date: {date}")
-        print(f"Start Time: {start_time}")
-        print(f"End Time: {end_time}")
-
         try:
-            # Skip service validation
-            service = None
-            if service_id:
-                # Use get_or_create to avoid errors
-                service, created = Service.objects.get_or_create(id=service_id,
-                                                                 defaults={'name': f'Service {service_id}'})
-
+            # Validate and create the appointment
             start_datetime = f"{date} {start_time}"
-            end_datetime = f"{date} {end_time}"
-
             start_datetime_obj = timezone.make_aware(datetime.strptime(start_datetime, '%Y-%m-%d %H:%M'))
-            end_datetime_obj = timezone.make_aware(datetime.strptime(end_datetime, '%Y-%m-%d %H:%M'))
 
-            # Validate if the appointment is in the past
-            if start_datetime_obj < timezone.now():
-                messages.error(request, "No puedes pedir una cita en el pasado.")
+            if start_datetime_obj < now():
+                messages.error(request, "No puedes pedir citas antes del día y hora de hoy.")
                 return redirect('appointment_list')
 
-            # Save appointment
+            end_datetime = f"{date} {end_time}"
+            end_datetime_obj = timezone.make_aware(datetime.strptime(end_datetime, '%Y-%m-%d %H:%M'))
+
+            service = Service.objects.filter(id=service_id).first()
+            if not service:
+                messages.error(request, "El servicio seleccionado no es válido.")
+                return redirect('appointment_list')
+
             Appointment.objects.create(
                 patient=patient,
-                service=service,  # This can be None
+                service=service,
                 start_hour=start_datetime_obj.time(),
                 end_hour=end_datetime_obj.time(),
                 date=start_datetime_obj.date()
             )
-
-            messages.success(request, "Cita creada correctamente.")
-            return render(request, 'appointment_list.html', {'reserva_exitosa': True})
+            reserva_exitosa = True
         except Exception as e:
-            messages.error(request, f"Error al crear la cita: {str(e)}")
-            print(f"Error creating appointment: {str(e)}")
+            messages.error(request, f"Error creating appointment: {str(e)}")
 
-    # GET request processing
-    patient = Patient.objects.get(id=patient_id)
-    services = Service.objects.all()
-
-    # Get all appointments
+    # Fetch all appointments for the patient
     appointments = Appointment.objects.all()
 
-    # Convert to JSON for JavaScript
-    booked_appointments_json = []
-    for appointment in appointments:
-        booked_appointments_json.append({
+    # Convert appointments to JSON for JavaScript
+    booked_appointments_json = [
+        {
             'date': appointment.date.strftime('%Y-%m-%d'),
             'service_id': appointment.service_id if appointment.service else None,
             'start': appointment.start_hour.strftime('%H:%M'),
             'end': appointment.end_hour.strftime('%H:%M')
-        })
+        }
+        for appointment in appointments
+    ]
 
     return render(request, 'appointment_list.html', {
         'services': services,
-        'patient': patient,  # Pasar el paciente al template puede ser útil
-        'booked_appointments': json.dumps(booked_appointments_json)
+        'patient': patient,
+        'booked_appointments': json.dumps(booked_appointments_json),
+        'reserva_exitosa': reserva_exitosa
     })
-
-
 
 def booking_success(request):
     return render(request, 'booking_success.html')

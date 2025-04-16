@@ -17,10 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from healthApp.views import *
-from healthApp.views import login_view, register, home, appointment_list, get_services, my_appointments, \
-    cancel_appointment
-from healthApp.views import login_view, register, home,appointment_list, get_services, modify_appointment
-from healthApp.views import pedir_cita, nosotros, centros, servicios_salud, informacion_util, contacto
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -38,6 +35,6 @@ urlpatterns = [
     path('contacto/', contacto, name='contacto'),
     path('area-privada/', login_view , name='area_privada'),
     path('logout/', patient_logout, name='logout'),
-    path('api/servicios/', get_services, name='get_services'),
+    path('get-available-hours/', get_available_hours, name='get_available_hours'),
 
 ]
