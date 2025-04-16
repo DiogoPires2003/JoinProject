@@ -2,13 +2,14 @@ from .forms import PatientForm, AppointmentForm, ModifyAppointmentsForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import check_password
 import requests
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseNotAllowed
 from .models import Appointment, Patient, Service
 from django.contrib import messages
 import json
 from datetime import datetime
 from django.utils import timezone
 from .models import Patient
+from django.views.decorators.http import require_POST
 
 
 
@@ -442,3 +443,11 @@ def modify_appointment(request, appointment_id):
         'service_duration': service_duration,  # Pasamos la duración del servicio al template
         'service_id': service.id if service else None  # Añadimos el service_id para el frontend
     })
+
+@require_POST
+def cancel_appointment(request, appointment_id):
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        appointment = get_object_or_404(Appointment, id=appointment_id)
+        appointment.delete()
+        return JsonResponse({'status': 'success'})
+    return HttpResponseNotAllowed(['POST'])

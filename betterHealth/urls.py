@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from healthApp.views import login_view, register, home, appointment_list, get_services, my_appointments
+from healthApp.views import login_view, register, home, appointment_list, get_services, my_appointments, \
+    cancel_appointment
 from healthApp.views import login_view, register, home,appointment_list, get_services, modify_appointment
 from healthApp.views import pedir_cita, nosotros, centros, servicios_salud, informacion_util, contacto
 
@@ -29,6 +30,7 @@ urlpatterns = [
     path('api/servicios/', get_services, name='get_services'),
     path('my-appointments/', my_appointments, name='my_appointments'),
     path('citas/modificar/<int:appointment_id>/', modify_appointment, name='modify_appointment'),
+    path('cancel_appointment/<int:appointment_id>/', cancel_appointment, name='cancel_appointment'),
     path('nosotros/', nosotros, name='nosotros'),
     path('centros/', centros, name='centros'),
     path('servicios-salud/', servicios_salud, name='servicios_salud'),

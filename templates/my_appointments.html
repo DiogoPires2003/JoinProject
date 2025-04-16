@@ -14,12 +14,15 @@
 <body>
   {% include 'navbar.html' %}
 
+  <!-- Contenedor de alertas -->
+  <div id="alert-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1100;"></div>
+
   <div class="page-content">
     <h1>Mis Citas</h1>
 
     {% if appointments %}
         {% for appointment in appointments %}
-            <div class="appointment-card">
+            <div class="appointment-card" id="appointment-card-{{ appointment.id }}">
                 <!-- Encabezado de la tarjeta -->
                 <div class="appointment-header">
                     <h5 class="service-name">{{ appointment.service_name }}</h5>
@@ -35,7 +38,32 @@
                     <p><strong>Detalles:</strong> Esta es tu cita para el servicio de {{ appointment.service_name }}. Si necesitas cambiarla, por favor contacta a nuestro soporte.</p>
                 </div>
                 <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-danger me-2" data-bs-toggle="modal" data-bs-target="#cancelModal{{ appointment.id }}">
+                        Cancelar Cita
+                    </button>
                     <a href="{% url 'modify_appointment' appointment.id %}" class="btn btn-outline-primary">Modificar Cita</a>
+                </div>
+
+                <!-- Modal de confirmación -->
+                <div class="modal fade" id="cancelModal{{ appointment.id }}" tabindex="-1" aria-labelledby="cancelModalLabel{{ appointment.id }}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="cancelModalLabel{{ appointment.id }}">Confirmar cancelación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                      </div>
+                      <div class="modal-body">
+                        ¿Estás seguro de que quieres cancelar la cita para <strong>{{ appointment.service_name }}</strong> el día <strong>{{ appointment.date|date:"d M Y" }}</strong>?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <form class="cancel-form" data-appointment-id="{{ appointment.id }}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Sí, cancelar</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
                 </div>
             </div>
         {% endfor %}
@@ -46,5 +74,92 @@
 
   {% include 'footer.html' %}
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".cancel-form").forEach(form => {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const appointmentId = this.dataset.appointmentId;
+      const csrfToken = this.querySelector("[name=csrfmiddlewaretoken]").value;
+
+      fetch(`/cancel_appointment/${appointmentId}/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "X-Requested-With": "XMLHttpRequest",
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          // Eliminar la tarjeta
+          const card = document.getElementById(`appointment-card-${appointmentId}`);
+          if (card) card.remove();
+
+          // Cerrar el modal manualmente de forma completa
+          const modalElement = document.getElementById(`cancelModal${appointmentId}`);
+          const modalInstance = bootstrap.Modal.getInstance(modalElement);
+          if (modalInstance) modalInstance.hide();
+
+          // Función completa para limpiar el modal y desbloquear la página
+          function unlockPage() {
+            // Eliminar clase modal-open del body
+            document.body.classList.remove('modal-open');
+
+            // Eliminar cualquier inline style en el body
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('padding-right');
+
+            // Eliminar todos los backdrops
+            document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+              backdrop.remove();
+            });
+          }
+
+          // Ejecutar limpieza inmediatamente
+          unlockPage();
+
+          // Ejecutar limpieza de nuevo después de un pequeño delay (por si acaso)
+          setTimeout(unlockPage, 100);
+
+          // Mostrar alerta de éxito
+          const alertContainer = document.getElementById("alert-container");
+          const alert = document.createElement("div");
+          alert.className = "alert alert-success alert-dismissible fade show";
+          alert.role = "alert";
+          alert.innerHTML = `
+            Cita cancelada correctamente.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+          `;
+          alertContainer.appendChild(alert);
+
+          // Ocultar la alerta después de 3 segundos
+          setTimeout(() => {
+            alert.classList.remove("show");
+            alert.classList.add("hide");
+            alert.remove();
+          }, 3000);
+
+          // Verificar si ya no quedan citas
+          if (document.querySelectorAll(".appointment-card").length === 0) {
+            const pageContent = document.querySelector(".page-content");
+            const noAppointments = document.createElement("p");
+            noAppointments.className = "no-appointments";
+            noAppointments.textContent = "No tienes citas registradas.";
+            pageContent.appendChild(noAppointments);
+          }
+        } else {
+          alert("Error al cancelar la cita.");
+        }
+      })
+      .catch(error => {
+        console.error("Error en la petición:", error);
+        alert("Ha ocurrido un error al cancelar la cita.");
+      });
+    });
+  });
+});
+  </script>
 </body>
 </html>

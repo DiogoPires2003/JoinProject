@@ -99,6 +99,19 @@ h1 {
     border-color: #003359;
 }
 
+.btn-outline-danger {
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    background-color: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+
 @media (max-width: 768px) {
   .appointment-card {
     padding: 18px;
