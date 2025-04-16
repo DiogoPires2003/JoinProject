@@ -381,6 +381,9 @@ def modify_appointment(request, appointment_id):
             # Asignar el end_time calculado
             form.instance.end_hour = end_time
 
+            # IMPORTANTE: Asegurar que se conserva el servicio
+            form.instance.service = service
+
             # Verificar solapamientos
             overlapping_appointments = Appointment.objects.filter(
                 date=date,
@@ -407,8 +410,10 @@ def modify_appointment(request, appointment_id):
                 return redirect('modify_appointment', appointment_id=appointment_id)
 
             # Si llegamos aquí, no hay solapamientos y podemos guardar la cita
-            form.save()
-            print("CITA MODIFICADA CORRECTAMENTE")
+            modified_appointment = form.save()
+
+            # Verificar que se haya guardado correctamente el servicio
+            print(f"CITA MODIFICADA CORRECTAMENTE. Service ID: {modified_appointment.service_id}")
 
             messages.success(request, "Cita modificada correctamente.")
             return redirect('my_appointments')
@@ -434,5 +439,6 @@ def modify_appointment(request, appointment_id):
         'appointment': appointment,
         'appointment_service_name': appointment_service_name,
         'booked_appointments': json.dumps(booked_appointments_json),
-        'service_duration': service_duration  # Pasamos la duración del servicio al template
+        'service_duration': service_duration,  # Pasamos la duración del servicio al template
+        'service_id': service.id if service else None  # Añadimos el service_id para el frontend
     })
