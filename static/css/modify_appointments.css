@@ -66,3 +66,14 @@
 .dialog-buttons {
     margin-top: 20px;
 }
+
+.btn-available {
+    background-color: #005F99; /* Azul */
+    color: white;
+    border: 1px solid #004c7a;
+}
+
+.btn-available.selected {
+    background-color: #003f73; /* Azul más oscuro al seleccionar */
+    border-color: #003359;
+}

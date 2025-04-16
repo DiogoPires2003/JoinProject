@@ -415,7 +415,7 @@ def modify_appointment(request, appointment_id):
             # Verificar que se haya guardado correctamente el servicio
             print(f"CITA MODIFICADA CORRECTAMENTE. Service ID: {modified_appointment.service_id}")
 
-            messages.success(request, "Cita modificada correctamente.")
+
             return redirect('my_appointments')
     else:
         form = ModifyAppointmentsForm(instance=appointment)

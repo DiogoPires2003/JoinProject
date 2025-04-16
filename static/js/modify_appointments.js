@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const hourBtn = document.createElement('button');
             hourBtn.type = 'button';
-            hourBtn.className = 'btn hour-btn btn-success'; // Todas las horas son disponibles
+            hourBtn.className = 'btn hour-btn btn-available'; // Todas las horas son disponibles
             hourBtn.textContent = displayText;
             hourBtn.dataset.horaInicio = hour;
             hourBtn.dataset.horaFin = endTime;
