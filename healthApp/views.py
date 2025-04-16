@@ -445,3 +445,32 @@ def cancel_appointment(request, appointment_id):
         appointment.delete()
         return JsonResponse({'status': 'success'})
     return HttpResponseNotAllowed(['POST'])
+
+def appointment_history(request):
+    patient_id = request.session.get('patient_id')
+    if not patient_id:
+        return redirect('login')
+
+    try:
+        patient = Patient.objects.get(id=patient_id)
+        now = timezone.now()
+
+        # Obtener citas pasadas
+        past_appointments = Appointment.objects.filter(
+            patient=patient
+        ).filter(
+            date__lt=now.date()
+        ).order_by('-date', '-start_hour')
+
+        service_names = get_service_names()
+
+        for appointment in past_appointments:
+            service_id = getattr(appointment.service, 'id', None)
+            appointment.service_name = service_names.get(service_id, "No asignado")
+
+        return render(request, 'appointment_history.html', {
+            'appointments': past_appointments
+        })
+
+    except Patient.DoesNotExist:
+        return redirect('login')
