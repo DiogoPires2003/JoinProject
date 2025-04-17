@@ -8,3 +8,4 @@ class HealthappConfig(AppConfig):
     def ready(self):
         from . import startup
         startup.create_default_roles()
+        startup.create_super_employee()
