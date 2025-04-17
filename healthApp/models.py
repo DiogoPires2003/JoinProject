@@ -17,12 +17,20 @@ class Role(models.Model):
         return self.name
 
 
+from django.contrib.auth.hashers import make_password, check_password
+
 class Employee(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
     password = models.CharField(max_length=128)
+
+    def save(self, *args, **kwargs):
+        # Hash the password if it is not already hashed
+        if not check_password(self.password, self.password):
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
