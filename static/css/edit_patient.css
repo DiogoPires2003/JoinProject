@@ -1,0 +1,13 @@
+.form-check-input {
+    height: 1.5em;
+    width: 1.5em;
+}
+
+label[for="id_has_insurance"] {
+    margin-left: 0.5rem;
+}
+
+input[readonly] {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}

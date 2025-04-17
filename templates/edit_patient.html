@@ -8,27 +8,10 @@
     {% load bootstrap5 %}
     {% bootstrap_css %}
     <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Custom Admin CSS (reuse the same one) -->
     <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
-    <style>
-        /* Optional: Add specific styles if needed */
-        .form-check-input {
-            height: 1.5em; /* Make checkbox slightly larger */
-            width: 1.5em;
-        }
-        label[for="id_has_insurance"] {
-             margin-left: 0.5rem; /* Space between checkbox and label */
-        }
-        /* Style for read-only fields */
-        input[readonly] {
-            background-color: #e9ecef; /* Light grey background */
-            cursor: not-allowed; /* Indicate it's not editable */
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/edit_patient.css' %}">
 </head>
 
 <body>
@@ -39,18 +22,16 @@
     <div class="page-wrapper d-flex flex-column min-vh-100">
         <main class="flex-grow-1">
             <div class="container admin-container my-5">
-                 <div class="card shadow-lg rounded-3 overflow-hidden">
+                <div class="card shadow-lg rounded-3 overflow-hidden">
                     <div class="card-body p-4 p-lg-5">
-
                         <h1 class="text-center mb-3">Editar Paciente</h1>
                         <p class="text-center text-muted mb-4">Modifica los datos de <strong>{{ patient.first_name }} {{ patient.last_name }}</strong>.</p>
 
-                        {% bootstrap_messages %} {# Display success/error messages here #}
+                        {% bootstrap_messages %}
 
                         <form method="post" novalidate>
-                            {% csrf_token %} {# !!! IMPORTANT: Cross-Site Request Forgery protection !!! #}
-
-                            {% bootstrap_form form %} {# Render the form using django-bootstrap5 #}
+                            {% csrf_token %}
+                            {% bootstrap_form form %}
 
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                                 <a href="{% url 'manage_patients' %}" class="btn btn-secondary me-md-2">
@@ -62,40 +43,15 @@
                             </div>
                         </form>
 
-                    </div> {# End card-body #}
-                </div> {# End card #}
-            </div> {# End container #}
+                    </div>
+                </div>
+            </div>
         </main>
 
         {% include 'footer.html' %}
-    </div> {# End page-wrapper #}
+    </div>
 
     {% bootstrap_javascript %}
-    {# Optional: Add JS for dynamic behavior like enabling/disabling insurance number based on checkbox #}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const hasInsuranceCheckbox = document.getElementById('id_has_insurance');
-            const insuranceNumberInput = document.getElementById('id_insurance_number');
-
-            function toggleInsuranceNumber() {
-                if (insuranceNumberInput) {
-                    insuranceNumberInput.disabled = !hasInsuranceCheckbox.checked;
-                     if (!hasInsuranceCheckbox.checked) {
-                        insuranceNumberInput.value = ''; // Clear value if unchecked
-                        insuranceNumberInput.placeholder = 'No aplicable';
-                     } else {
-                         insuranceNumberInput.placeholder = ''; // Reset placeholder
-                     }
-                }
-            }
-
-            if (hasInsuranceCheckbox) {
-                // Initial state on page load
-                toggleInsuranceNumber();
-                // Add listener for changes
-                hasInsuranceCheckbox.addEventListener('change', toggleInsuranceNumber);
-            }
-        });
-    </script>
+    <script src="{% static 'js/edit_patient.js' %}"></script>
 </body>
 </html>

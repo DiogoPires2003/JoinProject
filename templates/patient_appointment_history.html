@@ -8,57 +8,10 @@
     {% load bootstrap5 %}
     {% bootstrap_css %}
     <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Custom Admin CSS -->
     <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
-    <!-- Add specific styles for appointment cards here or in admin_dashboard.css -->
-    <style>
-        .appointment-card {
-            background-color: var(--blanco);
-            border: 1px solid #eee;
-            border-left: 5px solid var(--azul-profesional); /* Accent color */
-            border-radius: 5px;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: box-shadow 0.2s ease-in-out;
-        }
-        .appointment-card:hover {
-             box-shadow: 0 4px 10px rgba(0, 95, 153, 0.1);
-        }
-        .appointment-header {
-            border-bottom: 1px solid #f0f0f0;
-            padding-bottom: 0.75rem;
-            margin-bottom: 0.75rem;
-        }
-        .service-name {
-            font-weight: 600;
-            color: var(--gris-oscuro);
-        }
-        .appointment-datetime i, .appointment-details i {
-            color: #888; /* Lighter icon color */
-            margin-right: 5px;
-        }
-        .badge.bg-success { /* Ensure good contrast for admin theme */
-             background-color: var(--verde-salud) !important;
-             color: var(--blanco);
-        }
-         .badge.bg-secondary {
-             background-color: #6c757d !important; /* Standard Bootstrap secondary */
-             color: var(--blanco);
-        }
-        .no-appointments {
-            text-align: center;
-            color: var(--gris-oscuro);
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/patient_appointment_history.css' %}">
 </head>
 
 <body>
@@ -96,23 +49,19 @@
                                         <p class="mb-0 small text-muted"><i class="fas fa-clock"></i> {{ appointment.start_hour|time:"H:i" }} - {{ appointment.end_hour|time:"H:i" }}</p>
                                     </div>
                                 </div>
-                                {# You can add more details inside card-body if needed #}
-                               <!-- <div class="appointment-content mt-2">
-                                    <p class="small mb-0">Detalles adicionales si son necesarios...</p>
-                                </div> -->
                             </div>
                             {% endfor %}
                         {% else %}
                             <p class="no-appointments"><i class="fas fa-info-circle me-2"></i>Este paciente no tiene citas registradas en su historial.</p>
                         {% endif %}
 
-                    </div> {# End card-body #}
-                </div> {# End card #}
-            </div> {# End container #}
+                    </div>
+                </div>
+            </div>
         </main>
 
         {% include 'footer.html' %}
-    </div> {# End page-wrapper #}
+    </div>
 
     {% bootstrap_javascript %}
 </body>
