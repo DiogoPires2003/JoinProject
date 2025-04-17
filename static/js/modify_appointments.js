@@ -1,84 +1,52 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Obtener elementos del DOM
     const dateInput = document.querySelector('[name="date"]');
     const serviceDuration = parseInt(document.getElementById('serviceDuration').value);
-    
+
     console.log("Duración del servicio:", serviceDuration, "minutos");
-    
+
     // Añadir event listener para cambio de fecha
-    dateInput.addEventListener('change', function() {
+    dateInput.addEventListener('change', function () {
         loadAvailableHours();
     });
-    
+
     // Event listener para cambio de servicio (si existe)
     const serviceSelect = document.querySelector('[name="service_id"]');
     if (serviceSelect) {
-        serviceSelect.addEventListener('change', function() {
+        serviceSelect.addEventListener('change', function () {
             loadAvailableHours();
         });
     }
-    
+
     // Carga inicial de horas disponibles para la fecha preseleccionada
     loadAvailableHours();
-    
+
     // Función para cargar horas disponibles basadas en fecha y servicio seleccionados
     function loadAvailableHours() {
         const selectedDate = dateInput.value;
         const serviceId = document.querySelector('[name="service_id"]').value;
-        
+
         if (!selectedDate || !serviceId) {
             return;
         }
-        
+
         // Mostrar mensaje de carga
         const horaDisponiblesContainer = document.getElementById('horaDisponibles');
         horaDisponiblesContainer.innerHTML = '<p class="text-center">Cargando horarios disponibles...</p>';
 
-        // Obtener información del servicio para verificar su duración
-        $.ajax({
-            url: "/api/servicios/",
-            method: "GET",
-            success: function(servicios) {
-                // Encontrar el servicio seleccionado por ID
-                var servicioSeleccionado = servicios.find(function(servicio) {
-                    return servicio.id == serviceId;
-                });
+        // Use the service duration directly from the DOM or a default value
+        const duracionServicio = serviceDuration || 30;
 
-                if (!servicioSeleccionado) {
-                    horaDisponiblesContainer.innerHTML = '<p class="text-center text-danger">Error: No se encontró información del servicio seleccionado.</p>';
-                    return;
-                }
+        // Determine available hours for the selected date
+        const availableHours = getAvailableHours(selectedDate, serviceId, duracionServicio);
+        displayAvailableHours(availableHours, duracionServicio);
 
-                // Obtener la duración en minutos del servicio
-                var duracionServicio = servicioSeleccionado.duracion_minutos;
-
-                // Si la duración es 0 o no está definida, usar el valor del DOM o 30 minutos como predeterminado
-                if (!duracionServicio || duracionServicio <= 0) {
-                    duracionServicio = serviceDuration || 30;
-                }
-
-                // Determinar horas disponibles para la fecha seleccionada
-                const availableHours = getAvailableHours(selectedDate, serviceId, duracionServicio);
-                displayAvailableHours(availableHours, duracionServicio);
-
-                // Mostrar información del servicio seleccionado
-                displayServiceInfo(servicioSeleccionado);
-
-                // Obtener la fecha y hora actual de la cita
-                const currentAppointmentDate = getCurrentAppointmentDate();
-                const currentStartHour = getCurrentAppointmentStartHour();
-
-                // Si la fecha seleccionada es diferente a la fecha actual de la cita,
-                // entonces limpiamos la selección para obligar a elegir un nuevo horario
-                if (selectedDate !== currentAppointmentDate) {
-                    document.getElementById('selectedHour').value = '';
-                    document.getElementById('selectedEndHour').value = '';
-                }
-            },
-            error: function() {
-                horaDisponiblesContainer.innerHTML = '<p class="text-center text-danger">Error al obtener información de los servicios.</p>';
-            }
-        });
+        // Clear the selected hour if the date changes
+        const currentAppointmentDate = getCurrentAppointmentDate();
+        if (selectedDate !== currentAppointmentDate) {
+            document.getElementById('selectedHour').value = '';
+            document.getElementById('selectedEndHour').value = '';
+        }
     }
 
     // Función para obtener la fecha actual de la cita que estamos modificando
@@ -219,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
             hourBtn.dataset.horaInicio = hour;
             hourBtn.dataset.horaFin = endTime;
 
-            hourBtn.addEventListener('click', function() {
+            hourBtn.addEventListener('click', function () {
                 // Quitar clase 'selected' de todos los botones de hora
                 document.querySelectorAll('.hour-btn').forEach(btn => {
                     btn.classList.remove('selected');
@@ -266,8 +234,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-   // Validación del formulario antes de enviarlo
-    $('form').on('submit', function(e) {
+    // Validación del formulario antes de enviarlo
+    $('form').on('submit', function (e) {
         var servicioId = $('[name="service_id"]').val();
         var fecha = $('[name="date"]').val();
         var horaInicio = $('#selectedHour').val();
@@ -307,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sessionStorage.removeItem('formSubmitted');
 
         // Opcional: agregar cerrar el diálogo al hacer clic fuera
-        successDialog.addEventListener('click', function(event) {
+        successDialog.addEventListener('click', function (event) {
             const rect = successDialog.getBoundingClientRect();
             const isInDialog = (rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
                 rect.left <= event.clientX && event.clientX <= rect.left + rect.width);
