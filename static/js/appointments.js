@@ -5,20 +5,15 @@ $(document).ready(function() {
         allowClear: true
     });
 
-    // Fetch services via AJAX
-    $.ajax({
-        url: "/api/servicios/",
-        method: "GET",
-        success: function(response) {
-            $('#servicioInput').empty().append('<option value="" disabled selected>Seleccione el tipo de servicio</option>');
-            response.forEach(function(service) {
-                $('#servicioInput').append(new Option(service.nombre, service.id));
-            });
-        },
-        error: function() {
-            alert("Error al cargar los servicios.");
-        }
-    });
+    // Populate services using local data or backend-provided data
+    if (typeof availableServices !== 'undefined' && Array.isArray(availableServices)) {
+        $('#servicioInput').empty().append('<option value="" disabled selected>Seleccione el tipo de servicio</option>');
+        availableServices.forEach(function(service) {
+            $('#servicioInput').append(new Option(service.nombre, service.id));
+        });
+    } else {
+        alert("Error al cargar los servicios.");
+    }
 
     // Validate if the selected date is in the past
     $('#fechaInput').on('change', function() {
@@ -83,137 +78,61 @@ function cargarHorasDisponibles(servicioId, fecha) {
     $('.info-servicio').remove();
     $('#horaDisponibles').html('<p class="text-center">Cargando horarios disponibles...</p>');
 
-    // Primero, obtener la duración del servicio seleccionado
-    $.ajax({
-        url: "/api/servicios/",
-        method: "GET",
-        success: function(servicios) {
-            // Encontrar el servicio seleccionado por ID
-            var servicioSeleccionado = servicios.find(function(servicio) {
-                return servicio.id == servicioId;
+    // Replace this with local data or backend-provided data
+    var servicioSeleccionado = bookedAppointments.find(function(appointment) {
+        return appointment.service_id == servicioId;
+    });
+
+    if (!servicioSeleccionado) {
+        $('#horaDisponibles').html('<p class="text-center text-danger">Error: No se encontró información del servicio seleccionado.</p>');
+        return;
+    }
+
+    // Obtener la duración en minutos del servicio
+    var duracionServicio = servicioSeleccionado.duracion_minutos || 30;
+
+    // Horario de trabajo
+    var horaInicio = 8;  // 8 AM
+    var horaFin = 20;    // 8 PM
+
+    var slotsCreados = 0;
+
+    // Generar los slots de tiempo según la duración del servicio
+    for (var hora = horaInicio; hora < horaFin; hora++) {
+        for (var minuto = 0; minuto < 60; minuto += duracionServicio) {
+            var finalizaEnHora = hora + Math.floor((minuto + duracionServicio) / 60);
+            var finalizaEnMinuto = (minuto + duracionServicio) % 60;
+
+            if (finalizaEnHora > horaFin || (finalizaEnHora === horaFin && finalizaEnMinuto > 0)) {
+                continue;
+            }
+
+            var horaInicioFormateada =
+                (hora < 10 ? '0' : '') + hora + ':' +
+                (minuto === 0 ? '00' : (minuto < 10 ? '0' + minuto : minuto));
+
+            var horaFinFormateada =
+                (finalizaEnHora < 10 ? '0' : '') + finalizaEnHora + ':' +
+                (finalizaEnMinuto === 0 ? '00' : (finalizaEnMinuto < 10 ? '0' + finalizaEnMinuto : finalizaEnMinuto));
+
+            var isBooked = bookedAppointments.some(function(appointment) {
+                return appointment.date === fecha &&
+                    appointment.service_id == servicioId &&
+                    ((hora * 60 + minuto) < (parseInt(appointment.end.split(':')[0]) * 60 + parseInt(appointment.end.split(':')[1])) &&
+                    (finalizaEnHora * 60 + finalizaEnMinuto) > (parseInt(appointment.start.split(':')[0]) * 60 + parseInt(appointment.start.split(':')[1])));
             });
 
-            if (!servicioSeleccionado) {
-                $('#horaDisponibles').html('<p class="text-center text-danger">Error: No se encontró información del servicio seleccionado.</p>');
-                return;
+            if (!isBooked) {
+                var button = $('<button type="button" class="btn hour-btn" data-hora-inicio="' + horaInicioFormateada + '" data-hora-fin="' + horaFinFormateada + '">' +
+                              horaInicioFormateada + ' a ' + horaFinFormateada + '</button>');
+
+                $('#horaDisponibles').append(button);
+                slotsCreados++;
             }
-
-            // Limpiar el contenedor
-            $('#horaDisponibles').empty();
-
-            // Obtener la duración en minutos del servicio
-            var duracionServicio = servicioSeleccionado.duracion_minutos;
-
-            // Si la duración es 0 o no está definida, usar 30 minutos como valor predeterminado
-            if (!duracionServicio || duracionServicio <= 0) {
-                duracionServicio = 30;
-            }
-
-            // Horario de trabajo
-            var horaInicio = 8;  // 8 AM
-            var horaFin = 20;    // 8 PM
-
-            var slotsCreados = 0;
-
-            // Generar los slots de tiempo según la duración del servicio
-            for (var hora = horaInicio; hora < horaFin; hora++) {
-                for (var minuto = 0; minuto < 60; minuto += duracionServicio) {
-                    // Si la combinación de hora + duración excede el horario de cierre, no la mostramos
-                    var finalizaEnHora = hora + Math.floor((minuto + duracionServicio) / 60);
-                    var finalizaEnMinuto = (minuto + duracionServicio) % 60;
-
-                    if (finalizaEnHora > horaFin || (finalizaEnHora === horaFin && finalizaEnMinuto > 0)) {
-                        continue;
-                    }
-
-                    var horaInicioFormateada =
-                        (hora < 10 ? '0' : '') + hora + ':' +
-                        (minuto === 0 ? '00' : (minuto < 10 ? '0' + minuto : minuto));
-
-                    var horaFinFormateada =
-                        (finalizaEnHora < 10 ? '0' : '') + finalizaEnHora + ':' +
-                        (finalizaEnMinuto === 0 ? '00' : (finalizaEnMinuto < 10 ? '0' + finalizaEnMinuto : finalizaEnMinuto));
-
-                    // Check if this time slot is already booked
-                    var isBooked = false;
-
-                    // Loop through booked appointments
-                    for (var i = 0; i < bookedAppointments.length; i++) {
-                        var appointment = bookedAppointments[i];
-
-                        // Check appointments for the selected date AND service
-                        if (appointment.date === fecha && appointment.service_id == servicioId) {
-                            // Convertir horas a minutos desde el inicio del día para facilitar comparaciones
-                            var citaInicio = appointment.start.split(':');
-                            var citaHoraInicio = parseInt(citaInicio[0]);
-                            var citaMinInicio = parseInt(citaInicio[1]);
-                            var citaInicioMinutos = citaHoraInicio * 60 + citaMinInicio;
-
-                            var citaFin;
-                            var citaFinMinutos;
-
-                            if (appointment.end) {
-                                citaFin = appointment.end.split(':');
-                                citaFinMinutos = parseInt(citaFin[0]) * 60 + parseInt(citaFin[1]);
-                            } else {
-                                // Si no hay hora de fin, asumimos la duración del servicio actual
-                                citaFinMinutos = citaInicioMinutos + appointment.duracion_minutos || duracionServicio;
-                            }
-
-                            // Slot actual en minutos
-                            var slotInicioMinutos = hora * 60 + minuto;
-                            var slotFinMinutos = finalizaEnHora * 60 + finalizaEnMinuto;
-
-                            // Verificar si hay solapamiento
-                            if ((slotInicioMinutos < citaFinMinutos && slotFinMinutos > citaInicioMinutos)) {
-                                isBooked = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Only create button if time slot is not booked
-                    if (!isBooked) {
-                        var button = $('<button type="button" class="btn hour-btn" data-hora-inicio="' + horaInicioFormateada + '" data-hora-fin="' + horaFinFormateada + '">' +
-                                      horaInicioFormateada + ' a ' + horaFinFormateada + '</button>');
-
-                        $('#horaDisponibles').append(button);
-                        slotsCreados++;
-                    }
-                }
-            }
-
-            // Si no hay horas disponibles, mostrar un mensaje
-            if (slotsCreados === 0) {
-                $('#horaDisponibles').html('<p class="text-center mt-3">No hay horas disponibles para este servicio en la fecha seleccionada.</p>');
-            }
-
-            // Mostrar información del servicio seleccionado
-            if (servicioSeleccionado) {
-                var infoServicio = '<div class="mt-3 mb-4 p-3 bg-light rounded info-servicio">' +
-                                  '<h5>' + servicioSeleccionado.nombre + '</h5>' +
-                                  '<p class="mb-1"><small>Duración: ' + servicioSeleccionado.duracion_minutos + ' minutos</small></p>';
-
-                if (servicioSeleccionado.descripcion) {
-                    infoServicio += '<p class="mb-1"><small>' + servicioSeleccionado.descripcion + '</small></p>';
-                }
-
-                if (servicioSeleccionado.precio) {
-                    infoServicio += '<p class="mb-0"><small>Precio: €' + servicioSeleccionado.precio.toFixed(2) + '</small></p>';
-                }
-
-                if (servicioSeleccionado.incluido_mutua) {
-                    infoServicio += '<p class="mb-0 text-success"><small><strong>Incluido en mutua</strong></small></p>';
-                }
-
-                infoServicio += '</div>';
-
-                // Insertar antes de los horarios disponibles
-                $(infoServicio).insertBefore('#horaDisponibles');
-            }
-        },
-        error: function() {
-            $('#horaDisponibles').html('<p class="text-center text-danger">Error al obtener información de los servicios.</p>');
         }
-    });
+    }
+
+    if (slotsCreados === 0) {
+        $('#horaDisponibles').html('<p class="text-center mt-3">No hay horas disponibles para este servicio en la fecha seleccionada.</p>');
+    }
 }
