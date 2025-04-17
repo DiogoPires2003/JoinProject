@@ -70,6 +70,13 @@ def admin_area(request):
     else:
         return HttpResponseForbidden("Acceso denegado")
 
+@admin_required
+def manage_patients_view(request):
+    if not request.session.get('is_admin'):
+        return HttpResponseForbidden("Acceso denegado")
+
+    return render(request, 'manage_patients.html')
+
 def logout_view(request):
     print("Before logout:", request.session.get('is_admin'))
     if request.session.get('is_admin'):
