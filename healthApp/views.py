@@ -114,6 +114,43 @@ def edit_patient_view(request, pk):
     }
     return render(request, 'edit_patient.html', context)
 
+@admin_required
+def patient_appointment_history_view(request, pk):
+    # Admin check
+    if not request.session.get('is_admin'):
+        return HttpResponseForbidden("Acceso denegado")
+
+    patient = get_object_or_404(Patient, pk=pk)
+    now = timezone.now()
+
+    service_names_map = get_service_names()
+
+    all_patient_appointments = Appointment.objects.filter(
+        patient=patient
+    ).select_related('service').order_by('-date', '-start_hour') # Keep select_related for accessing service.id
+
+    appointments_with_status = []
+    for appointment in all_patient_appointments:
+        is_past = False
+        if appointment.date < now.date():
+            is_past = True
+        elif appointment.date == now.date() and appointment.start_hour < now.time():
+            is_past = True
+
+        appointment.status_label = "Finalizada" if is_past else "Próxima"
+
+        service_id = getattr(appointment.service, 'id', None)
+        appointment.service_name = service_names_map.get(service_id, "Servicio Desconocido")
+
+        appointments_with_status.append(appointment)
+
+    context = {
+        'patient': patient,
+        'appointments': appointments_with_status,
+    }
+    return render(request, 'patient_appointment_history.html', context)
+
+
 def logout_view(request):
     print("Before logout:", request.session.get('is_admin'))
     if request.session.get('is_admin'):

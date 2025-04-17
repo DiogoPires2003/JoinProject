@@ -31,6 +31,7 @@ urlpatterns = [
     path('administrator-area/', admin_area, name='admin_area'),
     path('manage-patients/', manage_patients_view, name='manage_patients'),
     path('patients/edit/<int:pk>/', edit_patient_view, name='edit_patient'),
+    path('patients/history/<int:pk>/', patient_appointment_history_view, name='patient_appointment_history'),
     path('nosotros/', nosotros, name='nosotros'),
     path('centros/', centros, name='centros'),
     path('servicios-salud/', servicios_salud, name='servicios_salud'),

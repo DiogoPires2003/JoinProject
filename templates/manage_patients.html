@@ -15,14 +15,7 @@
     <!-- Custom Admin CSS -->
     <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
     <style>
-        #noResultsMessage { display: none; }
-        /* Add style for the actions area */
-        .patient-actions {
-            margin-top: 1rem; /* Space above the actions */
-            padding-top: 1rem; /* Space above the buttons inside the border */
-            border-top: 1px solid #eee; /* Separator line */
-            text-align: end; /* Align buttons to the right */
-        }
+
     </style>
 </head>
 
@@ -76,7 +69,7 @@
                                         </div>
 
                                         {### Insurance Info ###}
-                                        <div class="patient-insurance-details pt-2"> {# Removed mt-auto here #}
+                                        <div class="patient-insurance-details pt-2">
                                             <div class="d-flex justify-content-between align-items-center mb-1">
                                                 <span class="fw-bold small text-muted">Seguro Médico:</span>
                                                 {% if patient.has_insurance %}
@@ -96,14 +89,19 @@
                                             {% endif %}
                                         </div>
 
-                                        {### Action Buttons - ADDED THIS SECTION ###}
-                                        <div class="patient-actions mt-auto"> {# mt-auto pushes this section to the bottom #}
-                                            <a href="{% url 'edit_patient' patient.pk %}" class="btn btn-sm btn-outline-primary"> {# Assumes URL name 'edit_patient' taking patient's pk #}
-                                                <i class="fas fa-edit me-1"></i> Editar
+                                        {### Action Buttons - UPDATED ###}
+                                        <div class="patient-actions mt-auto">
+                                            {# Edit Button #}
+                                            <a href="{% url 'edit_patient' patient.pk %}" class="btn btn-sm btn-outline-primary" title="Editar Datos">
+                                                <i class="fas fa-edit"></i><span class="d-none d-md-inline ms-1">Editar</span> {# Hide text on small screens #}
+                                            </a>
+                                            {# History Button - ADDED #}
+                                            <a href="{% url 'patient_appointment_history' patient.pk %}" class="btn btn-sm btn-outline-secondary ms-1" title="Ver Historial de Citas">
+                                                <i class="fas fa-history"></i><span class="d-none d-md-inline ms-1">Historial</span> {# Hide text on small screens #}
                                             </a>
                                             {# Add other buttons like 'Delete' here if needed in the future #}
-                                            <!-- <a href="#" class="btn btn-sm btn-outline-danger ms-1">
-                                                <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                            <!-- <a href="#" class="btn btn-sm btn-outline-danger ms-1" title="Eliminar Paciente">
+                                                <i class="fas fa-trash-alt"></i><span class="d-none d-md-inline ms-1">Eliminar</span>
                                             </a> -->
                                         </div>
 

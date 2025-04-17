@@ -1,117 +1,98 @@
-/* static/css/admin_dashboard.css */
-
-/* ... (keep existing styles, including previous .patient-card base styles) ... */
-
-/* Refined Patient Card Styles */
 .patient-card {
-    border: 1px solid #e8e8e8; /* Slightly lighter border */
+    border: 1px solid #e8e8e8;
     border-radius: 8px;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     background-color: var(--blanco);
-    /* Keep the top border accent */
     border-top: 3px solid var(--azul-profesional);
+    display: flex;
+    flex-direction: column;
 }
 
 .patient-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 6px 18px rgba(0, 95, 153, 0.15); /* Slightly stronger hover shadow */
+    box-shadow: 0 6px 18px rgba(0, 95, 153, 0.15);
 }
 
 .patient-card .card-body {
     padding: 1.25rem;
-    display: flex; /* Keep flex for layout control */
+    display: flex;
     flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
 }
 
-.patient-name { /* Style for the Name Title */
+.patient-name {
     color: var(--azul-profesional);
     font-weight: 600;
-    font-size: 1.1rem; /* Slightly smaller than before */
+    font-size: 1.1rem;
     line-height: 1.3;
 }
 
-.patient-name i.text-primary-light { /* Create a lighter primary color variation if needed */
-    color: #4da7dd; /* Example light blue - adjust as needed */
+.patient-name i.text-primary-light {
+    color: #4da7dd;
     opacity: 0.9;
 }
 
 .patient-core-details {
-     /* This block holds DNI, Email, Phone */
-     flex-grow: 1; /* Allow this section to grow, pushing insurance down */
 }
 
 .patient-info-item {
-    font-size: 0.88rem; /* Slightly smaller font for details */
-    color: #555; /* Slightly darker grey for readability */
+    font-size: 0.88rem;
+    color: #555;
     display: flex;
     align-items: center;
-    line-height: 1.5; /* Add a bit line spacing */
+    line-height: 1.5;
 }
 
 .patient-info-item i.fa-fw {
-    width: 1.4em; /* Consistent icon width */
+    width: 1.4em;
     text-align: center;
-    color: #a0a0a0; /* Lighter grey for icons */
-    margin-right: 8px; /* Space between icon and text */
+    color: #a0a0a0;
+    margin-right: 8px;
 }
 
 .patient-info-item .info-label {
-    font-weight: 600; /* Make labels like 'DNI:' bold */
-    color: #333;      /* Darker label text */
+    font-weight: 600;
+    color: #333;
     margin-right: 5px;
-    flex-shrink: 0; /* Prevent labels from shrinking */
+    flex-shrink: 0;
 }
 
-.patient-email { /* Style email link specifically */
+.patient-email {
     color: var(--azul-profesional);
-    word-break: break-all; /* Prevent long emails breaking layout */
+    word-break: break-all;
 }
 .patient-email:hover {
     text-decoration: underline !important;
 }
 
-/* Insurance section styling */
 .patient-insurance-details {
-    border-top: 1px solid #f0f0f0; /* Very subtle top border instead of margin */
-    margin-top: 0.75rem; /* Let flexbox push this down, add margin if needed */
+    border-top: 1px solid #f0f0f0;
+    margin-top: 0.75rem;
     padding-top: 0.75rem;
 }
 
-/* Keep soft badge styles */
-.badge.bg-success-soft { /* Defined previously */ }
-.badge.text-success { /* Defined previously */ }
-.badge.bg-danger-soft { /* Defined previously */ }
-.badge.text-danger { /* Defined previously */ }
-.badge { /* Defined previously */ }
+.badge.bg-success-soft { }
+.badge.text-success { }
+.badge.bg-danger-soft { }
+.badge.text-danger { }
+.badge { }
 
-/* Ensure h-100 works */
-.patient-card {
-    display: flex; /* Needed for h-100 on the card itself */
-    flex-direction: column;
-}
-.patient-card .card-body {
-   flex-grow: 1; /* Ensure card body fills the card height */
-}
-
-/* Adjust spacing between core details */
 .patient-core-details .patient-info-item {
-    margin-bottom: 0.3rem; /* Reduce space between DNI/Email/Phone lines */
+    margin-bottom: 0.3rem;
 }
 .patient-core-details .patient-info-item:last-child {
     margin-bottom: 0;
 }
 
-/* Style for insurance number (if shown) */
 .patient-insurance-details .patient-info-item.small {
-    font-size: 0.8rem; /* Make insurance number smaller */
+    font-size: 0.8rem;
     color: #777;
 }
 .patient-insurance-details .patient-info-item i.fa-fw {
-     color: #b0b0b0; /* Even lighter icon for number */
+    color: #b0b0b0;
 }
 
-
-/* Optional: Adjust overall card padding on smaller screens if needed */
 @media (max-width: 767px) {
     .patient-card .card-body {
         padding: 1rem;
@@ -125,56 +106,44 @@
 }
 
 .input-group .form-control:focus {
-    /* Enhance focus state */
     border-color: var(--azul-profesional);
     box-shadow: 0 0 0 0.25rem rgba(0, 95, 153, 0.25);
 }
 
 .input-group-text {
-    background-color: #e9ecef; /* Standard Bootstrap grey */
+    background-color: #e9ecef;
     border-color: #ced4da;
 }
 
-/* No Results Message Styling (already hidden via inline style in HTML initially) */
 #noResultsMessage .alert {
-    margin-top: 1rem; /* Add some space above it */
+    margin-top: 1rem;
 }
 
 .patient-actions {
-    margin-top: 1rem; /* Ensure space above */
-    padding-top: 1rem; /* Space between border and button */
-    border-top: 1px solid #f0f0f0; /* Lighter separator line */
-    text-align: end; /* Align button(s) to the right */
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+    text-align: end;
 }
 
-/* Make sure the button looks good */
 .patient-actions .btn-sm {
-    font-size: 0.8rem; /* Slightly smaller font for actions */
-    padding: 0.25rem 0.75rem; /* Adjust padding */
+    font-size: 0.8rem;
+    padding: 0.25rem 0.75rem;
 }
 
 .patient-actions .btn i {
-   margin-right: 4px; /* Space between icon and text */
+    margin-right: 4px;
 }
 
-/* Ensure mt-auto works correctly by making sure the parent flex container setup is correct */
-.patient-card .card-body {
-    display: flex;
-    flex-direction: column;
-    height: 100%; /* Ensure card body tries to fill height */
+#noResultsMessage {
+    display: none;
 }
 
-.patient-core-details {
-    /* Removed flex-grow: 1; from here if it was added previously */
-    /* Let the content take its natural height */
-}
-
-.patient-insurance-details {
-    /* Removed mt-auto from here */
-}
-
-/* The .patient-actions div now uses mt-auto to push itself to the bottom */
-.patient-actions {
-    margin-top: auto; /* THIS IS KEY - Pushes the actions div down */
-    /* border-top and padding-top are already defined */
+@media (max-width: 767.98px) {
+    .patient-actions .btn span.d-none.d-md-inline {
+        display: none !important;
+    }
+    .patient-actions .btn i {
+        margin-right: 0;
+    }
 }
