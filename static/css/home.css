@@ -7,14 +7,7 @@ body {
     padding: 0;
   }
   
-  /* Navbar Wrapper */
-  .navbar-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100px;
-    width: 100%;
-  }
+ 
   
   /* Sección Hero */
   .hero {
