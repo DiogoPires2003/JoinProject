@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import check_password
 import requests
 from django.http import JsonResponse, HttpResponseNotAllowed
-from .models import Appointment, Patient, Service
+from .models import Appointment, Patient, Service, Employee
 from django.contrib import messages
 import json
 from datetime import datetime, time, timedelta
@@ -24,24 +24,39 @@ def login_view(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        print(f"Received POST request with email: {email} and password: {password}")
-
+        # Intentar autenticar como Employee
         try:
-            patient = Patient.objects.get(email=email)
-            print(f"Patient found: {patient}")
-            if check_password(password, patient.password):
-                print("Password is correct")
-                request.session['patient_id'] = patient.id
-                return redirect('home')
+            employee = Employee.objects.get(email=email)
+            if check_password(password, employee.password):
+                #print("Empleado autenticado correctamente")
+                request.session['employee_id'] = employee.id
+                request.session['role_name'] = employee.role.name
+
+                # Si es administrador, marcarlo en la sesión
+                if employee.role.name == "Administrator":
+                    request.session['is_admin'] = True
+                else:
+                    request.session['is_admin'] = False
+
+                return redirect('home')  # o alguna otra vista específica para empleados
             else:
-                print("Password is incorrect")
                 return render(request, 'login.html', {'error': 'Contraseña incorrecta'})
 
+        except Employee.DoesNotExist:
+            pass  # Si no es empleado, intentar con paciente
+
+        # Intentar autenticar como Patient
+        try:
+            patient = Patient.objects.get(email=email)
+            if check_password(password, patient.password):
+                #print("Paciente autenticado correctamente")
+                request.session['patient_id'] = patient.id
+                return redirect('home')  # o vista específica para pacientes
+            else:
+                return render(request, 'login.html', {'error': 'Contraseña incorrecta'})
         except Patient.DoesNotExist:
-            print("Patient does not exist")
             return render(request, 'login.html', {'error': 'Correo no encontrado'})
 
-    print("Rendering login page")
     return render(request, 'login.html')
 
 
