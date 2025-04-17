@@ -1,5 +1,5 @@
 from .decorators import admin_required, redirect_admin
-from .forms import PatientForm, AppointmentForm
+from .forms import PatientForm, AppointmentForm, PatientEditForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import check_password, make_password
 from .forms import PatientForm, AppointmentForm, ModifyAppointmentsForm
@@ -69,6 +69,87 @@ def admin_area(request):
         return render(request, 'admin_area.html')  # Devuelve la plantilla para el área de admin
     else:
         return HttpResponseForbidden("Acceso denegado")
+
+@admin_required
+def manage_patients_view(request):
+    # Keep your admin check
+    if not request.session.get('is_admin'):
+         # Or however you handle admin checks (e.g., decorator)
+        return HttpResponseForbidden("Acceso denegado")
+
+    # Fetch all patients from the database
+    all_patients = Patient.objects.all().order_by('last_name', 'first_name') # Order for consistency
+
+    context = {
+        'patients': all_patients,
+        # Add other context variables if needed
+    }
+    return render(request, 'manage_patients.html', context)
+
+@admin_required # Ensure only admins can access
+def edit_patient_view(request, pk):
+    # Check admin status again if decorator doesn't handle sessions fully
+    if not request.session.get('is_admin'):
+        return HttpResponseForbidden("Acceso denegado")
+
+    patient = get_object_or_404(Patient, pk=pk) # Get patient or 404
+
+    if request.method == 'POST':
+        # Populate form with submitted data AND link it to the existing patient instance
+        form = PatientEditForm(request.POST, instance=patient)
+        if form.is_valid():
+            form.save() # Save the changes to the patient object
+            messages.success(request, f"Datos de {patient.first_name} {patient.last_name} actualizados correctamente.")
+            return redirect('manage_patients') # Redirect back to the list after successful edit
+        else:
+            # Form is invalid, errors will be attached to the form object
+            messages.error(request, "Por favor, corrija los errores en el formulario.")
+    else: # GET request
+        # Populate form with the existing patient's data
+        form = PatientEditForm(instance=patient)
+
+    context = {
+        'form': form,
+        'patient': patient, # Pass patient object for use in template (e.g., title)
+    }
+    return render(request, 'edit_patient.html', context)
+
+@admin_required
+def patient_appointment_history_view(request, pk):
+    # Admin check
+    if not request.session.get('is_admin'):
+        return HttpResponseForbidden("Acceso denegado")
+
+    patient = get_object_or_404(Patient, pk=pk)
+    now = timezone.now()
+
+    service_names_map = get_service_names()
+
+    all_patient_appointments = Appointment.objects.filter(
+        patient=patient
+    ).select_related('service').order_by('-date', '-start_hour') # Keep select_related for accessing service.id
+
+    appointments_with_status = []
+    for appointment in all_patient_appointments:
+        is_past = False
+        if appointment.date < now.date():
+            is_past = True
+        elif appointment.date == now.date() and appointment.start_hour < now.time():
+            is_past = True
+
+        appointment.status_label = "Finalizada" if is_past else "Próxima"
+
+        service_id = getattr(appointment.service, 'id', None)
+        appointment.service_name = service_names_map.get(service_id, "Servicio Desconocido")
+
+        appointments_with_status.append(appointment)
+
+    context = {
+        'patient': patient,
+        'appointments': appointments_with_status,
+    }
+    return render(request, 'patient_appointment_history.html', context)
+
 
 def logout_view(request):
     print("Before logout:", request.session.get('is_admin'))

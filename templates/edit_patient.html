@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Paciente | Better Health</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/edit_patient.css' %}">
+</head>
+
+<body>
+    <div class="navbar-wrapper">
+        {% include 'navbar.html' %}
+    </div>
+
+    <div class="page-wrapper d-flex flex-column min-vh-100">
+        <main class="flex-grow-1">
+            <div class="container admin-container my-5">
+                <div class="card shadow-lg rounded-3 overflow-hidden">
+                    <div class="card-body p-4 p-lg-5">
+                        <h1 class="text-center mb-3">Editar Paciente</h1>
+                        <p class="text-center text-muted mb-4">Modifica los datos de <strong>{{ patient.first_name }} {{ patient.last_name }}</strong>.</p>
+
+                        {% bootstrap_messages %}
+
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+                            {% bootstrap_form form %}
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="{% url 'manage_patients' %}" class="btn btn-secondary me-md-2">
+                                    <i class="fas fa-times me-1"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i> Guardar Cambios
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        {% include 'footer.html' %}
+    </div>
+
+    {% bootstrap_javascript %}
+    <script src="{% static 'js/edit_patient.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+.appointment-card {
+    background-color: var(--blanco);
+    border: 1px solid #eee;
+    border-left: 5px solid var(--azul-profesional); /* Accent color */
+    border-radius: 5px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s ease-in-out;
+}
+.appointment-card:hover {
+     box-shadow: 0 4px 10px rgba(0, 95, 153, 0.1);
+}
+.appointment-header {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+.service-name {
+    font-weight: 600;
+    color: var(--gris-oscuro);
+}
+.appointment-datetime i, .appointment-details i {
+    color: #888; /* Lighter icon color */
+    margin-right: 5px;
+}
+.badge.bg-success { /* Ensure good contrast for admin theme */
+     background-color: var(--verde-salud) !important;
+     color: var(--blanco);
+}
+ .badge.bg-secondary {
+     background-color: #6c757d !important; /* Standard Bootstrap secondary */
+     color: var(--blanco);
+}
+.no-appointments {
+    text-align: center;
+    color: var(--gris-oscuro);
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}

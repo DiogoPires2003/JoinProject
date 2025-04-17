@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Citas - {{ patient.first_name }} {{ patient.last_name }} | Better Health</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/patient_appointment_history.css' %}">
+</head>
+
+<body>
+    <div class="navbar-wrapper">
+        {% include 'navbar.html' %}
+    </div>
+
+    <div class="page-wrapper d-flex flex-column min-vh-100">
+        <main class="flex-grow-1">
+            <div class="container admin-container my-5">
+                <div class="card shadow-lg rounded-3 overflow-hidden">
+                    <div class="card-body p-4 p-lg-5">
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h1 class="h3 mb-0">Historial de Citas de {{ patient.first_name }} {{ patient.last_name }}</h1>
+                             <a href="{% url 'manage_patients' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Volver a Pacientes
+                            </a>
+                        </div>
+
+                        {% if appointments %}
+                            {% for appointment in appointments %}
+                            <div class="appointment-card" id="appointment-card-{{ appointment.id }}">
+                                <div class="appointment-header row align-items-start">
+                                    <div class="col-md-8 mb-2 mb-md-0">
+                                        <h5 class="service-name d-inline-block me-2">{{ appointment.service_name }}</h5>
+                                        {% if appointment.status_label == 'Próxima' %}
+                                            <span class="badge bg-success">{{ appointment.status_label }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ appointment.status_label }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="appointment-datetime col-md-4 text-md-end">
+                                        <p class="mb-1 small text-muted"><i class="fas fa-calendar-alt"></i> {{ appointment.date|date:"d/m/Y" }}</p>
+                                        <p class="mb-0 small text-muted"><i class="fas fa-clock"></i> {{ appointment.start_hour|time:"H:i" }} - {{ appointment.end_hour|time:"H:i" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="no-appointments"><i class="fas fa-info-circle me-2"></i>Este paciente no tiene citas registradas en su historial.</p>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        {% include 'footer.html' %}
+    </div>
+
+    {% bootstrap_javascript %}
+</body>
+</html>
