@@ -139,3 +139,42 @@
 #noResultsMessage .alert {
     margin-top: 1rem; /* Add some space above it */
 }
+
+.patient-actions {
+    margin-top: 1rem; /* Ensure space above */
+    padding-top: 1rem; /* Space between border and button */
+    border-top: 1px solid #f0f0f0; /* Lighter separator line */
+    text-align: end; /* Align button(s) to the right */
+}
+
+/* Make sure the button looks good */
+.patient-actions .btn-sm {
+    font-size: 0.8rem; /* Slightly smaller font for actions */
+    padding: 0.25rem 0.75rem; /* Adjust padding */
+}
+
+.patient-actions .btn i {
+   margin-right: 4px; /* Space between icon and text */
+}
+
+/* Ensure mt-auto works correctly by making sure the parent flex container setup is correct */
+.patient-card .card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ensure card body tries to fill height */
+}
+
+.patient-core-details {
+    /* Removed flex-grow: 1; from here if it was added previously */
+    /* Let the content take its natural height */
+}
+
+.patient-insurance-details {
+    /* Removed mt-auto from here */
+}
+
+/* The .patient-actions div now uses mt-auto to push itself to the bottom */
+.patient-actions {
+    margin-top: auto; /* THIS IS KEY - Pushes the actions div down */
+    /* border-top and padding-top are already defined */
+}

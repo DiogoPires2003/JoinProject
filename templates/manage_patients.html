@@ -15,16 +15,20 @@
     <!-- Custom Admin CSS -->
     <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
     <style>
-        /* Style to initially hide the no results message */
-        #noResultsMessage {
-            display: none;
+        #noResultsMessage { display: none; }
+        /* Add style for the actions area */
+        .patient-actions {
+            margin-top: 1rem; /* Space above the actions */
+            padding-top: 1rem; /* Space above the buttons inside the border */
+            border-top: 1px solid #eee; /* Separator line */
+            text-align: end; /* Align buttons to the right */
         }
     </style>
 </head>
 
 <body>
     <div class="navbar-wrapper">
-        {% include 'navbar.html' %} {# Assuming standard navbar #}
+        {% include 'navbar.html' %}
     </div>
 
     <div class="page-wrapper d-flex flex-column min-vh-100">
@@ -33,10 +37,10 @@
                 <div class="card shadow-lg rounded-3 overflow-hidden">
                     <div class="card-body p-lg-5">
                         <h1 class="text-center mb-4">Gestionar Pacientes</h1>
-                        <p class="text-center text-muted mb-4">Lista de pacientes registrados en la clínica.</p> {# Adjusted margin #}
+                        <p class="text-center text-muted mb-4">Lista de pacientes registrados en la clínica.</p>
 
                         <!-- Search Bar -->
-                        <div class="mb-4"> {# Wrapper for spacing #}
+                        <div class="mb-4">
                             <div class="input-group">
                                 <span class="input-group-text" id="search-icon"><i class="fas fa-search"></i></span>
                                 <input type="search" class="form-control" id="patientSearchInput" placeholder="Buscar por nombre, apellido, DNI, email..." aria-label="Buscar paciente" aria-describedby="search-icon">
@@ -44,36 +48,35 @@
                         </div>
 
                         <!-- Patient Card Grid -->
-                        <div class="row g-4" id="patientListContainer"> {# Added ID to the container #}
+                        <div class="row g-4" id="patientListContainer">
                             {% for patient in patients %}
-                            {# IMPORTANT: Added 'patient-card-wrapper' class here #}
                             <div class="col-lg-6 col-xl-4 patient-card-wrapper">
                                 <div class="card patient-card h-100 shadow-sm">
                                     <div class="card-body d-flex flex-column">
-                                        {### Patient Name - Primary Info ###}
+                                        {### Patient Name ###}
                                         <h5 class="card-title patient-name mb-3">
                                             <i class="fas fa-user me-2 text-primary-light"></i>
                                             {{ patient.first_name }} {{ patient.last_name }}
                                         </h5>
 
-                                        {### Core Details - Grouped ###}
+                                        {### Core Details ###}
                                         <div class="patient-core-details mb-3">
                                             <p class="patient-info-item mb-1">
                                                 <i class="fas fa-id-card fa-fw me-2 text-muted"></i>
-                                                <span class="info-label">DNI:</span> <span class="searchable-text">{{ patient.dni }}</span> {# Added span for easier JS access #}
+                                                <span class="info-label">DNI:</span> <span class="searchable-text">{{ patient.dni }}</span>
                                             </p>
                                             <p class="patient-info-item mb-1">
                                                 <i class="fas fa-envelope fa-fw me-2 text-muted"></i>
-                                                <span class="info-label">Email:</span> <a href="mailto:{{ patient.email }}" class="text-decoration-none patient-email searchable-text">{{ patient.email }}</a> {# Added span #}
+                                                <span class="info-label">Email:</span> <a href="mailto:{{ patient.email }}" class="text-decoration-none patient-email searchable-text">{{ patient.email }}</a>
                                             </p>
                                             <p class="patient-info-item mb-1">
                                                 <i class="fas fa-phone fa-fw me-2 text-muted"></i>
-                                                <span class="info-label">Teléfono:</span> <span class="searchable-text">{{ patient.phone }}</span> {# Added span #}
+                                                <span class="info-label">Teléfono:</span> <span class="searchable-text">{{ patient.phone }}</span>
                                             </p>
                                         </div>
 
-                                        {### Insurance Info - Visually Separated ###}
-                                        <div class="patient-insurance-details mt-auto pt-2">
+                                        {### Insurance Info ###}
+                                        <div class="patient-insurance-details pt-2"> {# Removed mt-auto here #}
                                             <div class="d-flex justify-content-between align-items-center mb-1">
                                                 <span class="fw-bold small text-muted">Seguro Médico:</span>
                                                 {% if patient.has_insurance %}
@@ -88,15 +91,26 @@
                                             </div>
                                             {% if patient.has_insurance and patient.insurance_number %}
                                             <p class="patient-info-item small mt-1 mb-0 text-muted justify-content-end">
-                                               <span class="searchable-text">{{ patient.insurance_number }}</span> <i class="fas fa-hashtag fa-fw ms-1"></i> {# Added span #}
+                                               <span class="searchable-text">{{ patient.insurance_number }}</span> <i class="fas fa-hashtag fa-fw ms-1"></i>
                                             </p>
                                             {% endif %}
                                         </div>
+
+                                        {### Action Buttons - ADDED THIS SECTION ###}
+                                        <div class="patient-actions mt-auto"> {# mt-auto pushes this section to the bottom #}
+                                            <a href="{% url 'edit_patient' patient.pk %}" class="btn btn-sm btn-outline-primary"> {# Assumes URL name 'edit_patient' taking patient's pk #}
+                                                <i class="fas fa-edit me-1"></i> Editar
+                                            </a>
+                                            {# Add other buttons like 'Delete' here if needed in the future #}
+                                            <!-- <a href="#" class="btn btn-sm btn-outline-danger ms-1">
+                                                <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                            </a> -->
+                                        </div>
+
                                     </div> {# End card-body #}
                                 </div> {# End patient-card #}
                             </div> {# End col / patient-card-wrapper #}
                             {% empty %}
-                            {# Keep the original empty message if the list is initially empty #}
                             <div class="col-12">
                                 <div class="alert alert-info text-center" role="alert">
                                     <i class="fas fa-info-circle me-2"></i> No hay pacientes registrados actualmente.
@@ -125,8 +139,7 @@
             </div> {# End container #}
         </main>
 
-        {% include 'footer.html' %} {# Assuming standard footer #}
-
+        {% include 'footer.html' %}
     </div> {# End page-wrapper #}
 
     {% bootstrap_javascript %}

@@ -137,3 +137,30 @@ class ModifyAppointmentsForm(forms.ModelForm):
         if 'instance' in kwargs:
             appointment = kwargs['instance']
             self.fields['service'].initial = appointment.service.name
+
+
+class PatientEditForm(forms.ModelForm):
+    class Meta:
+        model = Patient
+        fields = [
+            'first_name',
+            'last_name',
+            'dni',
+            'email',
+            'phone',
+            'has_insurance',
+            'insurance_number'
+        ]
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        dni = cleaned_data.get('dni')
+        if dni and Patient.objects.filter(dni=dni).exclude(pk=self.instance.pk).exists():
+             self.add_error('dni', 'Ya existe un paciente con este número de DNI.')
+
+        return cleaned_data
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['insurance_number'].required = False

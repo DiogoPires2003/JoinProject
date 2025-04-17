@@ -1,5 +1,5 @@
 from .decorators import admin_required, redirect_admin
-from .forms import PatientForm, AppointmentForm
+from .forms import PatientForm, AppointmentForm, PatientEditForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import check_password, make_password
 from .forms import PatientForm, AppointmentForm, ModifyAppointmentsForm
@@ -85,6 +85,34 @@ def manage_patients_view(request):
         # Add other context variables if needed
     }
     return render(request, 'manage_patients.html', context)
+
+@admin_required # Ensure only admins can access
+def edit_patient_view(request, pk):
+    # Check admin status again if decorator doesn't handle sessions fully
+    if not request.session.get('is_admin'):
+        return HttpResponseForbidden("Acceso denegado")
+
+    patient = get_object_or_404(Patient, pk=pk) # Get patient or 404
+
+    if request.method == 'POST':
+        # Populate form with submitted data AND link it to the existing patient instance
+        form = PatientEditForm(request.POST, instance=patient)
+        if form.is_valid():
+            form.save() # Save the changes to the patient object
+            messages.success(request, f"Datos de {patient.first_name} {patient.last_name} actualizados correctamente.")
+            return redirect('manage_patients') # Redirect back to the list after successful edit
+        else:
+            # Form is invalid, errors will be attached to the form object
+            messages.error(request, "Por favor, corrija los errores en el formulario.")
+    else: # GET request
+        # Populate form with the existing patient's data
+        form = PatientEditForm(instance=patient)
+
+    context = {
+        'form': form,
+        'patient': patient, # Pass patient object for use in template (e.g., title)
+    }
+    return render(request, 'edit_patient.html', context)
 
 def logout_view(request):
     print("Before logout:", request.session.get('is_admin'))
