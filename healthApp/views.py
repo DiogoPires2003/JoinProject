@@ -1,4 +1,4 @@
-from .decorators import admin_required
+from .decorators import admin_required, redirect_admin
 from .forms import PatientForm, AppointmentForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import check_password, make_password
@@ -19,7 +19,7 @@ from django.views.decorators.http import require_POST
 
 
 
-
+@redirect_admin
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -171,6 +171,7 @@ from django.utils.timezone import now
 
 from django.utils.timezone import now
 
+@redirect_admin
 def appointment_list(request):
     # Check if the patient is logged in
     patient_id = request.session.get('patient_id')
@@ -340,6 +341,7 @@ from django.utils import timezone
 from datetime import datetime
 from django.utils import timezone
 
+@redirect_admin
 def my_appointments(request):
     patient_id = request.session.get('patient_id')
     if not patient_id:
