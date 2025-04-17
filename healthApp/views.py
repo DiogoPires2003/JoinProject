@@ -72,10 +72,19 @@ def admin_area(request):
 
 @admin_required
 def manage_patients_view(request):
+    # Keep your admin check
     if not request.session.get('is_admin'):
+         # Or however you handle admin checks (e.g., decorator)
         return HttpResponseForbidden("Acceso denegado")
 
-    return render(request, 'manage_patients.html')
+    # Fetch all patients from the database
+    all_patients = Patient.objects.all().order_by('last_name', 'first_name') # Order for consistency
+
+    context = {
+        'patients': all_patients,
+        # Add other context variables if needed
+    }
+    return render(request, 'manage_patients.html', context)
 
 def logout_view(request):
     print("Before logout:", request.session.get('is_admin'))
