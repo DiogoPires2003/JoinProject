@@ -1,3 +1,4 @@
+from .decorators import admin_required
 from .forms import PatientForm, AppointmentForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import check_password, make_password
@@ -5,7 +6,7 @@ from .forms import PatientForm, AppointmentForm, ModifyAppointmentsForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import check_password
 import requests
-from django.http import JsonResponse, HttpResponseNotAllowed
+from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseForbidden
 from .models import Appointment, Patient, Service, Employee
 from django.contrib import messages
 import json
@@ -38,7 +39,7 @@ def login_view(request):
                 else:
                     request.session['is_admin'] = False
 
-                return redirect('home')  # o alguna otra vista específica para empleados
+                return redirect('admin_area')  # o alguna otra vista específica para empleados
             else:
                 return render(request, 'login.html', {'error': 'Contraseña incorrecta'})
 
@@ -62,8 +63,23 @@ def login_view(request):
 
 def home(request):
         return render(request, 'home.html')
+@admin_required
+def admin_area(request):
+    if request.session.get('is_admin', False):  # Verifica si es un administrador
+        return render(request, 'admin_area.html')  # Devuelve la plantilla para el área de admin
+    else:
+        return HttpResponseForbidden("Acceso denegado")
 
-
+def logout_view(request):
+    print("Before logout:", request.session.get('is_admin'))
+    if request.session.get('is_admin'):
+        del request.session['is_admin']
+        request.session.modified = True
+        print("After logout:", request.session.get('is_admin'))
+        return redirect('home')
+    else:
+        request.session.flush()
+        return redirect('home')
 def patient_logout(request):
     # Check if the patient is logged in by verifying the session
     if 'patient_id' in request.session:

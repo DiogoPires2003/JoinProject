@@ -1,0 +1,32 @@
+<div class="container mt-4">
+    <h1>Bienvenido al área del administrador</h1>
+    <p>Este es un área exclusiva para administradores.</p>
+    
+    <a href="{% url 'logout_view' %}" class="btn btn-danger mt-3">
+        <i class="fas fa-sign-out-alt"></i> Salir de modo administrador
+    </a>
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        padding: 20px;
+    }
+    
+    h1 {
+        color: #005F99;
+        margin-bottom: 20px;
+    }
+    
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+        padding: 10px 20px;
+    }
+    
+    .btn-danger:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+</style>
