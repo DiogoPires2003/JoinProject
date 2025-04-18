@@ -1,21 +1,16 @@
 from .decorators import admin_required, redirect_admin
-from .forms import PatientForm, AppointmentForm, PatientEditForm
-from django.shortcuts import render, redirect
-from django.contrib.auth.hashers import check_password, make_password
-from .forms import PatientForm, AppointmentForm, ModifyAppointmentsForm
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.hashers import check_password
-import requests
-from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseForbidden
+from .forms import PatientForm, AppointmentForm, PatientEditForm, ModifyAppointmentsForm
 from .models import Appointment, Patient, Service, Employee
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.hashers import check_password, make_password
+from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseForbidden
 from django.contrib import messages
-import json
-from datetime import datetime, time, timedelta
-from django.utils import timezone
-from .models import Patient
-from decouple import config
 from django.views.decorators.http import require_POST
-
+from django.utils.timezone import now, timezone
+from decouple import config
+from datetime import datetime, time, timedelta
+import requests
+import json
 
 
 
@@ -41,7 +36,7 @@ def login_view(request):
 
                 return redirect('admin_area')  # o alguna otra vista específica para empleados
             else:
-                return render(request, 'login.html', {'error': 'Contraseña incorrecta'})
+                return render(request, 'auth/login.html', {'error': 'Contraseña incorrecta'})
 
         except Employee.DoesNotExist:
             pass  # Si no es empleado, intentar con paciente
@@ -54,19 +49,17 @@ def login_view(request):
                 request.session['patient_id'] = patient.id
                 return redirect('home')  # o vista específica para pacientes
             else:
-                return render(request, 'login.html', {'error': 'Contraseña incorrecta'})
+                return render(request, 'auth/login.html', {'error': 'Contraseña incorrecta'})
         except Patient.DoesNotExist:
-            return render(request, 'login.html', {'error': 'Correo no encontrado'})
+            return render(request, 'auth/login.html', {'error': 'Correo no encontrado'})
 
-    return render(request, 'login.html')
-
-
+    return render(request, 'auth/login.html')
 def home(request):
-        return render(request, 'home.html')
+        return render(request, 'home/home.html')
 @admin_required
 def admin_area(request):
     if request.session.get('is_admin', False):  # Verifica si es un administrador
-        return render(request, 'admin_area.html')  # Devuelve la plantilla para el área de admin
+        return render(request, 'admin/admin_area.html')  # Devuelve la plantilla para el área de admin
     else:
         return HttpResponseForbidden("Acceso denegado")
 
@@ -84,7 +77,7 @@ def manage_patients_view(request):
         'patients': all_patients,
         # Add other context variables if needed
     }
-    return render(request, 'manage_patients.html', context)
+    return render(request, 'admin/manage_patients.html', context)
 
 @admin_required # Ensure only admins can access
 def edit_patient_view(request, pk):
@@ -112,7 +105,7 @@ def edit_patient_view(request, pk):
         'form': form,
         'patient': patient, # Pass patient object for use in template (e.g., title)
     }
-    return render(request, 'edit_patient.html', context)
+    return render(request, 'admin/edit_patient.html', context)
 
 @admin_required
 def patient_appointment_history_view(request, pk):
@@ -148,7 +141,7 @@ def patient_appointment_history_view(request, pk):
         'patient': patient,
         'appointments': appointments_with_status,
     }
-    return render(request, 'patient_appointment_history.html', context)
+    return render(request, 'admin/patient_appointment_history.html', context)
 
 
 def logout_view(request):
@@ -167,16 +160,6 @@ def patient_logout(request):
         del request.session['patient_id']  # Remove the patient session data
     return redirect('home')
 
-def register(request):
-    if request.method == 'POST':
-        form = PatientForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
-    else:
-        form = PatientForm()
-
-    return render(request, 'register.html', {'form': form})
 
 def get_available_hours(request):
     if request.method == 'GET':
@@ -248,9 +231,6 @@ def get_available_hours(request):
 
         return JsonResponse({'available_hours': available_hours})
     return JsonResponse({'error': 'Invalid request method.'}, status=405)
-from django.utils.timezone import now
-
-from django.utils.timezone import now
 
 @redirect_admin
 def appointment_list(request):
@@ -346,7 +326,7 @@ def appointment_list(request):
         for appointment in appointments
     ]
 
-    return render(request, 'appointment_list.html', {
+    return render(request, 'appointments/appointment_list.html', {
         'services': services,
         'patient': patient,
         'booked_appointments': json.dumps(booked_appointments_json),
@@ -354,7 +334,7 @@ def appointment_list(request):
     })
 
 def booking_success(request):
-    return render(request, 'booking_success.html')
+    return render(request, 'appointments/booking_success.html')
 
 def register(request):
     if request.method == 'POST':
@@ -367,29 +347,24 @@ def register(request):
     else:
         form = PatientForm()
 
-    return render(request, 'register.html', {'form': form})
-
-def pedir_cita(request):
-    if request.method == 'POST':
-        return redirect('home')
-    return render(request, 'pedir_cita.html')
+    return render(request, 'auth/register.html', {'form': form})
 
 def nosotros(request):
-    return render(request, 'nosotros.html')
+    return render(request, 'home/nosotros.html')
 
 def centros(request):
-    return render(request, 'centros.html')
+    return render(request, 'home/centros.html')
 
 def servicios_salud(request):
-    return render(request, 'servicios_salud.html')
+    return render(request, 'home/servicios_salud.html')
 
 def informacion_util(request):
-    return render(request, 'informacion_util.html')
+    return render(request, 'home/informacion_util.html')
 
 def contacto(request):
     if request.method == 'POST':
         return redirect('home')
-    return render(request, 'contacto.html')
+    return render(request, 'home/contacto.html')
 
 def get_service_names():
     token_url = "https://example-mutua.onrender.com/token"
@@ -449,7 +424,7 @@ def my_appointments(request):
             service_id = getattr(appointment.service, 'id', None) if appointment.service else None
             appointment.service_name = service_names.get(service_id, "No asignado")
 
-        return render(request, 'my_appointments.html', {'appointments': future_appointments})
+        return render(request, 'appointments/my_appointments.html', {'appointments': future_appointments})
 
     except Patient.DoesNotExist:
         return redirect('login')
@@ -588,7 +563,7 @@ def modify_appointment(request, appointment_id):
             'end': appt.end_hour.strftime('%H:%M')
         })
 
-    return render(request, 'modify_appointment.html', {
+    return render(request, 'appointments/modify_appointment.html', {
         'form': form,
         'appointment': appointment,
         'appointment_service_name': appointment_service_name,
@@ -652,7 +627,7 @@ def appointment_history(request):
             service_id = getattr(appointment.service, 'id', None)
             appointment.service_name = service_names.get(service_id, "No asignado")
 
-        return render(request, 'appointment_history.html', {
+        return render(request, 'appointments/appointment_history', {
             'appointments': all_appointments
         })
 

@@ -35,7 +35,7 @@ main {
 }
 
 /* Inherit Navbar and Footer styles from base/includes */
-/* (Assuming navbar.html and footer.html have their own styling or rely on bootstrap) */
+/* (Assuming base/navbar.html and base/footer.html have their own styling or rely on bootstrap) */
 
 /* Admin Container */
 .admin-container {
