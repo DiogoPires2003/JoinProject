@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Better Health - Servicios de Salud</title>
+  <title>Better Health - Información Útil</title>
   {% bootstrap_css %}
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -20,30 +20,25 @@
   </style>
 </head>
 <div class="navbar-wrapper">
-    {% include 'navbar.html' %}
+    {% include 'base/navbar.html' %}
 </div>
 <body>
 
-<!-- Contenido de Servicios de Salud -->
+<!-- Contenido de Información Útil -->
 <main>
   <section class="info-section">
     <div class="container content">
-      <h1>Servicios de Salud</h1>
+      <h1>Información Útil</h1>
       <p>
-        En Better Health ofrecemos una amplia variedad de servicios de salud, 
-        desde consultas generales y especializadas hasta pruebas diagnósticas de alta tecnología.
+        Encuentra consejos, guías y recursos para cuidar tu salud y bienestar. 
+        Aquí publicamos artículos y novedades sobre prevención, nutrición, ejercicio y más.
       </p>
-      <p>
-        Nuestro equipo de profesionales está comprometido a brindarte atención personalizada 
-        para cuidar de tu salud y bienestar, adaptándonos a tus necesidades.
-      </p>
-      <!-- Se pueden listar servicios o incluir imágenes descriptivas -->
+      <!-- Se pueden incluir listados o enlaces a artículos -->
     </div>
   </section>
 </main>
 
-{% include 'footer.html' %}
-
+{% include 'base/footer.html' %}
 
 {% bootstrap_javascript %}
 </body>
