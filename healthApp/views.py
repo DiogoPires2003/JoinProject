@@ -41,6 +41,25 @@ def check_attendance(request):
     # Query today's appointments
     appointments = Appointment.objects.filter(date=today)
 
+    # Apply filters
+    patient_filter = request.GET.get("patient")
+    service_filter = request.GET.get("service")
+    attended_filter = request.GET.get("attended")
+
+    if patient_filter:
+        appointments = appointments.filter(
+            patient__first_name__icontains=patient_filter
+        ) | appointments.filter(
+            patient__last_name__icontains=patient_filter
+        )
+
+    if service_filter:
+        appointments = appointments.filter(service_id=int(service_filter))
+
+    if attended_filter in ["0", "1"]:
+        attended = attended_filter == "1"
+        appointments = appointments.filter(attendance__attended=attended)
+
     # Enrich appointments with service names and attendance status
     enriched_appointments = []
     for appointment in appointments:
@@ -53,16 +72,9 @@ def check_attendance(request):
             'attended': attendance.attended if attendance else False,
         })
 
-    if request.method == "POST":
-        appointment_id = request.POST.get("appointment_id")
-        attended = request.POST.get("attended") == "on"
-        appointment = get_object_or_404(Appointment, id=appointment_id)
-        attendance, created = Attendance.objects.get_or_create(appointment=appointment)
-        attendance.attended = attended
-        attendance.save()
-
     return render(request, 'admin/check_attendance.html', {
         'appointments': enriched_appointments,
+        'service_map': service_map,
     })
 @redirect_admin
 def login_view(request):

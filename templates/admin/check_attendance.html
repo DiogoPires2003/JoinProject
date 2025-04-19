@@ -24,8 +24,42 @@
             <div class="card shadow-lg rounded-3 overflow-hidden">
                 <div class="card-body p-lg-5">
                     <h1 class="text-center mb-4">Comprobar Asistencias</h1>
-                    <p class="text-center text-muted mb-4">Lista de asistencias de pacientes para las citas programadas.</p>
-
+                    <p class="text-center text-muted mb-4">Lista de asistencias de pacientes para las citas
+                        programadas.</p>
+                    <form method="get" class="mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <input type="text" name="patient" class="form-control" placeholder="Buscar por paciente"
+                                       value="{{ request.GET.patient }}">
+                            </div>
+                            <div class="col-md-4">
+                                <select name="service" class="form-select">
+                                    <option value="">Todos los servicios</option>
+                                    {% for service_id, service_name in service_map.items %}
+                                        <option value="{{ service_id }}"
+                                                {% if request.GET.service == service_id|stringformat:"s" %}
+                                                selected{% endif %}>
+                                            {{ service_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select name="attended" class="form-select">
+                                    <option value="">Todos</option>
+                                    <option value="1" {% if request.GET.attended == "1" %}selected{% endif %}>Asistió
+                                    </option>
+                                    <option value="0" {% if request.GET.attended == "0" %}selected{% endif %}>No
+                                        asistió
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                            <a href="{% url 'check_attendance' %}" class="btn btn-secondary">Restablecer</a>
+                        </div>
+                    </form>
                     <form method="post">
                         {% csrf_token %}
                         <div class="table-responsive">
