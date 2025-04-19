@@ -26,6 +26,13 @@
                                     <img src="{% static 'img/logo.png' %}"
                                          style="width: 50%;" alt="logo">
                                 </div>
+                                <div class="text-center">
+                                    {% if error_message %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error_message }}
+                                        </div>
+                                    {% endif %}
+                                </div>
                                 <form class="text-center" method="post">
                                     {% csrf_token %}
                                     <div class="mb-3 form-floating {% if error_message %}has-danger{% endif %}">
