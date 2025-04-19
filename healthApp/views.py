@@ -1,6 +1,6 @@
 from .decorators import admin_required, redirect_admin
 from .forms import PatientForm, AppointmentForm, PatientEditForm, ModifyAppointmentsForm
-from .models import Appointment, Patient, Service, Employee
+from .models import Appointment, Patient, Service, Employee, Attendance
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import check_password, make_password
 from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseForbidden
@@ -12,8 +12,58 @@ from datetime import datetime, time, timedelta
 import requests
 import json
 
+def check_attendance(request):
+    today = now().date()
 
+    # Fetch the API token
+    token_url = "https://example-mutua.onrender.com/token"
+    payload = {
+        "username": config("API_USERNAME"),
+        "password": config("API_PASSWORD"),
+    }
 
+    token_response = requests.post(token_url, data=payload)
+    if token_response.status_code != 200:
+        return JsonResponse({'error': 'Failed to fetch API token.'}, status=500)
+
+    access_token = token_response.json().get("access_token")
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    # Fetch the services
+    services_url = "https://example-mutua.onrender.com/servicios-clinica/"
+    services_response = requests.get(services_url, headers=headers)
+    if services_response.status_code != 200:
+        return JsonResponse({'error': 'Failed to fetch services from the API.'}, status=500)
+
+    services = services_response.json()
+    service_map = {service['id']: service['nombre'] for service in services}
+
+    # Query today's appointments
+    appointments = Appointment.objects.filter(date=today)
+
+    # Enrich appointments with service names and attendance status
+    enriched_appointments = []
+    for appointment in appointments:
+        attendance = Attendance.objects.filter(appointment=appointment).first()
+        enriched_appointments.append({
+            'id': appointment.id,
+            'patient': f"{appointment.patient.first_name} {appointment.patient.last_name}",
+            'service_name': service_map.get(appointment.service.id, 'Servicio no encontrado') if appointment.service else 'No asignado',
+            'start_hour': appointment.start_hour,
+            'attended': attendance.attended if attendance else False,
+        })
+
+    if request.method == "POST":
+        appointment_id = request.POST.get("appointment_id")
+        attended = request.POST.get("attended") == "on"
+        appointment = get_object_or_404(Appointment, id=appointment_id)
+        attendance, created = Attendance.objects.get_or_create(appointment=appointment)
+        attendance.attended = attended
+        attendance.save()
+
+    return render(request, 'admin/check_attendance.html', {
+        'appointments': enriched_appointments,
+    })
 @redirect_admin
 def login_view(request):
     if request.method == 'POST':
@@ -24,7 +74,7 @@ def login_view(request):
         try:
             employee = Employee.objects.get(email=email)
             if check_password(password, employee.password):
-                #print("Empleado autenticado correctamente")
+                # print("Empleado autenticado correctamente")
                 request.session['employee_id'] = employee.id
                 request.session['role_name'] = employee.role.name
 
@@ -45,7 +95,7 @@ def login_view(request):
         try:
             patient = Patient.objects.get(email=email)
             if check_password(password, patient.password):
-                #print("Paciente autenticado correctamente")
+                # print("Paciente autenticado correctamente")
                 request.session['patient_id'] = patient.id
                 return redirect('home')  # o vista específica para pacientes
             else:
@@ -54,8 +104,12 @@ def login_view(request):
             return render(request, 'auth/login.html', {'error': 'Correo no encontrado'})
 
     return render(request, 'auth/login.html')
+
+
 def home(request):
-        return render(request, 'home/home.html')
+    return render(request, 'home/home.html')
+
+
 @admin_required
 def admin_area(request):
     if request.session.get('is_admin', False):  # Verifica si es un administrador
@@ -63,15 +117,16 @@ def admin_area(request):
     else:
         return HttpResponseForbidden("Acceso denegado")
 
+
 @admin_required
 def manage_patients_view(request):
     # Keep your admin check
     if not request.session.get('is_admin'):
-         # Or however you handle admin checks (e.g., decorator)
+        # Or however you handle admin checks (e.g., decorator)
         return HttpResponseForbidden("Acceso denegado")
 
     # Fetch all patients from the database
-    all_patients = Patient.objects.all().order_by('last_name', 'first_name') # Order for consistency
+    all_patients = Patient.objects.all().order_by('last_name', 'first_name')  # Order for consistency
 
     context = {
         'patients': all_patients,
@@ -79,33 +134,35 @@ def manage_patients_view(request):
     }
     return render(request, 'admin/manage_patients.html', context)
 
-@admin_required # Ensure only admins can access
+
+@admin_required  # Ensure only admins can access
 def edit_patient_view(request, pk):
     # Check admin status again if decorator doesn't handle sessions fully
     if not request.session.get('is_admin'):
         return HttpResponseForbidden("Acceso denegado")
 
-    patient = get_object_or_404(Patient, pk=pk) # Get patient or 404
+    patient = get_object_or_404(Patient, pk=pk)  # Get patient or 404
 
     if request.method == 'POST':
         # Populate form with submitted data AND link it to the existing patient instance
         form = PatientEditForm(request.POST, instance=patient)
         if form.is_valid():
-            form.save() # Save the changes to the patient object
+            form.save()  # Save the changes to the patient object
             messages.success(request, f"Datos de {patient.first_name} {patient.last_name} actualizados correctamente.")
-            return redirect('manage_patients') # Redirect back to the list after successful edit
+            return redirect('manage_patients')  # Redirect back to the list after successful edit
         else:
             # Form is invalid, errors will be attached to the form object
             messages.error(request, "Por favor, corrija los errores en el formulario.")
-    else: # GET request
+    else:  # GET request
         # Populate form with the existing patient's data
         form = PatientEditForm(instance=patient)
 
     context = {
         'form': form,
-        'patient': patient, # Pass patient object for use in template (e.g., title)
+        'patient': patient,  # Pass patient object for use in template (e.g., title)
     }
     return render(request, 'admin/edit_patient.html', context)
+
 
 @admin_required
 def patient_appointment_history_view(request, pk):
@@ -120,7 +177,7 @@ def patient_appointment_history_view(request, pk):
 
     all_patient_appointments = Appointment.objects.filter(
         patient=patient
-    ).select_related('service').order_by('-date', '-start_hour') # Keep select_related for accessing service.id
+    ).select_related('service').order_by('-date', '-start_hour')  # Keep select_related for accessing service.id
 
     appointments_with_status = []
     for appointment in all_patient_appointments:
@@ -154,6 +211,8 @@ def logout_view(request):
     else:
         request.session.flush()
         return redirect('home')
+
+
 def patient_logout(request):
     # Check if the patient is logged in by verifying the session
     if 'patient_id' in request.session:
@@ -231,6 +290,7 @@ def get_available_hours(request):
 
         return JsonResponse({'available_hours': available_hours})
     return JsonResponse({'error': 'Invalid request method.'}, status=405)
+
 
 @redirect_admin
 def appointment_list(request):
@@ -333,8 +393,10 @@ def appointment_list(request):
         'reserva_exitosa': reserva_exitosa
     })
 
+
 def booking_success(request):
     return render(request, 'appointments/booking_success.html')
+
 
 def register(request):
     if request.method == 'POST':
@@ -349,22 +411,28 @@ def register(request):
 
     return render(request, 'auth/register.html', {'form': form})
 
+
 def nosotros(request):
     return render(request, 'home/nosotros.html')
+
 
 def centros(request):
     return render(request, 'home/centros.html')
 
+
 def servicios_salud(request):
     return render(request, 'home/servicios_salud.html')
 
+
 def informacion_util(request):
     return render(request, 'home/informacion_util.html')
+
 
 def contacto(request):
     if request.method == 'POST':
         return redirect('home')
     return render(request, 'home/contacto.html')
+
 
 def get_service_names():
     token_url = "https://example-mutua.onrender.com/token"
@@ -397,6 +465,7 @@ from django.utils import timezone
 from datetime import datetime
 from django.utils import timezone
 
+
 @redirect_admin
 def my_appointments(request):
     patient_id = request.session.get('patient_id')
@@ -428,8 +497,6 @@ def my_appointments(request):
 
     except Patient.DoesNotExist:
         return redirect('login')
-
-
 
 
 def modify_appointment(request, appointment_id):
@@ -544,7 +611,6 @@ def modify_appointment(request, appointment_id):
             # Verificar que se haya guardado correctamente el servicio
             print(f"CITA MODIFICADA CORRECTAMENTE. Service ID: {modified_appointment.service_id}")
 
-
             return redirect('my_appointments')
     else:
         form = ModifyAppointmentsForm(instance=appointment)
@@ -572,6 +638,7 @@ def modify_appointment(request, appointment_id):
         'service_id': service.id if service else None  # Añadimos el service_id para el frontend
     })
 
+
 @require_POST
 def cancel_appointment(request, appointment_id):
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
@@ -579,6 +646,7 @@ def cancel_appointment(request, appointment_id):
         appointment.delete()
         return JsonResponse({'status': 'success'})
     return HttpResponseNotAllowed(['POST'])
+
 
 def appointment_history(request):
     patient_id = request.session.get('patient_id')

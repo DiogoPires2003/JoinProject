@@ -14,71 +14,72 @@
 </head>
 
 <body>
-    <div class="navbar-wrapper">
-        {% include 'base/navbar.html' %}
-    </div>
+<div class="navbar-wrapper">
+    {% include 'base/navbar.html' %}
+</div>
 
-    <div class="page-wrapper d-flex flex-column min-vh-100">
-        <main class="flex-grow-1">
-            <div class="container admin-container my-5">
-                <div class="card shadow-lg rounded-3 overflow-hidden">
-                    <div class="card-body p-lg-5">
-                        <h1 class="text-center mb-4">Panel de Administración</h1>
-                        <p class="text-center text-muted mb-5">Gestione la información y operaciones de la clínica.</p>
+<div class="page-wrapper d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container admin-container my-5">
+            <div class="card shadow-lg rounded-3 overflow-hidden">
+                <div class="card-body p-lg-5">
+                    <h1 class="text-center mb-4">Panel de Administración</h1>
+                    <p class="text-center text-muted mb-5">Gestione la información y operaciones de la clínica.</p>
 
-                        <div class="row g-4 mb-5">
-                            <div class="col-md-6">
-                                <div class="card admin-action-card h-100">
-                                    <div class="card-body d-flex flex-column align-items-center text-center">
-                                        <i class="fas fa-users fa-3x mb-3 text-primary"></i>
-                                        <h5 class="card-title">Gestionar Pacientes</h5>
-                                        <p class="card-text small">Ver y editar datos de los pacientes registrados.</p>
-                                        <a href="{% url 'manage_patients' %}" class="btn btn-outline-primary mt-auto">Acceder</a>
-                                    </div>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <div class="card admin-action-card h-100">
+                                <div class="card-body d-flex flex-column align-items-center text-center">
+                                    <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Gestionar Pacientes</h5>
+                                    <p class="card-text small">Ver y editar datos de los pacientes registrados.</p>
+                                    <a href="{% url 'manage_patients' %}" class="btn btn-outline-primary mt-auto">Acceder</a>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-md-6">
-                                <div class="card admin-action-card h-100">
-                                    <div class="card-body d-flex flex-column align-items-center text-center">
-                                        <i class="fas fa-calendar-alt fa-3x mb-3 text-primary"></i>
-                                        <h5 class="card-title">Gestionar Citas</h5>
-                                        <p class="card-text small">Visualizar, agendar o cancelar citas médicas.</p>
-                                        <a href="#" class="btn btn-outline-primary mt-auto">Acceder</a>
-                                    </div>
+                        <div class="col-md-6">
+                            <div class="card admin-action-card h-100">
+                                <div class="card-body d-flex flex-column align-items-center text-center">
+                                    <i class="fas fa-calendar-alt fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Gestionar Citas</h5>
+                                    <p class="card-text small">Visualizar, agendar o cancelar citas médicas.</p>
+                                    <a href="#" class="btn btn-outline-primary mt-auto">Acceder</a>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-md-6">
-                                <div class="card admin-action-card h-100">
-                                    <div class="card-body d-flex flex-column align-items-center text-center">
-                                        <i class="fas fa-check-circle fa-3x mb-3 text-primary"></i>
-                                        <h5 class="card-title">Comprobar Asistencias</h5>
-                                        <p class="card-text small">Marcar y verificar la asistencia de pacientes a sus citas.</p>
-                                        <a href="#" class="btn btn-outline-primary mt-auto">Acceder</a>
-                                    </div>
+                        <div class="col-md-6">
+                            <div class="card admin-action-card h-100">
+                                <div class="card-body d-flex flex-column align-items-center text-center">
+                                    <i class="fas fa-check-circle fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Comprobar Asistencias</h5>
+                                    <p class="card-text small">Marcar y verificar la asistencia de pacientes a sus
+                                        citas.</p>
+                                    <a href="{% url 'check_attendance' %}" class="btn btn-outline-primary mt-auto">Acceder</a>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-md-6">
-                                <div class="card admin-action-card h-100">
-                                    <div class="card-body d-flex flex-column align-items-center text-center">
-                                        <i class="fas fa-user-plus fa-3x mb-3 text-primary"></i>
-                                        <h5 class="card-title">Gestionar Empleados</h5>
-                                        <p class="card-text small">Dar de alta y administrar personal de la clínica.</p>
-                                        <a href="#" class="btn btn-outline-primary mt-auto">Acceder</a>
-                                    </div>
+                        <div class="col-md-6">
+                            <div class="card admin-action-card h-100">
+                                <div class="card-body d-flex flex-column align-items-center text-center">
+                                    <i class="fas fa-user-plus fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Gestionar Empleados</h5>
+                                    <p class="card-text small">Dar de alta y administrar personal de la clínica.</p>
+                                    <a href="#" class="btn btn-outline-primary mt-auto">Acceder</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
+    </main>
 
-        {% include 'base/footer.html' %}
-    </div>
+    {% include 'base/footer.html' %}
+</div>
 
-    {% bootstrap_javascript %}
+{% bootstrap_javascript %}
 </body>
 </html>
