@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Patient, Appointment, Service, Role, Employee
+from .models import Patient, Appointment, Service, Role, Employee, Attendance
 
 @admin.register(Patient)
 class PatientAdmin(admin.ModelAdmin):
@@ -25,3 +25,9 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'email', 'role')  # Muestra estos campos en la lista
     search_fields = ('first_name', 'last_name', 'email')  # Permite buscar por estos campos
     list_filter = ('role',)  # Permite filtrar por el campo 'role'
+
+@admin.register(Attendance)
+class AttendanceAdmin(admin.ModelAdmin):
+    list_display = ('appointment', 'attended', 'marked_at')  # Customize the columns displayed
+    search_fields = ('appointment__patient__first_name', 'appointment__patient__last_name')  # Enable search
+    list_filter = ('attended',)  # Add filters for attendance status

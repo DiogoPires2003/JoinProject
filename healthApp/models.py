@@ -9,6 +9,7 @@ from django.utils.timezone import now
 
 from betterHealth import settings
 
+
 class Role(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField()
@@ -154,3 +155,15 @@ class Appointment(models.Model):
         verbose_name = 'Appointment'
         verbose_name_plural = 'Appointments'
         unique_together = ('patient', 'date', 'start_hour', 'end_hour')
+
+class Attendance(models.Model):
+    appointment = models.OneToOneField('Appointment', on_delete=models.CASCADE)
+    attended = models.BooleanField(default=False)
+    marked_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Attendance for {self.appointment} - {'Attended' if self.attended else 'Not Attended'}"
+
+    class Meta:
+        verbose_name = 'Attendance'
+        verbose_name_plural = 'Attendances'
