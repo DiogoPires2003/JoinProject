@@ -82,38 +82,29 @@ def login_view(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        # Intentar autenticar como Employee
+        # Try to authenticate as Employee
         try:
             employee = Employee.objects.get(email=email)
             if check_password(password, employee.password):
-                # print("Empleado autenticado correctamente")
                 request.session['employee_id'] = employee.id
                 request.session['role_name'] = employee.role.name
-
-                # Si es administrador, marcarlo en la sesión
-                if employee.role.name == "Administrator":
-                    request.session['is_admin'] = True
-                else:
-                    request.session['is_admin'] = False
-
-                return redirect('admin_area')  # o alguna otra vista específica para empleados
+                request.session['is_admin'] = employee.role.name == "Administrator"
+                return redirect('admin_area')
             else:
-                return render(request, 'auth/login.html', {'error': 'Contraseña incorrecta'})
-
+                return render(request, 'auth/login.html', {'error_message': 'Incorrect password.'})
         except Employee.DoesNotExist:
-            pass  # Si no es empleado, intentar con paciente
+            pass
 
-        # Intentar autenticar como Patient
+        # Try to authenticate as Patient
         try:
             patient = Patient.objects.get(email=email)
             if check_password(password, patient.password):
-                # print("Paciente autenticado correctamente")
                 request.session['patient_id'] = patient.id
-                return redirect('home')  # o vista específica para pacientes
+                return redirect('home')
             else:
-                return render(request, 'auth/login.html', {'error': 'Contraseña incorrecta'})
+                return render(request, 'auth/login.html', {'error_message': 'El usuario o la contraseña son incorrectos.'})
         except Patient.DoesNotExist:
-            return render(request, 'auth/login.html', {'error': 'Correo no encontrado'})
+            return render(request, 'auth/login.html', {'error_message': 'El usuario o la contraseña son incorrectos.'})
 
     return render(request, 'auth/login.html')
 
