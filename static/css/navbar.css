@@ -1,75 +1,267 @@
-/* Variables globales compartidas (si usas base.css, puedes eliminar este bloque) */
+/* 1. Variables globales y reset */
 :root {
-    --primary: #004d80;
-    --accent: #ffb400;
-    --white: #ffffff;
-  }
-  
-  /* Reset básico para navbar */
-  .navbar-wrapper {
-    background-color: var(--primary);
-    padding: 0.5rem 1rem;
-  }
-  
+  --primary: #004d80;  /* Azul oscuro */
+  --secondary: #007acc; /* Azul intermedio */
+  --accent: #ffb400;  /* Amarillo */
+  --bg-light: #f4f7fa; /* Fondo claro */
+  --text-dark: #1a2a33; /* Texto oscuro */
+  --white: #ffffff; /* Blanco */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+}
+
+a {
+  text-decoration: none;
+}
+
+/* 2. Navbar */
+.navbar-wrapper {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: 0.5rem 1rem;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.navbar {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand img {
+  height: 60px;
+  width: auto;
+  margin-right: 0.5rem;
+}
+
+.navbar-brand span {
+  color: var(--white);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.navbar-toggler {
+  border: none;
+  color: var(--white);
+  font-size: 1.25rem;
+}
+
+.navbar-collapse {
+  display: flex !important;
+  flex-basis: auto;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.nav-item {
+  margin: 0 1rem;
+}
+
+.nav-link {
+  color: var(--white);
+  padding: 0.5rem;
+  transition: color 0.3s ease;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  color: var(--accent);
+}
+
+.navbar-nav i {
+  margin-right: 0.5rem;
+}
+
+/* Botones “Pedir Cita” y Login/Logout */
+.btn-success {
+  background-color: var(--accent);
+  border-radius: 25px;
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  margin: 0 0.25rem;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.btn-success:hover {
+  transform: translateY(-3px);
+  background-color: var(--secondary);
+}
+
+/* 3. Hero Section */
+.hero {
+  position: relative;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--white);
+  padding: 6rem 1rem;
+  background-attachment: fixed;
+}
+
+.hero .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.hero-subtitle {
+  font-size: 1.75rem;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.hero-btn {
+  background-color: var(--accent);
+  border: none;
+  padding: 0.85rem 1.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 5px;
+  transition: transform 0.3s ease;
+}
+
+.hero-btn:hover {
+  transform: translateY(-3px);
+}
+
+.hero-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.hero-img:hover {
+  transform: scale(1.03);
+}
+
+/* 4. Sección de Servicios */
+.info-section {
+  padding: 4rem 1rem;
+  background-color: var(--bg-light);
+}
+
+.section-header h2 {
+  font-size: 2.75rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.section-header p {
+  font-size: 1.125rem;
+  color: #555;
+}
+
+.info-card {
+  border: none;
+  background-color: var(--white);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.info-card .card-img-top {
+  height: 220px;
+  object-fit: cover;
+}
+
+.info-card .card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--primary);
+}
+
+.info-card .card-text {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+/* 5. Animaciones y Footer */
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+footer {
+  background-color: var(--text-dark);
+  color: var(--white);
+  padding: 2rem 1rem;
+  text-align: center;
+  margin-top: auto;
+}
+
+/* 6. Responsividad */
+@media (max-width: 768px) {
   .navbar {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  .navbar-brand {
-    display: flex;
-    align-items: center;
-  }
-  .navbar-brand img {
-    height: 60px;
-    width: auto;
-    margin-right: 0.5rem;
-  }
-  .navbar-brand span {
-    color: var(--white);
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-  
-  .navbar-toggler {
-    border: none;
-    color: var(--white);
-    font-size: 1.25rem;
-  }
-  
-  .navbar-collapse {
-    display: flex !important;
-    flex-basis: auto;
-  }
-  
+
   .navbar-nav {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
+    margin-left: 0;
   }
+
   .nav-item {
-    margin: 0 0.5rem;
+    margin: 0.25rem 0;
   }
-  .nav-link {
-    color: var(--white);
-    padding: 0.5rem;
-    transition: color 0.2s;
+
+  .hero-title { font-size: 2.5rem; }
+  .hero-subtitle { font-size: 1.25rem; }
+  .info-card .card-img-top { height: 180px; }
+  .section-header h2 { font-size: 2rem; }
+  .hero-btn {
+    margin-bottom: 1rem;
+    width: 100%;
+    text-align: center;
   }
-  .nav-link:hover {
-    color: var(--accent);
-  }
-  
-  /* Botones “Pedir Cita” y Login/Logout */
-  .btn-success {
-    background-color: var(--accent);
-    border: none;
-    font-weight: 600;
-    margin: 0 0.25rem;
-  }
-  .btn-success:hover {
-    filter: brightness(0.9);
-  }
-  
+}
