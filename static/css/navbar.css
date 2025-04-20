@@ -1,83 +1,75 @@
-/* Contenedor que envuelve al navbar (zona sobre el logo) */
-.navbar-wrapper {
-    width: 100%;
-    background-color: #003366; /* Azul fuerte */
-    padding: 0.5rem 0;         /* Alto del recuadro superior */
-}
-
-/* Barra de navegación */
-.navbar {
-    background-color: #003366; /* Azul fuerte */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+/* Variables globales compartidas (si usas base.css, puedes eliminar este bloque) */
+:root {
+    --primary: #004d80;
+    --accent: #ffb400;
+    --white: #ffffff;
+  }
+  
+  /* Reset básico para navbar */
+  .navbar-wrapper {
+    background-color: var(--primary);
     padding: 0.5rem 1rem;
-}
-
-/* Marca (logo + texto) */
-.navbar-brand {
+  }
+  
+  .navbar {
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
-    color: #940a0a;
+    justify-content: space-between;
+  }
+  
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+  }
+  .navbar-brand img {
+    height: 60px;
+    width: auto;
+    margin-right: 0.5rem;
+  }
+  .navbar-brand span {
+    color: var(--white);
+    font-size: 1.5rem;
     font-weight: 700;
-    font-size: 1.25rem;
-    text-decoration: none;
-}
-.navbar-brand img {
-    height: 50px;
-    margin-right: 10px;
-}
-
-/* Botón toggler para móvil */
-.navbar-toggler {
+  }
+  
+  .navbar-toggler {
     border: none;
-    background-color: #002244; /* Azul más oscuro */
-    color: #ffffff;
-}
-.navbar-toggler-icon {
-    background-color: #ffffff; /* Icono blanco */
-    border-radius: 2px;
-}
-
-/* Elementos del menú */
-.navbar-nav {
+    color: var(--white);
+    font-size: 1.25rem;
+  }
+  
+  .navbar-collapse {
+    display: flex !important;
+    flex-basis: auto;
+  }
+  
+  .navbar-nav {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
     margin-left: auto;
-}
-.navbar-nav .nav-link {
-    color: #ffffff !important;
-    padding: 0.5rem 1rem;
-    font-weight: 600;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-.navbar-nav .nav-link:hover,
-.navbar-nav .nav-link:focus {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #ffcc00 !important;
-}
-
-/* Botones dentro del menú */
-.navbar-nav .btn {
-    margin-left: 0.5rem;
-    background-color: #28a745;
-    color: #ffffff;
+  }
+  .nav-item {
+    margin: 0 0.5rem;
+  }
+  .nav-link {
+    color: var(--white);
+    padding: 0.5rem;
+    transition: color 0.2s;
+  }
+  .nav-link:hover {
+    color: var(--accent);
+  }
+  
+  /* Botones “Pedir Cita” y Login/Logout */
+  .btn-success {
+    background-color: var(--accent);
     border: none;
-    padding: 0.4rem 0.9rem;
-    transition: background-color 0.3s ease;
-}
-.navbar-nav .btn:hover,
-.navbar-nav .btn:focus {
-    background-color: #218838;
-}
-
-/* Menú colapsado (móvil) */
-.navbar-collapse {
-    background-color: #003366; /* Azul fuerte */
-    text-align: center;
-    padding: 0.5rem 0;
-}
-.navbar-collapse .nav-link,
-.navbar-collapse .btn {
-    display: block;
-    margin: 0.25rem auto;
-}
+    font-weight: 600;
+    margin: 0 0.25rem;
+  }
+  .btn-success:hover {
+    filter: brightness(0.9);
+  }
+  
