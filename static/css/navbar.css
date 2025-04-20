@@ -1,45 +1,83 @@
-
-navbar-toggler {
-    position: relative;
-    margin-left: 10px; /* Pushes the button to the right */
-    margin-right: 3rem; /* Adds spacing from the edge */
-    z-index: 1050; /* Ensures it stays above other elements */
-    display: block; /* Ensures visibility */
+/* Contenedor que envuelve al navbar (zona sobre el logo) */
+.navbar-wrapper {
+    width: 100%;
+    background-color: #003366; /* Azul fuerte */
+    padding: 0.5rem 0;         /* Alto del recuadro superior */
 }
+
+/* Barra de navegación */
 .navbar {
-    display: flex;
-    justify-content: center; /* Centers all items horizontally */
-    align-items: center; /* Centers all items vertically */
-    flex-wrap: wrap; /* Ensures items wrap if needed */
-    width: 100%; /* Full width */
+    background-color: #003366; /* Azul fuerte */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 1rem;
 }
 
+/* Marca (logo + texto) */
 .navbar-brand {
     display: flex;
-    justify-content: center; /* Centers logo and brand name horizontally */
-    align-items: center; /* Centers logo and brand name vertically */
-    margin-right: 20px; /* Adds spacing between brand and nav items */
+    align-items: center;
+    color: #940a0a;
+    font-weight: 700;
+    font-size: 1.25rem;
+    text-decoration: none;
+}
+.navbar-brand img {
+    height: 50px;
+    margin-right: 10px;
 }
 
+/* Botón toggler para móvil */
+.navbar-toggler {
+    border: none;
+    background-color: #002244; /* Azul más oscuro */
+    color: #ffffff;
+}
+.navbar-toggler-icon {
+    background-color: #ffffff; /* Icono blanco */
+    border-radius: 2px;
+}
+
+/* Elementos del menú */
 .navbar-nav {
     display: flex;
-    justify-content: center; /* Centers nav items horizontally */
-    align-items: center; /* Centers nav items vertically */
-    flex-wrap: wrap; /* Ensures items wrap if needed */
-    margin: auto; /* Centers the navbar items */
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+}
+.navbar-nav .nav-link {
+    color: #ffffff !important;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffcc00 !important;
 }
 
+/* Botones dentro del menú */
+.navbar-nav .btn {
+    margin-left: 0.5rem;
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    padding: 0.4rem 0.9rem;
+    transition: background-color 0.3s ease;
+}
+.navbar-nav .btn:hover,
+.navbar-nav .btn:focus {
+    background-color: #218838;
+}
+
+/* Menú colapsado (móvil) */
 .navbar-collapse {
-    position: absolute; /* Ensures the menu is positioned relative to the navbar */
-    top: 100%; /* Positions the menu just below the navbar */
-    width: 100%; /* Ensures the menu spans the full width of the navbar */
-    margin-bottom: 5px;
-    z-index: 1040; /* Keeps it above other elements but below the toggler */
-    overflow: hidden; /* Prevents content from overflowing */
-    background-color: #005f99;
-    text-align: center; /* Center-aligns the items */
+    background-color: #003366; /* Azul fuerte */
+    text-align: center;
+    padding: 0.5rem 0;
 }
-
-.navbar-collapse.show {
-    display: block; /* Ensures the menu is visible when expanded */
+.navbar-collapse .nav-link,
+.navbar-collapse .btn {
+    display: block;
+    margin: 0.25rem auto;
 }
