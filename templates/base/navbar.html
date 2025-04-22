@@ -21,22 +21,22 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'home' %}" style="color: white;">Home</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item mb-2">
                     <a class="nav-link" href="{% url 'nosotros' %}" style="color: white;">Nosotros</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item mb-2">
                     <a class="nav-link" href="{% url 'centros' %}" style="color: white;">Centros</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item mb-2">
                     <a class="nav-link" href="{% url 'informacion_util' %}" style="color: white;">Información útil</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item mb-2">
                     <a class="nav-link" href="{% url 'servicios_salud' %}" style="color: white;">Servicios de salud</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item mb-2">
                     <a class="nav-link" href="{% url 'contacto' %}" style="color: white;">Contacto</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item mb-2">
                     {% if request.session.employee_id %}
                         <a class="nav-link" href="{% url 'admin_area' %}" style="color: white;">Panel de
                             Administración</a>
@@ -45,14 +45,14 @@
                     {% endif %}
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item mb-2">
                     {% if not request.session.employee_id %}
                     <a style="margin-right: 2px" class="btn btn-success"
                        href="{% url 'appointment_list' %}">Pedir Cita</a>
                     {% endif %}
 
                 </li>
-                <li class="nav-item">
+                <li class="nav-item mb-2">
                     {% if request.session.patient_id %}
                         <a style="margin-left: 2px" class="btn btn-success" href="{% url 'logout' %}">Cerrar sesión</a>
                     {% elif request.session.employee_id %}

@@ -12,6 +12,7 @@ navbar-toggler {
     align-items: center; /* Centers all items vertically */
     flex-wrap: wrap; /* Ensures items wrap if needed */
     width: 100%; /* Full width */
+    
 }
 
 .navbar-brand {
