@@ -12,6 +12,7 @@
     padding: 8px 12px;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-size: 14px;
 }
 
 .hour-btn:hover {
@@ -28,13 +29,38 @@
 .modify-title {
     text-align: center;
     color: #005F99;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
 }
 
+.modify-form {
+    max-width: 800px;
+    margin: 0 auto;
+    border-radius: 12px;
+}
+
+.service-name {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+}
+
+.duration-text {
+    color: #666;
+    font-size: 1rem;
+}
+
+.form-actions {
+    margin-top: 1.5rem;
+}
+
+/* Dialog styles */
 .reserva-dialog {
     padding: 0;
     border: none;
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 500px;
 }
@@ -61,10 +87,25 @@
     color: #005F99;
     font-size: 1.8rem;
     margin-bottom: 15px;
+    text-align: center;
+    width: 100%;
+    display: block;
+    margin: 0 auto 15px;
 }
 
 .dialog-buttons {
     margin-top: 20px;
+}
+
+.view-appointments-btn {
+    display: block;
+    margin: 0 auto;
+    max-width: 200px;
+    background-color: #005F99;
+    border-color: #005F99;
+    color: white;
+    text-decoration: none;
+    box-shadow: none;
 }
 
 .btn-available {
@@ -76,4 +117,115 @@
 .btn-available.selected {
     background-color: #003f73; /* Azul más oscuro al seleccionar */
     border-color: #003359;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 992px) {
+    .modify-title {
+        font-size: 1.8rem;
+    }
+
+    .modify-form {
+        padding: 1.5rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modify-title {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+    }
+
+    .service-name {
+        font-size: 1.3rem;
+    }
+
+    .hour-btn {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+
+    .modify-form {
+        padding: 1.25rem !important;
+    }
+
+    .form-actions {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .modify-title {
+        font-size: 1.4rem;
+    }
+
+    .service-name {
+        font-size: 1.2rem;
+    }
+
+    .hour-btn {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+
+    .modify-form {
+        padding: 1rem !important;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .dialog-title {
+        font-size: 1.5rem;
+    }
+
+    .success-icon i {
+        font-size: 3rem;
+    }
+
+    .view-appointments-btn {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .available-hours {
+        justify-content: center;
+    }
+
+    .hour-btn {
+        min-width: 70px;
+        text-align: center;
+    }
+
+    .modify-title {
+        font-size: 1.3rem;
+    }
+
+    .btn .btn-text {
+        display: none;
+    }
+
+    .btn i {
+        margin-right: 0;
+    }
+
+    .form-actions .btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 38px;
+        width: 100%;
+    }
 }
