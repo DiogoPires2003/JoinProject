@@ -16,27 +16,29 @@
 </head>
 
 <body>
-    <div class="navbar-wrapper">
-        {% include 'base/navbar.html' %}
-    </div>
+<div class="navbar-wrapper">
+    {% include 'base/navbar.html' %}
+</div>
 
-    <div class="page-wrapper d-flex flex-column min-vh-100">
-        <main class="flex-grow-1">
-            <div class="container admin-container my-5">
-                <div class="card shadow-lg rounded-3 overflow-hidden">
-                    <div class="card-body p-lg-5">
-                        <h1 class="text-center mb-4">Gestionar Pacientes</h1>
-                        <p class="text-center text-muted mb-4">Lista de pacientes registrados en la clínica.</p>
+<div class="page-wrapper d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container admin-container my-5">
+            <div class="card shadow-lg rounded-3 overflow-hidden">
+                <div class="card-body p-lg-5">
+                    <h1 class="text-center mb-4">Gestionar Pacientes</h1>
+                    <p class="text-center text-muted mb-4">Lista de pacientes registrados en la clínica.</p>
 
-                        <div class="mb-4">
-                            <div class="input-group">
-                                <span class="input-group-text" id="search-icon"><i class="fas fa-search"></i></span>
-                                <input type="search" class="form-control" id="patientSearchInput" placeholder="Buscar por nombre, apellido, DNI, email..." aria-label="Buscar paciente" aria-describedby="search-icon">
-                            </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text" id="search-icon"><i class="fas fa-search"></i></span>
+                            <input type="search" class="form-control" id="patientSearchInput"
+                                   placeholder="Buscar por nombre, apellido, DNI, email..." aria-label="Buscar paciente"
+                                   aria-describedby="search-icon">
                         </div>
+                    </div>
 
-                        <div class="row g-4" id="patientListContainer">
-                            {% for patient in patients %}
+                    <div class="row g-4" id="patientListContainer">
+                        {% for patient in patients %}
                             <div class="col-lg-6 col-xl-4 patient-card-wrapper">
                                 <div class="card patient-card h-100 shadow-sm">
                                     <div class="card-body d-flex flex-column">
@@ -48,15 +50,19 @@
                                         <div class="patient-core-details mb-3">
                                             <p class="patient-info-item mb-1">
                                                 <i class="fas fa-id-card fa-fw me-2 text-muted"></i>
-                                                <span class="info-label">DNI:</span> <span class="searchable-text">{{ patient.dni }}</span>
+                                                <span class="info-label">DNI:</span> <span
+                                                    class="searchable-text">{{ patient.dni }}</span>
                                             </p>
                                             <p class="patient-info-item mb-1">
                                                 <i class="fas fa-envelope fa-fw me-2 text-muted"></i>
-                                                <span class="info-label">Email:</span> <a href="mailto:{{ patient.email }}" class="text-decoration-none patient-email searchable-text">{{ patient.email }}</a>
+                                                <span class="info-label">Email:</span> <a
+                                                    href="mailto:{{ patient.email }}"
+                                                    class="text-decoration-none patient-email searchable-text">{{ patient.email }}</a>
                                             </p>
                                             <p class="patient-info-item mb-1">
                                                 <i class="fas fa-phone fa-fw me-2 text-muted"></i>
-                                                <span class="info-label">Teléfono:</span> <span class="searchable-text">{{ patient.phone }}</span>
+                                                <span class="info-label">Teléfono:</span> <span
+                                                    class="searchable-text">{{ patient.phone }}</span>
                                             </p>
                                         </div>
 
@@ -74,17 +80,22 @@
                                                 {% endif %}
                                             </div>
                                             {% if patient.has_insurance and patient.insurance_number %}
-                                            <p class="patient-info-item small mt-1 mb-0 text-muted justify-content-end">
-                                               <span class="searchable-text">{{ patient.insurance_number }}</span> <i class="fas fa-hashtag fa-fw ms-1"></i>
-                                            </p>
+                                                <p class="patient-info-item small mt-1 mb-0 text-muted justify-content-end">
+                                                    <span class="searchable-text">{{ patient.insurance_number }}</span>
+                                                    <i class="fas fa-hashtag fa-fw ms-1"></i>
+                                                </p>
                                             {% endif %}
                                         </div>
 
                                         <div class="patient-actions mt-auto">
-                                            <a href="{% url 'edit_patient' patient.pk %}" class="btn btn-sm btn-outline-primary" title="Editar Datos">
-                                                <i class="fas fa-edit"></i><span class="d-none d-md-inline ms-1">Editar</span>
+                                            <a href="{% url 'edit_patient' patient.pk %}"
+                                               class="btn btn-sm btn-outline-primary" title="Editar Datos">
+                                                <i class="fas fa-edit"></i><span
+                                                    class="d-none d-md-inline ms-1">Editar</span>
                                             </a>
-                                            <a href="{% url 'patient_appointment_history' patient.pk %}" class="btn btn-sm btn-outline-secondary ms-1" title="Ver Historial de Citas">
+                                            <a href="{% url 'patient_appointment_history' patient.pk %}"
+                                               class="btn btn-sm btn-outline-secondary ms-1"
+                                               title="Ver Historial de Citas">
                                                 <i class="fas fa-history"></i><span class="d-none d-md-inline ms-1">Historial</span>
                                             </a>
                                         </div>
@@ -92,38 +103,39 @@
                                     </div>
                                 </div>
                             </div>
-                            {% empty %}
+                        {% empty %}
                             <div class="col-12">
                                 <div class="alert alert-info text-center" role="alert">
                                     <i class="fas fa-info-circle me-2"></i> No hay pacientes registrados actualmente.
                                 </div>
                             </div>
-                            {% endfor %}
+                        {% endfor %}
 
-                            <div class="col-12" id="noResultsMessage">
-                                <div class="alert alert-warning text-center" role="alert">
-                                    <i class="fas fa-exclamation-triangle me-2"></i> No se encontraron pacientes que coincidan con la búsqueda.
-                                </div>
+                        <div class="col-12" id="noResultsMessage" style="display: none;">
+                            <div class="alert alert-warning text-center" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i> No se encontraron pacientes que
+                                coincidan con la búsqueda.
                             </div>
-
-                        </div>
-
-                        <div class="text-center mt-5">
-                             <a href="{% url 'admin_area' %}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left me-2"></i> Volver al Panel
-                            </a>
                         </div>
 
                     </div>
+
+                    <div class="text-center mt-5">
+                        <a href="{% url 'admin_area' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i> Volver al Panel
+                        </a>
+                    </div>
+
                 </div>
             </div>
-        </main>
+        </div>
+    </main>
 
-        {% include 'base/footer.html' %}
-    </div>
+    {% include 'base/footer.html' %}
+</div>
 
-    {% bootstrap_javascript %}
-    <script src="{% static 'js/manage_patient.js' %}"></script>
+{% bootstrap_javascript %}
+<script src="{% static 'js/manage_patient.js' %}"></script>
 
 </body>
 </html>
