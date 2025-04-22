@@ -698,7 +698,7 @@ def appointment_history(request):
             service_id = getattr(appointment.service, 'id', None)
             appointment.service_name = service_names.get(service_id, "No asignado")
 
-        return render(request, 'appointments/appointment_history', {
+        return render(request, 'appointments/appointment_history.html', {
             'appointments': all_appointments
         })
 
