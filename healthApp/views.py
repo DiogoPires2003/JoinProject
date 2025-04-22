@@ -308,6 +308,8 @@ def get_available_hours(request):
 
 @redirect_admin
 def appointment_list(request):
+    MAX_APPOINTMENTS_PER_DAY = 5
+
     # Check if the patient is logged in
     patient_id = request.session.get('patient_id')
     if not patient_id:
@@ -358,6 +360,10 @@ def appointment_list(request):
         start_time = request.POST.get('start_hour')
         end_time = request.POST.get('end_hour')
 
+        appointments_on_date = Appointment.objects.filter(patient=patient, date=date).count()
+        if appointments_on_date >= MAX_APPOINTMENTS_PER_DAY:
+            messages.error(request, f"Solo puedes reservar un máximo de {MAX_APPOINTMENTS_PER_DAY} citas por día.")
+            return redirect('appointment_list')
         try:
             # Validate and create the appointment
             start_datetime = f"{date} {start_time}"
