@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html style="background-color: #eee;" lang="es">
+<html lang="es" style="background-color: #f7f7f7;">
 <head>
-    <title>Register</title>
+    <title>Registro</title>
     {% load static %}
     {% load bootstrap5 %}
     {% bootstrap_css %}
@@ -25,54 +25,65 @@
         };
     </script>
 </head>
+<body>
+
+<!-- Navbar -->
 <div class="navbar-wrapper">
     {% include 'base/navbar.html' %}
 </div>
-<body>
-<section style="background-color: #eee; min-height: 100%;">
-    <div class="container py-5">
-        <div class="d-flex justify-content-center align-items-center h-100">
-            <div class="col-xl-10">
-                <div class="card rounded-3 text-black">
-                    <div class="row g-0">
-                        <div class="col-lg-12">
-                            <div class="card-body p-md-5 mx-md-4 ">
-                                <div class="text-center ">
-                                    <img src="{% static "img/logo.png" %}"
-                                         style="width: 30%; margin-top: -5% " alt="logo">
-                                    <h4 class=" mb-5 pb-1">Tu bienestar, nuestra prioridad.</h4>
-                                </div>
-                                <form method="post">
-                                    {% csrf_token %}
-                                    {% if form.errors %}
-                                        <div class="alert alert-danger">
-                                            Porfavor corrige los errores en el formulario.
-                                        </div>
-                                    {% endif %}
 
-                                    <div class="mb-3 form-floating {% if form.first_name.errors %}has-danger{% endif %}">
+<section style="background-color: #f7f7f7; min-height: 100vh;">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-10 col-md-12">
+                <div class="card shadow-lg rounded-4 border-0">
+                    <div class="card-body p-5">
+                        <!-- Logo and Welcome Text -->
+                        <div class="text-center mb-4">
+                            <h4 class="text-dark mt-3">¡Bienvenido!</h4>
+                                <h4 class="text-dark mt-3">Regístrate para acceder a tu cuenta.</h4>
+
+                        </div>
+
+                        <!-- Registration Form -->
+                        <form method="post">
+                            {% csrf_token %}
+                            {% if form.errors %}
+                                <div class="alert alert-danger mb-4">
+                                    Por favor corrige los errores en el formulario.
+                                </div>
+                            {% endif %}
+
+                            <!-- Form Inputs -->
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
                                         <input type="text" name="first_name" required
                                                class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
-                                               id="firstNameInput" placeholder="First Name"
+                                               id="firstNameInput" placeholder="Nombre"
                                                value="{{ form.first_name.value|default:'' }}">
                                         <label for="firstNameInput">Nombre</label>
                                         {% for error in form.first_name.errors %}
                                             <div class="invalid-feedback">{{ error }}</div>
                                         {% endfor %}
                                     </div>
-                                    <div class="mb-3 form-floating {% if form.last_name.errors %}has-danger{% endif %}">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating">
                                         <input type="text" name="last_name" required
                                                class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
-                                               id="lastNameInput" placeholder="Last Name"
+                                               id="lastNameInput" placeholder="Apellido"
                                                value="{{ form.last_name.value|default:'' }}">
                                         <label for="lastNameInput">Apellido</label>
                                         {% for error in form.last_name.errors %}
                                             <div class="invalid-feedback">{{ error }}</div>
                                         {% endfor %}
                                     </div>
+                                </div>
 
-
-                                    <div class="mb-3 form-floating {% if form.dni.errors %}has-danger{% endif %}">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
                                         <input type="text" name="dni" required
                                                class="form-control {% if form.dni.errors %}is-invalid{% endif %}"
                                                id="dniInput" placeholder="DNI"
@@ -82,8 +93,10 @@
                                             <div class="invalid-feedback">{{ error }}</div>
                                         {% endfor %}
                                     </div>
+                                </div>
 
-                                    <div class="mb-3 form-floating {% if form.email.errors %}has-danger{% endif %}">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
                                         <input type="email" name="email" required
                                                class="form-control {% if form.email.errors %}is-invalid{% endif %}"
                                                id="emailInput" placeholder="Email"
@@ -93,74 +106,75 @@
                                             <div class="invalid-feedback">{{ error }}</div>
                                         {% endfor %}
                                     </div>
+                                </div>
 
-
-                                    <div class="mb-3 form-floating {% if form.phone.errors %}has-danger{% endif %}">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
                                         <input type="text" name="phone" required
                                                class="form-control {% if form.phone.errors %}is-invalid{% endif %}"
-                                               id="phoneInput" placeholder="Phone"
+                                               id="phoneInput" placeholder="Teléfono"
                                                value="{{ form.phone.value|default:'' }}">
-                                        <label for="phoneInput">Número de teléfono</label>
+                                        <label for="phoneInput">Teléfono</label>
                                         {% for error in form.phone.errors %}
                                             <div class="invalid-feedback">{{ error }}</div>
                                         {% endfor %}
                                     </div>
+                                </div>
 
-
-                                    <div class="mb-3 form-floating {% if form.password.errors %}has-danger{% endif %}">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
                                         <input type="password" name="password" required
                                                class="form-control {% if form.password.errors %}is-invalid{% endif %}"
-                                               id="passwordInput" placeholder="Password">
+                                               id="passwordInput" placeholder="Contraseña">
                                         <label for="passwordInput">Contraseña</label>
                                         {% for error in form.password.errors %}
                                             <div class="invalid-feedback">{{ error }}</div>
                                         {% endfor %}
                                     </div>
+                                </div>
 
-                                    <div class="mb-3 form-floating {% if form.confirm_password.errors %}has-danger{% endif %}">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
                                         <input type="password" name="confirm_password" required
                                                class="form-control {% if form.confirm_password.errors %}is-invalid{% endif %}"
-                                               id="confirmPasswordInput" placeholder="Confirm Password">
-                                        <label for="confirmPasswordInput">Confirmar
-                                            contraseña</label>
+                                               id="confirmPasswordInput" placeholder="Confirmar Contraseña">
+                                        <label for="confirmPasswordInput">Confirmar contraseña</label>
                                         {% for error in form.confirm_password.errors %}
                                             <div class="invalid-feedback">{{ error }}</div>
                                         {% endfor %}
                                     </div>
+                                </div>
 
-
-                                    <div class="mb-3 form-check">
+                                <div class="col-12">
+                                    <div class="form-check">
                                         <input type="checkbox" name="has_insurance" class="form-check-input"
-                                               id="id_has_insurance"
-                                               {% if form.has_insurance.value %}checked{% endif %}>
-                                        <label class="form-check-label" for="id_has_insurance">Tienes mutua?</label>
+                                               id="id_has_insurance" {% if form.has_insurance.value %}checked{% endif %}>
+                                        <label class="form-check-label" for="id_has_insurance">¿Tienes mutua?</label>
                                     </div>
-                                    <div id="insuranceNumberContainer" style="display: none;"
-                                         class="mb-3 form-floating {% if form.insurance_number.errors %}has-danger{% endif %}">
+                                </div>
+
+                                <div id="insuranceNumberContainer" style="display: none;" class="col-12">
+                                    <div class="form-floating">
                                         <input type="text" name="insurance_number"
                                                class="form-control {% if form.insurance_number.errors %}is-invalid{% endif %}"
-                                               id="id_insurance_number" placeholder="Insurance Number"
+                                               id="id_insurance_number" placeholder="Número de mutua"
                                                value="{{ form.insurance_number.value|default:'' }}">
                                         <label for="id_insurance_number">Número de mutua</label>
                                         {% for error in form.insurance_number.errors %}
+                                            <div class="invalid-feedback">{{ error }}</div>
                                         {% endfor %}
-                                        <div class="invalid-feedback">{{ error }}</div>
                                     </div>
-                                    <div class="text-center pt-1 mb-7 pb-1">
-                                        <button data-mdb-button-init data-mdb-ripple-init
-                                                class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3"
-                                                type="submit">Registrarse
-                                        </button>
-                                    </div>
-                                </form>
-                                <div class="d-flex align-items-center justify-content-center pb-4 flex-column">
-                                    <p class="mb-0 me-2">¿Ya tienes cuenta?</p>
-                                    <a href="{% url 'login' %}" class="btn btn-outline-primary mt-2"
-                                       data-mdb-button-init data-mdb-ripple-init>
-                                        Acceder
-                                    </a>
                                 </div>
                             </div>
+
+                            <div class="text-center mt-4">
+                                <button class="btn btn-primary btn-block w-100" type="submit">Registrarse</button>
+                            </div>
+                        </form>
+
+                        <div class="d-flex flex-column align-items-center justify-content-center pt-4">
+                            <p class="mb-2">¿Ya tienes cuenta?</p>
+                            <a href="{% url 'login' %}" class="btn btn-outline-primary w-100">Acceder</a>
                         </div>
                     </div>
                 </div>
@@ -168,43 +182,77 @@
         </div>
     </div>
 </section>
+
 </body>
+
 <style>
-
+    /* General Styles */
     body {
-        font-family: 'Inter', 'Open Sans', 'Roboto', sans-serif;
-        color: #333333;
+        font-family: 'Inter', 'Open Sans', sans-serif;
+        color: #333;
     }
 
-    h1 {
-        font-size: 36px;
-        font-weight: bold;
-        color: #333333;
+    h4 {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
     }
 
-    h2 {
-        font-size: 28px;
-        font-weight: 600; /* semi-bold */
-        color: #333333;
+    .card {
+        border-radius: 15px;
     }
 
-    h3 {
-        font-size: 22px;
-        font-weight: 600; /* semi-bold */
-        color: #333333;
+    /* Input Styles */
+    .form-floating {
+        margin-bottom: 20px;
     }
 
-    body, p {
-        font-size: 16px;
-        font-weight: 400; /* regular */
-        color: #333333;
+    .form-control {
+        border-radius: 8px;
+        box-shadow: none;
+        transition: border 0.3s ease;
     }
 
-    small {
-        font-size: 14px;
-        font-weight: 400; /* regular */
-        color: #333333;
+    .form-control:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 5px rgba(78, 115, 223, 0.6);
     }
 
+    /* Button Styles */
+    .btn-primary {
+        background-color: #4e73df;
+        border-color: #4e73df;
+        border-radius: 8px;
+    }
+
+    .btn-primary:hover {
+        background-color: #2e59d9;
+        border-color: #2e59d9;
+    }
+
+    .btn-outline-primary {
+        border-radius: 8px;
+        border-color: #4e73df;
+        color: #4e73df;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #4e73df;
+        color: #fff;
+        border-color: #4e73df;
+    }
+
+    /* Footer and Links */
+    .text-center p {
+        color: #777;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 576px) {
+        .btn-outline-primary {
+            width: 100%;
+        }
+    }
 </style>
+
 </html>
