@@ -3,6 +3,7 @@
 <head>
     <title>Iniciar sesión</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
     {% load bootstrap5 %}
     {% bootstrap_css %}
@@ -14,37 +15,40 @@
     {% include 'base/navbar.html' %}
 </div>
 
-<section class="h-100 gradient-form" style="background-color: #f5f5f5;">
-    <div class="container py-5 h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-xl-8 col-lg-10 col-md-12">
+<section class="gradient-form">
+    <div class="container min-vh-100 d-flex align-items-center justify-content-center py-4 py-lg-5">
+        <div class="row justify-content-center w-100 mx-0">
+            <div class="col-12 col-lg-10 col-xl-8">
                 <div class="card shadow-lg rounded-4 border-0">
                     <div class="row g-0">
-                        <div class="col-lg-6">
-                            <div class="card-body p-md-5 mx-md-4">
-                                <div class="text-center mb-4">
-                                    <h4 class="mt-3">¡Bienvenido de nuevo! Inicia sesión en tu cuenta.</h4>
+                        <!-- Form Column -->
+                        <div class="col-12 col-lg-6">
+                            <div class="card-body p-3 p-md-4 p-lg-5">
+                                <div class="text-center mb-3 mb-md-4">
+                                    <h4 class="mb-2">¡Bienvenido de nuevo!</h4>
+                                    <p class="text-muted">Inicia sesión en tu cuenta</p>
                                 </div>
-                                <div class="text-center">
-                                    {% if error_message %}
-                                        <div class="alert alert-danger mb-4">
-                                            {{ error_message }}
-                                        </div>
-                                    {% endif %}
+
+                                {% if error_message %}
+                                <div class="alert alert-danger mb-3 mb-md-4 text-wrap">
+                                    {{ error_message }}
                                 </div>
+                                {% endif %}
+
                                 <form method="post">
                                     {% csrf_token %}
                                     <div class="mb-3 form-floating">
                                         <input type="email" name="email" required
                                                class="form-control {% if error_message %}is-invalid{% endif %}"
-                                               id="emailInput" placeholder="Correo electrónico" value="{{ form.email.value }}">
+                                               id="emailInput" placeholder="Correo electrónico"
+                                               value="{{ form.email.value }}">
                                         <label for="emailInput">Correo electrónico</label>
                                         {% for error in form.email.errors %}
                                             <div class="invalid-feedback">{{ error }}</div>
                                         {% endfor %}
                                     </div>
 
-                                    <div class="mb-4 form-floating">
+                                    <div class="mb-3 form-floating">
                                         <input type="password" name="password" required
                                                class="form-control {% if error_message %}is-invalid{% endif %}"
                                                id="passwordInput" placeholder="Contraseña">
@@ -54,15 +58,15 @@
                                         {% endfor %}
                                     </div>
 
-                                    <div class="text-center pt-1 mb-5 pb-1">
-                                        <button type="submit" class="btn btn-primary btn-block w-100">
+                                    <div class="d-grid gap-2 mt-4 mt-md-5">
+                                        <button type="submit" class="btn btn-primary btn-lg">
                                             Iniciar sesión
                                         </button>
                                     </div>
 
-                                    <div class="d-flex align-items-center justify-content-center flex-column">
-                                        <p class="mb-0 me-2">¿No tienes cuenta?</p>
-                                        <a href="{% url 'register' %}" class="btn btn-outline-primary mt-2 w-100">
+                                    <div class="text-center mt-3 mt-md-4">
+                                        <p class="mb-2">¿No tienes cuenta?</p>
+                                        <a href="{% url 'register' %}" class="btn btn-outline-primary w-100">
                                             Registrarse
                                         </a>
                                     </div>
@@ -70,10 +74,11 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
-                            <div class="text-content px-3 py-4 p-md-5 mx-md-4">
+                        <!-- Image/Content Column -->
+                        <div class="col-lg-6 d-none d-lg-flex align-items-center gradient-custom-2">
+                            <div class="text-content px-4 px-xl-5">
                                 <h4 class="mb-4">Tu bienestar, nuestra prioridad.</h4>
-                                <p class="small mb-0">Bienvenido a Better Health Clinic, donde tu bienestar es nuestra máxima prioridad. Nuestro equipo de profesionales experimentados está dedicado a proporcionar atención personalizada y tratamientos médicos avanzados. Únete a nosotros en el camino hacia una mejor salud y experimenta la diferencia en nuestras instalaciones de vanguardia.</p>
+                                <p class="small mb-0">Bienvenido a Better Health Clinic, donde tu bienestar es nuestra máxima prioridad. Nuestro equipo de profesionales experimentados está dedicado a proporcionar atención personalizada y tratamientos médicos avanzados.</p>
                             </div>
                         </div>
                     </div>
@@ -87,74 +92,56 @@
 
 <!-- Custom Styles -->
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;600;700&display=swap');
-
     .gradient-custom-2 {
         background: linear-gradient(to left, #4CAF50, #4CAF7A, #47A89E, rgb(43, 169, 165));
     }
 
     .gradient-form {
-        height: 100vh !important;
+        min-height: calc(100vh - 120px); /* Ajuste para header/footer */
     }
 
-    body {
-        font-family: 'Inter', 'Open Sans', 'Roboto', sans-serif;
-        color: #333333;
-    }
+    @media (max-width: 991.98px) {
+        .gradient-form {
+            min-height: auto;
+            padding: 2rem 0;
+        }
 
-    h4 {
-        font-size: 24px;
-        font-weight: 600;
-        color: #333333;
-    }
+        .card-body {
+            padding: 2rem !important;
+        }
 
-    .text-content {
-        color: #333333;
-    }
-
-    /* Button styles */
-    .btn-primary {
-        background-color: #4e73df;
-        border-color: #4e73df;
-        border-radius: 8px;
-    }
-
-    .btn-primary:hover {
-        background-color: #2e59d9;
-        border-color: #2e59d9;
-    }
-
-    .btn-outline-primary {
-        border-radius: 8px;
-        border-color: #4e73df;
-        color: #4e73df;
-    }
-
-    .btn-outline-primary:hover {
-        background-color: #4e73df;
-        color: #fff;
-        border-color: #4e73df;
-    }
-
-    .form-floating {
-        margin-bottom: 20px;
+        h4 {
+            font-size: 1.5rem;
+        }
     }
 
     .form-control {
         border-radius: 8px;
-        box-shadow: none;
-        transition: border 0.3s ease;
+        transition: border-color 0.3s ease;
     }
 
-    .form-control:focus {
-        border-color: #4e73df;
-        box-shadow: 0 0 5px rgba(78, 115, 223, 0.6);
+    .btn-primary {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
     }
 
-    .invalid-feedback {
-    .invalid-feedback {
-        font-size: 0.875rem;
-        color: #dc3545;
+    .btn-outline-primary {
+        border-width: 2px;
+    }
+
+    @media (max-width: 575.98px) {
+        .card {
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .card-body {
+            padding: 1.5rem !important;
+        }
+
+        .btn-primary {
+            font-size: 1rem;
+        }
     }
 </style>
 

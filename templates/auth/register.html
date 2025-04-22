@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html lang="es" style="background-color: #f7f7f7;">
+<html lang="es">
 <head>
     <title>Registro</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
     {% load bootstrap5 %}
     {% bootstrap_css %}
@@ -25,39 +27,38 @@
         };
     </script>
 </head>
-<body>
+<body style="background-color: #f7f7f7;">
 
 <!-- Navbar -->
 <div class="navbar-wrapper">
     {% include 'base/navbar.html' %}
 </div>
 
-<section style="background-color: #f7f7f7; min-height: 100vh;">
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-xl-8 col-lg-10 col-md-12">
+<section class="gradient-form">
+    <div class="container min-vh-100 d-flex align-items-center justify-content-center py-4 py-lg-5">
+        <div class="row justify-content-center w-100 mx-0">
+            <div class="col-12 col-lg-10 col-xl-8">
                 <div class="card shadow-lg rounded-4 border-0">
-                    <div class="card-body p-5">
-                        <!-- Logo and Welcome Text -->
+                    <div class="card-body p-3 p-md-4 p-lg-5">
+                        <!-- Encabezado -->
                         <div class="text-center mb-4">
-                            <h4 class="text-dark mt-3">¡Bienvenido!</h4>
-                                <h4 class="text-dark mt-3">Regístrate para acceder a tu cuenta.</h4>
-
+                            <h4 class="mb-2">¡Bienvenido!</h4>
+                            <p class="text-muted">Crea tu cuenta en pocos pasos</p>
                         </div>
 
-                        <!-- Registration Form -->
+                        <!-- Formulario -->
                         <form method="post">
                             {% csrf_token %}
                             {% if form.errors %}
-                                <div class="alert alert-danger mb-4">
-                                    Por favor corrige los errores en el formulario.
+                                <div class="alert alert-danger mb-4 text-wrap">
+                                    Por favor corrige los errores en el formulario
                                 </div>
                             {% endif %}
 
-                            <!-- Form Inputs -->
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                            <div class="row g-2 g-md-3">
+                                <!-- Campos del formulario -->
+                                <div class="col-12 col-md-6">
+                                    <div class="form-floating mb-3">
                                         <input type="text" name="first_name" required
                                                class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
                                                id="firstNameInput" placeholder="Nombre"
@@ -69,8 +70,8 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-floating mb-3">
                                         <input type="text" name="last_name" required
                                                class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
                                                id="lastNameInput" placeholder="Apellido"
@@ -82,8 +83,8 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-floating mb-3">
                                         <input type="text" name="dni" required
                                                class="form-control {% if form.dni.errors %}is-invalid{% endif %}"
                                                id="dniInput" placeholder="DNI"
@@ -95,8 +96,8 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-floating mb-3">
                                         <input type="email" name="email" required
                                                class="form-control {% if form.email.errors %}is-invalid{% endif %}"
                                                id="emailInput" placeholder="Email"
@@ -108,8 +109,8 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-floating mb-3">
                                         <input type="text" name="phone" required
                                                class="form-control {% if form.phone.errors %}is-invalid{% endif %}"
                                                id="phoneInput" placeholder="Teléfono"
@@ -121,8 +122,8 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-floating mb-3">
                                         <input type="password" name="password" required
                                                class="form-control {% if form.password.errors %}is-invalid{% endif %}"
                                                id="passwordInput" placeholder="Contraseña">
@@ -133,8 +134,8 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-floating mb-3">
                                         <input type="password" name="confirm_password" required
                                                class="form-control {% if form.confirm_password.errors %}is-invalid{% endif %}"
                                                id="confirmPasswordInput" placeholder="Confirmar Contraseña">
@@ -145,7 +146,8 @@
                                     </div>
                                 </div>
 
-                                <div class="col-12">
+                                <!-- Seguro médico -->
+                                <div class="col-12 mt-2">
                                     <div class="form-check">
                                         <input type="checkbox" name="has_insurance" class="form-check-input"
                                                id="id_has_insurance" {% if form.has_insurance.value %}checked{% endif %}>
@@ -154,7 +156,7 @@
                                 </div>
 
                                 <div id="insuranceNumberContainer" style="display: none;" class="col-12">
-                                    <div class="form-floating">
+                                    <div class="form-floating mb-3">
                                         <input type="text" name="insurance_number"
                                                class="form-control {% if form.insurance_number.errors %}is-invalid{% endif %}"
                                                id="id_insurance_number" placeholder="Número de mutua"
@@ -167,12 +169,14 @@
                                 </div>
                             </div>
 
-                            <div class="text-center mt-4">
-                                <button class="btn btn-primary btn-block w-100" type="submit">Registrarse</button>
+                            <!-- Botón de registro -->
+                            <div class="d-grid gap-2 mt-4">
+                                <button class="btn btn-primary btn-lg" type="submit">Registrarse</button>
                             </div>
                         </form>
 
-                        <div class="d-flex flex-column align-items-center justify-content-center pt-4">
+                        <!-- Enlace a login -->
+                        <div class="text-center mt-4">
                             <p class="mb-2">¿Ya tienes cuenta?</p>
                             <a href="{% url 'login' %}" class="btn btn-outline-primary w-100">Acceder</a>
                         </div>
@@ -183,76 +187,67 @@
     </div>
 </section>
 
-</body>
-
 <style>
-    /* General Styles */
-    body {
-        font-family: 'Inter', 'Open Sans', sans-serif;
-        color: #333;
+    .gradient-form {
+        min-height: calc(100vh - 120px);
     }
 
-    h4 {
-        font-size: 24px;
-        font-weight: 600;
-        color: #333;
-    }
+    @media (max-width: 991.98px) {
+        .gradient-form {
+            min-height: auto;
+            padding: 2rem 0;
+        }
 
-    .card {
-        border-radius: 15px;
-    }
+        .card-body {
+            padding: 2rem !important;
+        }
 
-    /* Input Styles */
-    .form-floating {
-        margin-bottom: 20px;
+        h4 {
+            font-size: 1.5rem;
+        }
     }
 
     .form-control {
         border-radius: 8px;
-        box-shadow: none;
-        transition: border 0.3s ease;
+        transition: border-color 0.3s ease;
     }
 
-    .form-control:focus {
-        border-color: #4e73df;
-        box-shadow: 0 0 5px rgba(78, 115, 223, 0.6);
-    }
-
-    /* Button Styles */
     .btn-primary {
-        background-color: #4e73df;
-        border-color: #4e73df;
-        border-radius: 8px;
-    }
-
-    .btn-primary:hover {
-        background-color: #2e59d9;
-        border-color: #2e59d9;
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
     }
 
     .btn-outline-primary {
-        border-radius: 8px;
-        border-color: #4e73df;
-        color: #4e73df;
+        border-width: 2px;
     }
 
-    .btn-outline-primary:hover {
-        background-color: #4e73df;
-        color: #fff;
-        border-color: #4e73df;
-    }
-
-    /* Footer and Links */
-    .text-center p {
-        color: #777;
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 576px) {
-        .btn-outline-primary {
-            width: 100%;
+    @media (max-width: 575.98px) {
+        .card {
+            border-radius: 0;
+            box-shadow: none;
         }
+
+        .card-body {
+            padding: 1.5rem !important;
+        }
+
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary {
+            font-size: 1rem;
+        }
+
+        #insuranceNumberContainer {
+            margin-top: 0.5rem;
+        }
+    }
+
+    .form-check {
+        margin: 1rem 0;
     }
 </style>
 
+</body>
 </html>
