@@ -38,6 +38,20 @@ def check_attendance(request):
     services = services_response.json()
     service_map = {service['id']: service['nombre'] for service in services}
 
+    # Handle form submission
+    if request.method == 'POST':
+        appointment_id = request.POST.get('appointment_id')
+        attended = request.POST.get('attended') == 'on'  # Checkbox value
+
+        # Update or create attendance record
+        appointment = Appointment.objects.get(id=appointment_id)
+        attendance, created = Attendance.objects.get_or_create(appointment=appointment)
+        attendance.attended = attended
+        attendance.save()
+
+        # Redirect to the same page to reflect changes
+        return redirect('check_attendance')
+
     # Query today's appointments
     appointments = Appointment.objects.filter(date=today)
 
