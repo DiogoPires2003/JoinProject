@@ -3,28 +3,29 @@
 <head>
     <title>LogIn</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {% load static %}
     {% load bootstrap5 %}
     {% bootstrap_css %}
 </head>
+<body>
 <div class="navbar-wrapper">
     {% include 'base/navbar.html' %}
 </div>
-<body>
 
 <section class="h-100 gradient-form" style="background-color:#F5F5F5;">
-    <div class="container py-5 h-100">
+    <div class="container-fluid py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col-xl-10">
                 <div class="card rounded-3 text-black">
-                    <div class="row g-0 ">
+                    <div class="row g-0">
                         <div class="col-lg-6">
                             <div class="card-body p-md-5 mx-md-4">
 
                                 <div class="text-center">
                                     <img src="{% static 'images/LogoBetterHealth.webp' %}"
-                                         style="width: 50%; margin-bottom: 15%" alt="logo">
+                                         class="img-fluid" style="width: 50%; margin-bottom: 15%;" alt="logo">
                                 </div>
                                 <div class="text-center">
                                     {% if error_message %}
@@ -67,8 +68,8 @@
                         </div>
                         <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
                             <div class="text-content px-3 py-4 p-md-5 mx-md-4">
-                                <h4 class="mb-4">Tu bienestar, nuestra prioridad.</h4>
-                                <p class="small mb-0">Bienvenido a Better Health Clinic, donde tu bienestar es nuestra
+                                <h4 class="mb-4 text-center text-lg-start">Tu bienestar, nuestra prioridad.</h4>
+                                <p class="small mb-0 text-center text-lg-start">Bienvenido a Better Health Clinic, donde tu bienestar es nuestra
                                     máxima prioridad. Nuestro equipo de profesionales experimentados está dedicado a
                                     proporcionar atención personalizada y tratamientos médicos avanzados. Únete a
                                     nosotros en el camino hacia una mejor salud y experimenta la diferencia en nuestras
@@ -81,18 +82,11 @@
         </div>
     </div>
 </section>
-</body>
+
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;600;700&display=swap');
 
     .gradient-custom-2 {
-        /* fallback for old browsers */
-        background: #fccb90;
-
-        /* Chrome 10-25, Safari 5.1-6 */
-        background: linear-gradient(to left, #4CAF50, #4CAF7A, #47A89E, rgb(43, 169, 165));
-
-        /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
         background: linear-gradient(to left, #4CAF50, #4CAF7A, #47A89E, rgb(43, 169, 165));
     }
 
@@ -114,33 +108,7 @@
         color: #333333;
     }
 
-    h1 {
-        font-size: 36px;
-        font-weight: bold;
-        color: #333333;
-    }
-
-    h2 {
-        font-size: 28px;
-        font-weight: 600; /* semi-bold */
-        color: #333333;
-    }
-
-    h3 {
-        font-size: 22px;
-        font-weight: 600; /* semi-bold */
-        color: #333333;
-    }
-
-    body, p {
-        font-size: 16px;
-        font-weight: 400; /* regular */
-        color: #333333;
-    }
-
-    small {
-        font-size: 14px;
-        font-weight: 400; /* regular */
+    h1, h2, h3, body, p, small {
         color: #333333;
     }
 
@@ -149,5 +117,5 @@
     }
 </style>
 {% include 'base/footer.html' %}
-
+</body>
 </html>
