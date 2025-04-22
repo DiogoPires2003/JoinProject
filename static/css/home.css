@@ -1,0 +1,75 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #F5F5F5;
+    color: #03222F;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3 {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.brand-logo {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.btn-primary {
+    background-color: #005F99;
+    border: none;
+}
+
+.btn-success {
+    background-color: #4ACF50;
+    border: none;
+}
+
+.hero {
+    background-color: #005F99;
+    color: #fff;
+    padding: 4rem 0;
+}
+
+.hero .hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.hero .hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.hero-img {
+    max-width: 100%;
+    height: auto;
+}
+
+.info-section {
+    padding: 3rem 0;
+    background-color: #F5F5F5;
+}
+
+.info-card {
+    border: none;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+footer {
+    background-color: #03222F;
+    color: #fff;
+    padding: 2rem 0;
+    text-align: center;
+    margin-top: auto;
+}
+

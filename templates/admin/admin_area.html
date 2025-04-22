@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración | Better Health</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+</head>
+
+<body>
+<div class="navbar-wrapper">
+    {% include 'base/navbar.html' %}
+</div>
+
+<div class="page-wrapper d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container admin-container my-5">
+            <div class="card shadow-lg rounded-3 overflow-hidden">
+                <div class="card-body p-lg-5">
+                    <h1 class="text-center mb-4">Panel de Administración</h1>
+                    <p class="text-center text-muted mb-5">Gestione la información y operaciones de la clínica.</p>
+
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <div class="card admin-action-card h-100">
+                                <div class="card-body d-flex flex-column align-items-center text-center">
+                                    <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Gestionar Pacientes</h5>
+                                    <p class="card-text small">Ver y editar datos de los pacientes registrados.</p>
+                                    <a href="{% url 'manage_patients' %}" class="btn btn-outline-primary mt-auto">Acceder</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card admin-action-card h-100">
+                                <div class="card-body d-flex flex-column align-items-center text-center">
+                                    <i class="fas fa-check-circle fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Comprobar Asistencias</h5>
+                                    <p class="card-text small">Marcar y verificar la asistencia de pacientes a sus
+                                        citas.</p>
+                                    <a href="{% url 'check_attendance' %}" class="btn btn-outline-primary mt-auto">Acceder</a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% include 'base/footer.html' %}
+</div>
+
+{% bootstrap_javascript %}
+</body>
+</html>
