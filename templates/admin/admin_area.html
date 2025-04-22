@@ -7,7 +7,7 @@
     <title>Panel de Administración | Better Health</title>
     {% load bootstrap5 %}
     {% bootstrap_css %}
-    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
@@ -20,7 +20,8 @@
 
 <div class="page-wrapper d-flex flex-column min-vh-100">
     <main class="flex-grow-1">
-        <div class="container admin-container my-5">
+        <div class="container admin-container my-5 d-flex flex-column justify-content-center"
+             style="min-height: 65vh;">
             <div class="card shadow-lg rounded-3 overflow-hidden">
                 <div class="card-body p-lg-5">
                     <h1 class="text-center mb-4">Panel de Administración</h1>
