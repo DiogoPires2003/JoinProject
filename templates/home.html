@@ -64,8 +64,9 @@
               <img src="{% static 'images/servicio2.jpg' %}" class="card-img-top" alt="Pruebas Diagnósticas">
               <div class="card-body">
                 <h5 class="card-title">Pruebas Diagnósticas</h5>
-                <p class="card-text">Accede a análisis clínicos, radiografías y otros servicios de diagnóstico.</p>
-                <a href="#" class="btn btn-primary">Saber más</a>
+                <p class="card-text">Accede a análisis clínicos, radiografías y otros servicios de diagnóstico en nuestro catalogo.</p>
+                <a href="{% url 'servicios_salud' %}" class="btn btn-primary">Saber más</a>
+
               </div>
             </div>
           </div>
@@ -73,10 +74,11 @@
             <div class="card info-card">
               <img src="{% static 'images/servicio3.jpg' %}" class="card-img-top" alt="Atención 24/7">
               <div class="card-body">
-                <h5 class="card-title">Atención 24/7</h5>
-                <p class="card-text">Recibe asistencia médica de urgencia en nuestros centros disponibles.</p>
+                <h5 class="card-title">Gestión de Citas Online</h5>
+                <p class="card-text">Reserva, consulta o cancela tus citas fácilmente desde nuestra plataforma web.
+                  .</p>
                 <!-- Botón modificado para redirigir a la página de Centros -->
-                <a href="{% url 'centros' %}" class="btn btn-primary">Saber más</a>
+                <a href="{% url 'my_appointments' %}" class="btn btn-primary">Saber más</a>
               </div>
             </div>
           </div>
