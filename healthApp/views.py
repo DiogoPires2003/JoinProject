@@ -219,11 +219,8 @@ def patient_appointment_history_view(request, pk):
 
 
 def logout_view(request):
-    print("Before logout:", request.session.get('is_admin'))
     if request.session.get('is_admin'):
-        del request.session['is_admin']
-        request.session.modified = True
-        print("After logout:", request.session.get('is_admin'))
+        request.session.flush()  
         return redirect('home')
     else:
         request.session.flush()
