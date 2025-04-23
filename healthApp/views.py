@@ -387,8 +387,8 @@ def edit_appointment_admin_view(request, pk):
         # Pasamos la instancia para que el form sepa que estamos editando
         form = ModifyAppointmentsForm(request.POST, instance=appointment)
 
-        # Extraer datos directamente del POST para validación (start_hour viene de hidden)
-        start_hour_str = request.POST.get('start_hour') # Obtener hora seleccionada por JS
+        # Extraer datos directamente del POST para validación
+        start_hour_str = request.POST.get('start_hour')  # Obtener hora seleccionada por JS
         date_str = request.POST.get('date')
 
         # Validar manualmente los datos que no están directamente en el form visible
@@ -443,8 +443,8 @@ def edit_appointment_admin_view(request, pk):
                 # No redirigir, dejar que se re-renderice el formulario con el error
                 valid_post = False # Marcar como inválido para no guardar
             else:
-                 # Si no hay errores y no hay solapamiento, intentamos guardar
-                 try:
+                # Si no hay errores y no hay solapamiento, intentamos guardar
+                try:
                     # Actualizar la instancia con los datos validados
                     appointment.date = date
                     appointment.start_hour = start_time
@@ -454,14 +454,14 @@ def edit_appointment_admin_view(request, pk):
 
                     messages.success(request, f"Cita de {patient} modificada exitosamente para el {date.strftime('%d/%m/%Y')} a las {start_hour_str}.")
                     return redirect('manage_appointments') # Redirigir a la lista de citas admin
-                 except Exception as e:
-                      messages.error(request, f"Error al guardar los cambios: {e}")
-                      valid_post = False # Marcar como inválido si falla el guardado
+                except Exception as e:
+                    messages.error(request, f"Error al guardar los cambios: {e}")
+                    valid_post = False # Marcar como inválido si falla el guardado
 
         # Si hubo algún error en validaciones o solapamiento, añadir mensajes
         if not valid_post:
             for error in form_errors:
-                 messages.error(request, error)
+                messages.error(request, error)
         # Si llegamos aquí, significa que o bien hubo un error o es una petición GET,
         # o la validación POST falló. Se renderizará el formulario.
 
@@ -470,21 +470,19 @@ def edit_appointment_admin_view(request, pk):
         form = ModifyAppointmentsForm(instance=appointment)
 
     # Obtener todas las citas para la comprobación de JS (igual que en tu vista original)
-    # Considerar filtrar por fecha +/- N días para mejorar rendimiento si hay muchas citas
     all_appointments = Appointment.objects.filter(date__gte=timezone.now().date() - timedelta(days=1)).values(
-         'id', 'date', 'service_id', 'start_hour', 'end_hour'
+        'id', 'date', 'service_id', 'start_hour', 'end_hour'
     )
     booked_appointments_list = []
     for appt in all_appointments:
-         booked_appointments_list.append({
-             'id': appt['id'],
-             'date': appt['date'].strftime('%Y-%m-%d'),
-             'service_id': appt['service_id'],
-             'start': appt['start_hour'].strftime('%H:%M'),
-             'end': appt['end_hour'].strftime('%H:%M')
-         })
+        booked_appointments_list.append({
+            'id': appt['id'],
+            'date': appt['date'].strftime('%Y-%m-%d'),
+            'service_id': appt['service_id'],
+            'start': appt['start_hour'].strftime('%H:%M'),
+            'end': appt['end_hour'].strftime('%H:%M')
+        })
     booked_appointments_json = json.dumps(booked_appointments_list)
-
 
     context = {
         'form': form,

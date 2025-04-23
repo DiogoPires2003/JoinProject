@@ -8,13 +8,12 @@
     <title>Modificar Cita (Admin) | Better Health</title>
     {% bootstrap_css %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    {# Ya no necesitamos Select2 CSS #}
     <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
     <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/png">
     <style>
         /* Estilos para los botones de hora (igual que en create_appointment) */
         .available-hours-container { display: flex; flex-wrap: wrap; gap: 0.5rem; padding-top: 0.5rem; }
-        .hour-btn { flex-grow: 1; min-width: 100px; /* Ajusta según necesites */ }
+        .hour-btn { flex-grow: 1; min-width: 100px; }
         .hour-btn.active { background-color: #005F99; color: white; border-color: #005F99; }
         /* Otros estilos como service-info-box */
         .service-info-box { background-color: #e9ecef; padding: 1rem; border-radius: 0.25rem; margin-bottom: 1.5rem; }
@@ -51,11 +50,9 @@
                         {% bootstrap_field form.date layout='vertical' %}
                      </div>
 
-
-
                     {# Hidden input for Start Hour - populated by JS #}
-                    {# Usamos el name del form field 'selected_start_hour' #}
-                    <input type="hidden" id="selectedHour" name="selected_start_hour" value="{{ form.selected_start_hour.value|default:'' }}">
+                    {# CAMBIO IMPORTANTE: Cambiamos el nombre a start_hour #}
+                    <input type="hidden" id="selectedHour" name="start_hour" value="{{ form.start_hour.value|default:appointment.start_hour|time:'H:i' }}">
 
                     {# Available Hours Section - ESTILO DE BOTONES #}
                     <div class="mb-3">
@@ -90,7 +87,6 @@
     {# --- JavaScript Includes --- #}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% bootstrap_javascript %}
-    {# Ya no necesitamos Select2 JS #}
 
     {# --- Page Specific JavaScript --- #}
     <script>
@@ -102,20 +98,17 @@
         // Usar el valor actual del campo fecha (puede ser el inicial o el de un POST fallido)
         var initialDate = "{{ form.date.value|date:'Y-m-d' }}";
         // Usar el valor actual del campo oculto (puede ser el inicial o el de un POST fallido)
-        var initialStartHour = "{{ form.selected_start_hour.value|default:appointment.start_hour|time:'H:i' }}";
-
+        var initialStartHour = "{{ form.start_hour.value|default:appointment.start_hour|time:'H:i' }}";
     </script>
     <script>
     $(document).ready(function() {
-        // Ya no necesitamos inicializar Select2
-
-        const dateInput = $('#id_date'); // ID por defecto de Django Forms
+        const dateInput = $('#id_date');
         const hoursContainer = $('#availableHours');
-        const selectedStartHourInput = $('#selectedHour'); // ID que le dimos al input hidden
+        const selectedStartHourInput = $('#selectedHour');
         const form = $('#editAppointmentForm');
         const hourErrorContainer = $('#hour-error-message-container');
 
-        // --- Función para obtener y mostrar horas (DEBES USAR TU AJAX REAL) ---
+        // --- Función para obtener y mostrar horas ---
         function fetchAndDisplayAvailableHours(selectedDateStr) {
              hoursContainer.html('<small class="text-muted w-100 text-center">Cargando horas...</small>');
              hourErrorContainer.empty();
@@ -127,7 +120,6 @@
              }
 
              console.log("Fetching hours for:", selectedDateStr, "Service:", serviceId); // Log para debug
-
 
             hoursContainer.empty();
             const simulatedHours = [];
@@ -168,10 +160,6 @@
                 hoursContainer.html('<p class="text-info w-100 text-center">No hay horas disponibles (simulación).</p>');
                 selectedStartHourInput.val('');
             }
-            // --- FIN SIMULACIÓN ---
-              // --- FIN SIMULACIÓN ---
-
-
         } // Fin fetchAndDisplayAvailableHours
 
         // --- Evento cambio de fecha ---
@@ -204,7 +192,6 @@
         // --- Cargar horas iniciales al cargar la página ---
         // Usamos el valor actual del campo de fecha (puede venir de GET o POST fallido)
         fetchAndDisplayAvailableHours(dateInput.val());
-
     });
     </script>
     {# --- End Page Specific JavaScript --- #}
