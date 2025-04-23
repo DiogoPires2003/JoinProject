@@ -1,0 +1,37 @@
+.available-hours-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+.hour-btn {
+    flex-grow: 1;
+    min-width: 100px;
+}
+
+
+.hour-btn.active {
+    background-color: #005F99;
+    color: white;
+    border-color: #005F99;
+}
+
+
+.service-info-box {
+    background-color: #e9ecef;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1.5rem;
+}
+
+
+.service-info-box h5 { margin-bottom: 0.25rem;
+    color: #005F99;
+}
+
+
+.service-info-box p {
+    margin-bottom: 0;
+    color: #495057;
+}

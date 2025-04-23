@@ -5,6 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from .models import Appointment, Patient, Service
 import requests, time
 from decouple import config
+from django.utils import timezone
 
 
 class PatientForm(forms.ModelForm):
@@ -163,3 +164,120 @@ class PatientEditForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['insurance_number'].required = False
+
+
+class AppointmentAdminCreateForm(forms.Form):
+    patient = forms.ModelChoiceField(
+        queryset=Patient.objects.order_by('last_name', 'first_name'),
+        label="Seleccionar Paciente",
+        widget=forms.Select(attrs={'class': 'form-select'}) # Basic select, consider Select2 later
+    )
+    service = forms.ModelChoiceField(
+        queryset=Service.objects.order_by('name'), # Assumes Service model exists locally
+        label="Seleccionar Servicio",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    date = forms.DateField(
+        label="Fecha de la Cita",
+        widget=forms.DateInput(
+            attrs={
+                'type': 'date',
+                'class': 'form-control',
+                'min': timezone.now().strftime('%Y-%m-%d') # Prevent selecting past dates
+            }
+        ),
+        # Initial value can be set if desired, e.g., initial=timezone.now().date()
+    )
+
+    # Hidden fields to store the selected time slot from JS
+    selected_start_hour = forms.CharField(widget=forms.HiddenInput(), required=False) # Start as not required
+    selected_end_hour = forms.CharField(widget=forms.HiddenInput(), required=False) # Start as not required
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_hour_str = cleaned_data.get("selected_start_hour")
+        end_hour_str = cleaned_data.get("selected_end_hour")
+        date = cleaned_data.get("date")
+        service = cleaned_data.get("service")
+        patient = cleaned_data.get("patient")
+
+        # --- Basic Validations ---
+        if not patient:
+             self.add_error('patient', "Debe seleccionar un paciente.")
+        if not service:
+             self.add_error('service', "Debe seleccionar un servicio.")
+        if not date:
+             self.add_error('date', "Debe seleccionar una fecha.")
+
+        # --- Date Validation ---
+        if date and date < timezone.now().date():
+            self.add_error('date', "No se puede seleccionar una fecha pasada.")
+
+        # --- Time Slot Validation ---
+        if not start_hour_str or not end_hour_str:
+            # Raise a non-field error because it depends on JS interaction
+            raise forms.ValidationError("Debe seleccionar una hora disponible para la cita.", code='no_hour_selected')
+        else:
+            try:
+                start_time = timezone.datetime.strptime(start_hour_str, '%H:%M').time()
+                end_time = timezone.datetime.strptime(end_hour_str, '%H:%M').time()
+                # Combine date and time, make aware for comparison
+                appointment_start_dt = timezone.make_aware(timezone.datetime.combine(date, start_time))
+                now_dt = timezone.now()
+
+                if appointment_start_dt <= now_dt:
+                    raise forms.ValidationError("No se puede crear una cita para una hora que ya ha pasado.", code='past_time_selected')
+
+                # --- Check for Conflicts ---
+                conflicting_appointments = Appointment.objects.filter(
+                    date=date,
+                    # Check if the new slot overlaps with any existing slot for *any* patient/service
+                    start_hour__lt=end_time,
+                    end_hour__gt=start_time
+                ).exists() # Use exists() for efficiency
+
+                if conflicting_appointments:
+                     raise forms.ValidationError(
+                         f"El horario seleccionado ({start_hour_str} - {end_hour_str}) ya no está disponible. Por favor, seleccione otro.",
+                         code='conflict'
+                     )
+
+            except (ValueError, TypeError):
+                 raise forms.ValidationError("La hora seleccionada no es válida.", code='invalid_time_format')
+
+        return cleaned_data
+
+
+class ModifyAppointmentsForm_administrator(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        # Campos que el admin modificará principalmente
+        fields = ['service', 'start_hour', 'end_hour', 'date']
+        widgets = {
+            # Usaremos 'text' para que el JS pueda poner el valor,
+            # pero podríamos usar 'time' si el navegador lo soporta bien con JS
+            'start_hour': forms.TimeInput(attrs={'type': 'hidden'}), # Lo haremos hidden, se rellena con JS
+            'end_hour': forms.TimeInput(attrs={'type': 'hidden'}),   # Lo haremos hidden, se calcula en la vista
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'service': forms.TextInput(attrs={'readonly': 'readonly', 'class': 'form-control bg-light'}) # Hacemos servicio no editable aquí
+        }
+        labels = { # Etiquetas más claras para el admin
+            'date': 'Nueva Fecha',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Rellenar el campo service_display si hay instancia
+        if self.instance and self.instance.pk and self.instance.service:
+            self.fields['service_display'].initial = self.instance.service.name
+        elif self.instance and self.instance.pk:
+            self.fields['service_display'].initial = "Servicio no asignado"
+
+        # Pre-rellenar la fecha y hora inicial en los campos correspondientes
+        if self.instance and self.instance.pk:
+            self.fields['date'].initial = self.instance.date
+            # El valor inicial del campo oculto se pondrá en la plantilla
+            # self.fields['selected_start_hour'].initial = self.instance.start_hour.strftime('%H:%M') # No necesario aquí
+
+
+

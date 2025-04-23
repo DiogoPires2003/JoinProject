@@ -1,0 +1,41 @@
+body {
+    background-color: #f8f9fa;
+}
+.page-main-title {
+    color: #005F99;
+    font-weight: 600;
+    padding-bottom: 0.75rem;
+    margin-bottom: 2rem !important;
+    display: block;
+    text-align: center;
+}
+.card {
+    border: none;
+}
+
+.available-hours-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+}
+.available-hours-container .hour-btn {
+     flex-grow: 1;
+     min-width: 120px;
+}
+.available-hours-container .hour-btn.active {
+     background-color: #005F99;
+     color: white;
+     border-color: #005F99;
+}
+
+input[type="hidden"] {
+    display: none;
+}
+
+.form-wrapper > div {
+    margin-bottom: 1.25rem;
+}
+.form-wrapper label {
+    font-weight: 500;
+}

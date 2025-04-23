@@ -1,9 +1,9 @@
 from .decorators import admin_required, redirect_admin
-from .forms import PatientForm, AppointmentForm, PatientEditForm, ModifyAppointmentsForm
+from .forms import PatientForm, AppointmentForm, PatientEditForm, ModifyAppointmentsForm, AppointmentAdminCreateForm
 from .models import Appointment, Patient, Service, Employee, Attendance
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import check_password, make_password
-from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseForbidden, HttpResponse
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.utils.timezone import now, timezone
@@ -12,6 +12,10 @@ from datetime import datetime, time, timedelta
 import requests
 import json
 import logging
+from django.db.models import Q # Import Q object for complex lookups
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db import IntegrityError
+from datetime import time as dt_time
 def check_attendance(request):
     today = now().date()
 
@@ -217,6 +221,315 @@ def patient_appointment_history_view(request, pk):
     }
     return render(request, 'admin/patient_appointment_history.html', context)
 
+@admin_required
+def manage_appointments_view(request):
+
+    now_dt = timezone.now()
+    today = now_dt.date()
+    now_time = now_dt.time()
+
+    future_appointments_filter = Q(date__gt=today) | Q(date=today, start_hour__gte=now_time)
+
+    appointments_list = Appointment.objects.filter(future_appointments_filter) \
+                                         .select_related('patient', 'service') \
+                                         .order_by('date', 'start_hour')
+
+    services = Service.objects.all() # For the filter dropdown
+
+    patient_name = request.GET.get('patient_name', '').strip()
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    service_id = request.GET.get('service')
+
+    if patient_name:
+        appointments_list = appointments_list.filter(
+            Q(patient__first_name__icontains=patient_name) |
+            Q(patient__last_name__icontains=patient_name)
+        )
+
+    if date_from:
+        try:
+
+            date_from_obj = timezone.datetime.strptime(date_from, '%Y-%m-%d').date()
+            if date_from_obj >= today:
+                 appointments_list = appointments_list.filter(date__gte=date_from)
+
+        except (ValueError, TypeError):
+             messages.warning(request, f"Formato de fecha 'Desde' inválido ignorado: {date_from}")
+    if date_to:
+        try:
+            appointments_list = appointments_list.filter(date__lte=date_to)
+        except (ValueError, TypeError):
+             messages.warning(request, f"Formato de fecha 'Hasta' inválido ignorado: {date_to}")
+    if service_id:
+        appointments_list = appointments_list.filter(service_id=service_id)
+
+
+
+    paginator = Paginator(appointments_list, 10)
+    page_number = request.GET.get('page')
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+
+    context = {
+        'page_obj': page_obj,
+        'services': services,
+
+    }
+    return render(request, 'admin/manage_appointments.html', context)
+
+@admin_required
+def create_appointment_admin_view(request):
+    """
+    Vista para que un administrador cree una nueva cita médica
+    usando un formulario personalizado con selección de hora dinámica.
+    """
+    if request.method == 'POST':
+        form = AppointmentAdminCreateForm(request.POST)
+        if form.is_valid():
+
+            patient = form.cleaned_data['patient']
+            service = form.cleaned_data['service']
+            date = form.cleaned_data['date']
+            start_hour_str = form.cleaned_data['selected_start_hour']
+            end_hour_str = form.cleaned_data['selected_end_hour']
+
+            try:
+                start_time = timezone.datetime.strptime(start_hour_str, '%H:%M').time()
+                end_time = timezone.datetime.strptime(end_hour_str, '%H:%M').time()
+
+                new_appointment = Appointment.objects.create(
+                    patient=patient,
+                    service=service,
+                    date=date,
+                    start_hour=start_time,
+                    end_hour=end_time
+                )
+
+                storage = messages.get_messages(request)
+                for _ in storage:
+                    pass
+
+                messages.success(
+                    request,
+                    f"Cita para {patient.first_name} {patient.last_name} el {date.strftime('%d/%m/%Y')} a las {start_hour_str} creada exitosamente."
+                )
+
+                return redirect('manage_appointments')
+
+            except IntegrityError:
+
+                messages.error(request, "Ya existe una cita con estos datos. Por favor, verifica la información.")
+            except (ValueError, TypeError) as e:
+
+                messages.error(request, f"Error interno al procesar la hora seleccionada: {e}")
+            except Exception as e:
+
+                messages.error(request, f"Ocurrió un error inesperado al crear la cita: {str(e)}")
+        else:
+
+            messages.error(request, "El formulario contiene errores. Por favor, revíselos.")
+
+    else:
+        form = AppointmentAdminCreateForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'admin/create_appointment.html', context)
+
+
+
+# --- VERY SIMPLE Placeholder View for Editing Appointments ---
+@admin_required
+def edit_appointment_admin_view(request, pk):
+    """
+    Vista para que un administrador modifique una cita existente.
+    """
+    appointment = get_object_or_404(Appointment.objects.select_related('patient', 'service'), pk=pk)
+    service = appointment.service
+    patient = appointment.patient
+
+
+    service_duration = 30 # Valor por defecto si no se puede calcular
+    if service and appointment.start_hour and appointment.end_hour:
+        start_time = appointment.start_hour
+        end_time = appointment.end_hour
+        start_minutes = start_time.hour * 60 + start_time.minute
+        end_minutes = end_time.hour * 60 + end_time.minute
+        if end_minutes < start_minutes:
+            end_minutes += 24 * 60
+        calculated_duration = end_minutes - start_minutes
+        if calculated_duration > 0:
+            service_duration = calculated_duration
+
+    service_name = service.name if service else "Servicio no asignado"
+
+    if request.method == 'POST':
+        form = ModifyAppointmentsForm(request.POST, instance=appointment)
+
+
+        start_hour_str = request.POST.get('start_hour')
+        date_str = request.POST.get('date')
+
+        valid_post = True
+        form_errors = []
+        start_time = None
+        date = None
+
+        if not date_str:
+            form_errors.append("Debe seleccionar una fecha.")
+            valid_post = False
+        else:
+            try:
+                date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
+                if date < timezone.now().date():
+                    form_errors.append("No se puede seleccionar una fecha pasada.")
+                    valid_post = False
+            except ValueError:
+                form_errors.append("Formato de fecha inválido.")
+                valid_post = False
+
+        if not start_hour_str:
+            form_errors.append("Debe seleccionar una hora.")
+            valid_post = False
+        else:
+            try:
+                start_time = timezone.datetime.strptime(start_hour_str, '%H:%M').time()
+            except ValueError:
+                form_errors.append("Formato de hora inválido.")
+                valid_post = False
+
+
+        if valid_post and start_time and date:
+            start_minutes = start_time.hour * 60 + start_time.minute
+            end_minutes = start_minutes + service_duration
+            end_hour = (end_minutes // 60) % 24
+            end_minute = end_minutes % 60
+            end_time = dt_time(hour=end_hour, minute=end_minute)
+
+
+            overlapping_appointments = Appointment.objects.filter(
+                date=date,
+
+                start_hour__lt=end_time,
+                end_hour__gt=start_time
+            ).exclude(pk=pk)
+
+            if overlapping_appointments.exists():
+                messages.error(request, f"El horario seleccionado ({start_hour_str} - {end_time.strftime('%H:%M')}) se solapa con otra cita existente.")
+
+                valid_post = False
+            else:
+
+                try:
+
+                    appointment.date = date
+                    appointment.start_hour = start_time
+                    appointment.end_hour = end_time
+
+                    appointment.save()
+
+                    messages.success(request, f"Cita de {patient} modificada exitosamente para el {date.strftime('%d/%m/%Y')} a las {start_hour_str}.")
+                    return redirect('manage_appointments')
+                except Exception as e:
+                    messages.error(request, f"Error al guardar los cambios: {e}")
+                    valid_post = False
+
+
+        if not valid_post:
+            for error in form_errors:
+                messages.error(request, error)
+
+
+    else:
+
+        form = ModifyAppointmentsForm(instance=appointment)
+
+
+    all_appointments = Appointment.objects.filter(date__gte=timezone.now().date() - timedelta(days=1)).values(
+        'id', 'date', 'service_id', 'start_hour', 'end_hour'
+    )
+    booked_appointments_list = []
+    for appt in all_appointments:
+        booked_appointments_list.append({
+            'id': appt['id'],
+            'date': appt['date'].strftime('%Y-%m-%d'),
+            'service_id': appt['service_id'],
+            'start': appt['start_hour'].strftime('%H:%M'),
+            'end': appt['end_hour'].strftime('%H:%M')
+        })
+    booked_appointments_json = json.dumps(booked_appointments_list)
+
+    context = {
+        'form': form,
+        'appointment': appointment,
+        'patient': patient,
+        'service_name': service_name,
+        'service_duration': service_duration,
+        'service_id': service.id if service else None,
+        'booked_appointments': booked_appointments_json,
+        'current_appointment_id': pk,
+    }
+
+    return render(request, 'admin/edit_appointment.html', context)
+
+
+
+@admin_required
+def cancel_appointment_admin_view(request, pk):
+    """
+    Handles the cancellation of an appointment by an admin.
+    Only allows cancellation of future appointments via POST request.
+    """
+    now_dt = timezone.now()
+    today = now_dt.date()
+    now_time = now_dt.time()
+
+
+    appointment = get_object_or_404(Appointment, pk=pk)
+
+    try:
+        appointment_start_dt = timezone.make_aware(
+            timezone.datetime.combine(appointment.date, appointment.start_hour)
+        )
+    except ValueError:
+         messages.error(request, "Error al procesar la hora de la cita.")
+         return redirect('manage_appointments')
+
+
+    if appointment_start_dt <= now_dt:
+        messages.error(request, "No se puede cancelar una cita que ya ha comenzado o ha pasado.")
+        return redirect('manage_appointments')
+
+    if request.method == 'POST':
+        try:
+            patient_name = f"{appointment.patient.first_name} {appointment.patient.last_name}"
+            appointment_date_str = appointment.date.strftime('%d/%m/%Y')
+            appointment_time_str = appointment.start_hour.strftime('%H:%M')
+
+            appointment.delete()
+
+            messages.success(
+                request,
+                f"La cita de {patient_name} para el {appointment_date_str} a las {appointment_time_str} ha sido cancelada exitosamente."
+            )
+
+        except Exception as e:
+
+            messages.error(request, f"Ocurrió un error al intentar cancelar la cita: {e}")
+
+        return redirect('manage_appointments')
+
+    else:
+
+        messages.warning(request, "Método no válido para cancelar. Use el botón de cancelación.")
+        return redirect('manage_appointments')
 
 def logout_view(request):
     if request.session.get('is_admin'):
@@ -275,8 +588,8 @@ def get_available_hours(request):
         logging.info(f"Service ID {service_id} duration: {duration} minutes")
 
         # Define working hours (e.g., 9:00 AM to 5:00 PM)
-        start_time = time(9, 0)
-        end_time = time(17, 0)
+        start_time = time(8, 0)
+        end_time = time(20, 0)
 
         # Fetch existing appointments for the selected service and date
         existing_appointments = Appointment.objects.filter(
