@@ -2,12 +2,15 @@
 `pip install -r requirements.txt
 `
 
-`python3 manage.py runserver`
-#Or
-`docker-compose build`
-`docker-compose up`
+`python3 manage.py runserver
+`
+# Or
+`docker-compose build
+`
+`docker-compose up
+`
 
-#Deployed version: https://joinproject.onrender.com
+# Deployed version: https://joinproject.onrender.com
 
 
 # Project Members 
