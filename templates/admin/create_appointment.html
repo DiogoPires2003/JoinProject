@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+{% load bootstrap5 %} {# Load bootstrap5 tags at the top #}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nueva Cita | Admin | Better Health</title>
+
+    {# Include Bootstrap CSS - Essential for styling #}
+    {% bootstrap_css %}
+
+    {# Include Font Awesome (if used for icons) #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    {# Link to your custom admin CSS if you have one #}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    {# Favicon #}
+    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/png"> {# Adjust path if needed #}
+
+    {# --- Custom Styles for this page --- #}
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light background for the page */
+        }
+        .page-main-title { /* Style from previous request */
+            color: #005F99;
+            font-weight: 600;
+            padding-bottom: 0.75rem;
+            margin-bottom: 2rem !important;
+            display: block;
+            text-align: center;
+        }
+        .card {
+            border: none; /* Remove default card border */
+        }
+        /* Improve spacing for hour buttons */
+        .available-hours-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap */
+            gap: 0.5rem; /* Add space between buttons */
+            padding-top: 0.5rem; /* Add some space above buttons */
+        }
+        .available-hours-container .hour-btn {
+             flex-grow: 1; /* Allow buttons to grow slightly if needed */
+             min-width: 120px; /* Ensure minimum width */
+        }
+        .available-hours-container .hour-btn.active {
+             background-color: #005F99; /* Use primary color for active */
+             color: white;
+             border-color: #005F99;
+        }
+         /* Ensure hidden fields don't take up space */
+        input[type="hidden"] {
+            display: none;
+        }
+        /* Add some vertical spacing for form fields */
+        .form-wrapper > div {
+            margin-bottom: 1.25rem;
+        }
+        .form-wrapper label {
+            font-weight: 500; /* Slightly bolder labels */
+        }
+    </style>
+    {# --- End Custom Styles --- #}
+
+</head>
+
+<body>
+
+    <div class="navbar-wrapper">
+        {% include 'base/navbar.html' %}
+    </div>
+
+    {# Include Navbar if you have it as a separate snippet #}
+    {# {% include 'base/navbar.html' %} #} {# Uncomment and adjust path if needed #}
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+
+
+                <br>
+                <h1 class="mb-4 text-center page-main-title">Crear Nueva Cita Médica</h1>
+
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 p-md-5"> {# Added more padding #}
+                        <form method="post" id="createAppointmentForm" novalidate>
+                            {% csrf_token %}
+
+                            {# --- Form Fields Wrapper for better styling control --- #}
+                            <div class="form-wrapper">
+
+                                {# Render form fields vertically (often looks better without extra setup) #}
+                                {% bootstrap_field form.patient addon_before_class="input-group-text bg-light border-end-0" %}
+                                {% bootstrap_field form.service addon_before_class="input-group-text bg-light border-end-0" %}
+                                {% bootstrap_field form.date addon_before_class="input-group-text bg-light border-end-0" %}
+
+                                {# Hidden fields for selected times - populated by JS #}
+                                {# These are rendered directly by the form, style hidden via CSS #}
+                                {{ form.selected_start_hour }}
+                                {{ form.selected_end_hour }}
+
+                                {# Available Hours Section #}
+                                <div class="mb-3"> {# Removed row/col for simplicity #}
+                                    <label class="form-label fw-bold">Horas Disponibles:</label>
+                                    <div id="availableHours" class="available-hours-container border rounded p-3 bg-light">
+                                        <small class="text-muted w-100 text-center">Seleccione un servicio y una fecha para ver las horas.</small>
+                                    </div>
+                                     {# Error message placeholder #}
+                                    <div id="hour-error-message-container" class="mt-2"></div>
+                                     {# Display specific validation error for hidden fields if back-end fails #}
+
+                                </div>
+
+                            </div>
+                             {# --- End Form Fields Wrapper --- #}
+
+                            <hr class="my-4">
+
+                            {# Submit and Back Buttons #}
+                            <div class="d-flex justify-content-between">
+                                {# *** Adjust URL name if needed *** #}
+                                <a href="{% url 'manage_appointments' %}" class="btn btn-danger">
+                                    <i class="fas fa-times me-1"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-check me-1"></i> Crear Cita
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Include Footer if you have it as a separate snippet #}
+    {# {% include 'base/footer.html' %} #} {# Uncomment and adjust path if needed #}
+
+    {# --- JavaScript Includes --- #}
+    {# Include jQuery (required by Bootstrap JS and Select2) - place before Bootstrap JS #}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> {# Asegúrate que jQuery está ANTES de Select2 #}
+    {% bootstrap_javascript %}
+
+    {# --- ADD Select2 JS --- #}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    {# Include Bootstrap JS Bundle (includes Popper) - Essential for modals, dropdowns etc. #}
+    {% bootstrap_javascript %}
+
+    {# Include Select2 JS (Optional) #}
+    {# <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> #}
+
+    {# --- Page Specific JavaScript --- #}
+    <script>
+    $(document).ready(function() {
+        // --- Optional: Initialize Select2 ---
+        // $('#id_patient, #id_service').select2({
+        //     theme: 'bootstrap-5',
+        //     width: '100%' // Ensure it takes full width
+        // });
+        // --- End Select2 ---
+
+        const serviceInput = $('#id_service');
+        const dateInput = $('#id_date');
+        const hoursContainer = $('#availableHours');
+        const selectedStartHourInput = $('#id_selected_start_hour');
+        const selectedEndHourInput = $('#id_selected_end_hour');
+        const form = $('#createAppointmentForm');
+        const hourErrorContainer = $('#hour-error-message-container'); // Container for hour error
+
+        // Function to fetch and display hours
+        function fetchAvailableHours() {
+            const serviceId = serviceInput.val();
+            const date = dateInput.val();
+
+            // Clear previous hours, selections, and errors
+            hoursContainer.html('<small class="text-muted w-100 text-center">Cargando horas...</small>');
+            selectedStartHourInput.val('');
+            selectedEndHourInput.val('');
+            hourErrorContainer.empty(); // Clear previous hour errors
+
+            if (serviceId && date) {
+                // Basic date validation
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const selectedDate = new Date(date + 'T00:00:00');
+
+                if (selectedDate < today) {
+                    hoursContainer.html('<p class="text-danger w-100 text-center">No se puede seleccionar una fecha pasada.</p>');
+                    return;
+                }
+
+                $.ajax({
+                    url: "{% url 'get_available_hours' %}", // *** USE YOUR EXISTING AJAX URL ***
+                    data: { service_id: serviceId, date: date },
+                    success: function(response) {
+                        hoursContainer.empty();
+                        if (response.available_hours && response.available_hours.length > 0) {
+                            response.available_hours.forEach(hour => {
+                                const button = `<button type="button" class="btn btn-outline-primary hour-btn" data-start="${hour.start}" data-end="${hour.end}">
+                                                    ${hour.start} - ${hour.end}
+                                                </button>`;
+                                hoursContainer.append(button);
+                            });
+                        } else if (response.error) {
+                            hoursContainer.html(`<p class="text-danger w-100 text-center">Error: ${response.error}</p>`);
+                        } else {
+                            hoursContainer.html('<p class="text-info w-100 text-center">No hay horas disponibles.</p>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", status, error);
+                        hoursContainer.html('<p class="text-danger w-100 text-center">Error al cargar las horas. Inténtelo de nuevo.</p>');
+                    }
+                });
+            } else {
+                 hoursContainer.html('<small class="text-muted w-100 text-center">Seleccione un servicio y una fecha para ver las horas.</small>');
+            }
+        }
+
+        // Event listeners for service and date changes
+        serviceInput.on('change', fetchAvailableHours);
+        dateInput.on('change', fetchAvailableHours);
+
+        // Event delegation for dynamically created hour buttons
+        hoursContainer.on('click', '.hour-btn', function() {
+            const $this = $(this);
+            selectedStartHourInput.val($this.data('start'));
+            selectedEndHourInput.val($this.data('end'));
+            $('.hour-btn', hoursContainer).removeClass('active');
+            $this.addClass('active');
+            hourErrorContainer.empty(); // Clear error when an hour is clicked
+        });
+
+        // Frontend validation before submitting
+        form.on('submit', function(event) {
+            hourErrorContainer.empty(); // Clear previous errors
+            if (!selectedStartHourInput.val() || !selectedEndHourInput.val()) {
+                 hourErrorContainer.html('<p class="text-danger mt-1 mb-0">Debe seleccionar una hora disponible.</p>'); // Add error message
+                 event.preventDefault(); // Stop form submission
+                 return false;
+            }
+        });
+
+    });
+    </script>
+    {# --- End Page Specific JavaScript --- #}
+{% include 'base/footer.html' %}
+</body>
+</html>

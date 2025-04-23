@@ -1,5 +1,5 @@
 from .decorators import admin_required, redirect_admin
-from .forms import PatientForm, AppointmentForm, PatientEditForm, ModifyAppointmentsForm
+from .forms import PatientForm, AppointmentForm, PatientEditForm, ModifyAppointmentsForm, AppointmentAdminCreateForm
 from .models import Appointment, Patient, Service, Employee, Attendance
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import check_password, make_password
@@ -14,6 +14,7 @@ import json
 import logging
 from django.db.models import Q # Import Q object for complex lookups
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db import IntegrityError
 def check_attendance(request):
     today = now().date()
 
@@ -290,8 +291,70 @@ def manage_appointments_view(request):
 
 @admin_required
 def create_appointment_admin_view(request):
-    # Just return a simple text response. No form, no template needed yet.
-    return HttpResponse("Placeholder: Admin - Create Appointment Page")
+    """
+    Vista para que un administrador cree una nueva cita médica
+    usando un formulario personalizado con selección de hora dinámica.
+    """
+    if request.method == 'POST':
+        form = AppointmentAdminCreateForm(request.POST)
+        if form.is_valid():
+            # Si el formulario es válido (incluyendo validaciones en clean()),
+            # procedemos a crear la cita.
+            patient = form.cleaned_data['patient']
+            service = form.cleaned_data['service']
+            date = form.cleaned_data['date']
+            start_hour_str = form.cleaned_data['selected_start_hour']
+            end_hour_str = form.cleaned_data['selected_end_hour']
+
+            try:
+                # Convertir las horas de string a objetos time
+                start_time = timezone.datetime.strptime(start_hour_str, '%H:%M').time()
+                end_time = timezone.datetime.strptime(end_hour_str, '%H:%M').time()
+
+                # Crear la instancia de Appointment
+                new_appointment = Appointment.objects.create(
+                    patient=patient,
+                    service=service,
+                    date=date,
+                    start_hour=start_time,
+                    end_hour=end_time
+                )
+
+                # ¡Éxito! Limpiar mensajes anteriores y añadir solo el mensaje de éxito
+                storage = messages.get_messages(request)
+                for _ in storage:
+                    pass  # Esto limpiará todos los mensajes previos
+
+                # Añadir el mensaje de éxito
+                messages.success(
+                    request,
+                    f"Cita para {patient.first_name} {patient.last_name} el {date.strftime('%d/%m/%Y')} a las {start_hour_str} creada exitosamente."
+                )
+                # Redirigir a la vista de gestión de citas
+                return redirect('manage_appointments')
+
+            except IntegrityError:
+                # Capturar errores de integridad de base de datos
+                messages.error(request, "Ya existe una cita con estos datos. Por favor, verifica la información.")
+            except (ValueError, TypeError) as e:
+                # Error si las horas no tienen el formato esperado
+                messages.error(request, f"Error interno al procesar la hora seleccionada: {e}")
+            except Exception as e:
+                # Capturar cualquier otro error inesperado durante la creación
+                messages.error(request, f"Ocurrió un error inesperado al crear la cita: {str(e)}")
+        else:
+            # Solo mostrar mensaje de error si el formulario no es válido
+            messages.error(request, "El formulario contiene errores. Por favor, revíselos.")
+
+    else:  # GET request
+        form = AppointmentAdminCreateForm()
+
+    # Contexto para la plantilla
+    context = {
+        'form': form,
+    }
+    return render(request, 'admin/create_appointment.html', context)
+
 
 
 # --- VERY SIMPLE Placeholder View for Editing Appointments ---
@@ -411,8 +474,8 @@ def get_available_hours(request):
         logging.info(f"Service ID {service_id} duration: {duration} minutes")
 
         # Define working hours (e.g., 9:00 AM to 5:00 PM)
-        start_time = time(9, 0)
-        end_time = time(17, 0)
+        start_time = time(8, 0)
+        end_time = time(20, 0)
 
         # Fetch existing appointments for the selected service and date
         existing_appointments = Appointment.objects.filter(
