@@ -221,59 +221,71 @@ def patient_appointment_history_view(request, pk):
 
 @admin_required
 def manage_appointments_view(request):
-    # Start with the base queryset, optimize by selecting related objects
-    appointments_list = Appointment.objects.select_related('patient', 'service').order_by('-date', 'start_hour')
-    services = Service.objects.all() # For the service filter dropdown
+    # Get the current datetime aware of the timezone
+    now_dt = timezone.now()
+    today = now_dt.date()
+    now_time = now_dt.time()
 
-    # Get filter parameters from GET request
-    patient_name = request.GET.get('patient_name', '').strip() # Get name and remove leading/trailing whitespace
+    # --- BASE QUERY: Start by filtering only future appointments ---
+    # An appointment is in the future if:
+    # 1. Its date is after today OR
+    # 2. Its date is today AND its start time is >= now
+    future_appointments_filter = Q(date__gt=today) | Q(date=today, start_hour__gte=now_time)
+
+    appointments_list = Appointment.objects.filter(future_appointments_filter) \
+                                         .select_related('patient', 'service') \
+                                         .order_by('date', 'start_hour') # Order future appointments chronologically
+
+    services = Service.objects.all() # For the filter dropdown
+
+    # --- Apply USER Filters (Name, Date Range, Service) ---
+    # These filters will now operate *only* on the future appointments
+    patient_name = request.GET.get('patient_name', '').strip()
     date_from = request.GET.get('date_from')
     date_to = request.GET.get('date_to')
     service_id = request.GET.get('service')
 
-    # --- Apply Filters ---
     if patient_name:
-        # Filter by first name OR last name containing the search term (case-insensitive)
         appointments_list = appointments_list.filter(
             Q(patient__first_name__icontains=patient_name) |
             Q(patient__last_name__icontains=patient_name)
         )
+    # Note: Date range filters will now effectively filter within future dates
     if date_from:
         try:
-            appointments_list = appointments_list.filter(date__gte=date_from)
-        except ValueError: # Handle invalid date format if necessary
-             messages.error(request, f"Formato de fecha inválido para 'Fecha Desde': {date_from}")
-             # Optionally redirect or clear the filter
+            # Ensure date_from is not before today if filtering future appointments
+            date_from_obj = timezone.datetime.strptime(date_from, '%Y-%m-%d').date()
+            if date_from_obj >= today:
+                 appointments_list = appointments_list.filter(date__gte=date_from)
+            # else: you might want to inform the user the 'from' date is in the past
+        except (ValueError, TypeError):
+             messages.warning(request, f"Formato de fecha 'Desde' inválido ignorado: {date_from}")
     if date_to:
         try:
             appointments_list = appointments_list.filter(date__lte=date_to)
-        except ValueError: # Handle invalid date format if necessary
-             messages.error(request, f"Formato de fecha inválido para 'Fecha Hasta': {date_to}")
-             # Optionally redirect or clear the filter
+        except (ValueError, TypeError):
+             messages.warning(request, f"Formato de fecha 'Hasta' inválido ignorado: {date_to}")
     if service_id:
         appointments_list = appointments_list.filter(service_id=service_id)
+
 
     # --- Pagination ---
     paginator = Paginator(appointments_list, 10) # Show 10 appointments per page
     page_number = request.GET.get('page')
-
     try:
         page_obj = paginator.get_page(page_number)
     except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
         page_obj = paginator.page(1)
     except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
         page_obj = paginator.page(paginator.num_pages)
 
 
     context = {
-        # Pass the paginated page object, NOT the full list anymore
         'page_obj': page_obj,
         'services': services,
-        # 'appointments': appointments, # Remove this if using page_obj
+        # Optionally pass 'today' to the template if needed for display logic
+        # 'today': today
     }
-    # Pass the request context to keep filter values in pagination links
     return render(request, 'admin/manage_appointments.html', context)
 
 @admin_required
