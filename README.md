@@ -4,13 +4,13 @@
 
 `python3 manage.py runserver
 `
-# Or
+## Or
 `docker-compose build
 `
 `docker-compose up
 `
 
-# Deployed version: https://joinproject.onrender.com
+## Deployed version: https://joinproject.onrender.com
 
 
 # Project Members 
