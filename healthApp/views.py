@@ -316,6 +316,7 @@ def get_available_hours(request):
 
 
 @redirect_admin
+@redirect_admin
 def appointment_list(request):
     MAX_APPOINTMENTS_PER_DAY = 5
 
@@ -342,6 +343,7 @@ def appointment_list(request):
         services_url = "https://example-mutua.onrender.com/servicios-clinica/"
         services_response = requests.get(services_url, headers=headers)
         if services_response.status_code == 200:
+            # Filter services to include only valid ones
             services = [
                 {
                     "id": service["id"],
@@ -353,6 +355,7 @@ def appointment_list(request):
                     "duration": service["duracion_minutos"]
                 }
                 for service in services_response.json()
+                if service.get("id") and service.get("nombre")  # Ensure valid ID and name
             ]
         else:
             services = []
