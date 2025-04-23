@@ -306,19 +306,53 @@ def edit_appointment_admin_view(request, pk):
 # --- VERY SIMPLE View for Cancelling Appointments ---
 @admin_required
 def cancel_appointment_admin_view(request, pk):
-    # Use get_object_or_404 to ensure the ID is valid
+    """
+    Handles the cancellation of an appointment by an admin.
+    Only allows cancellation of future appointments via POST request.
+    """
+    now_dt = timezone.now()
+    today = now_dt.date()
+    now_time = now_dt.time()
+
+
     appointment = get_object_or_404(Appointment, pk=pk)
-    # This view expects a POST from the modal form
+
+    try:
+        appointment_start_dt = timezone.make_aware(
+            timezone.datetime.combine(appointment.date, appointment.start_hour)
+        )
+    except ValueError:
+         messages.error(request, "Error al procesar la hora de la cita.")
+         return redirect('manage_appointments')
+
+
+    if appointment_start_dt <= now_dt:
+        messages.error(request, "No se puede cancelar una cita que ya ha comenzado o ha pasado.")
+        return redirect('manage_appointments')
+
     if request.method == 'POST':
-        # Don't actually delete anything yet
-        messages.info(request, f"Placeholder: Would cancel appointment ID {pk}. (Not actually cancelled)")
-        # Redirect back to the list view
-        # *** Make sure 'your_app_name' matches the app_name in your urls.py ***
-        return redirect('your_app_name:manage_appointments')
+        try:
+            patient_name = f"{appointment.patient.first_name} {appointment.patient.last_name}"
+            appointment_date_str = appointment.date.strftime('%d/%m/%Y')
+            appointment_time_str = appointment.start_hour.strftime('%H:%M')
+
+            appointment.delete()
+
+            messages.success(
+                request,
+                f"La cita de {patient_name} para el {appointment_date_str} a las {appointment_time_str} ha sido cancelada exitosamente."
+            )
+
+        except Exception as e:
+
+            messages.error(request, f"Ocurrió un error al intentar cancelar la cita: {e}")
+
+        return redirect('manage_appointments')
+
     else:
-        # If someone tries to access this URL directly via GET, redirect them away
-        messages.warning(request, "Invalid request method for cancelling.")
-        return redirect('your_app_name:manage_appointments')
+
+        messages.warning(request, "Método no válido para cancelar. Use el botón de cancelación.")
+        return redirect('manage_appointments')
 
 def logout_view(request):
     if request.session.get('is_admin'):
