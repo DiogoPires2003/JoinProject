@@ -223,25 +223,19 @@ def patient_appointment_history_view(request, pk):
 
 @admin_required
 def manage_appointments_view(request):
-    # Get the current datetime aware of the timezone
+
     now_dt = timezone.now()
     today = now_dt.date()
     now_time = now_dt.time()
 
-    # --- BASE QUERY: Start by filtering only future appointments ---
-    # An appointment is in the future if:
-    # 1. Its date is after today OR
-    # 2. Its date is today AND its start time is >= now
     future_appointments_filter = Q(date__gt=today) | Q(date=today, start_hour__gte=now_time)
 
     appointments_list = Appointment.objects.filter(future_appointments_filter) \
                                          .select_related('patient', 'service') \
-                                         .order_by('date', 'start_hour') # Order future appointments chronologically
+                                         .order_by('date', 'start_hour')
 
     services = Service.objects.all() # For the filter dropdown
 
-    # --- Apply USER Filters (Name, Date Range, Service) ---
-    # These filters will now operate *only* on the future appointments
     patient_name = request.GET.get('patient_name', '').strip()
     date_from = request.GET.get('date_from')
     date_to = request.GET.get('date_to')
@@ -252,14 +246,14 @@ def manage_appointments_view(request):
             Q(patient__first_name__icontains=patient_name) |
             Q(patient__last_name__icontains=patient_name)
         )
-    # Note: Date range filters will now effectively filter within future dates
+
     if date_from:
         try:
-            # Ensure date_from is not before today if filtering future appointments
+
             date_from_obj = timezone.datetime.strptime(date_from, '%Y-%m-%d').date()
             if date_from_obj >= today:
                  appointments_list = appointments_list.filter(date__gte=date_from)
-            # else: you might want to inform the user the 'from' date is in the past
+
         except (ValueError, TypeError):
              messages.warning(request, f"Formato de fecha 'Desde' inválido ignorado: {date_from}")
     if date_to:
@@ -271,8 +265,8 @@ def manage_appointments_view(request):
         appointments_list = appointments_list.filter(service_id=service_id)
 
 
-    # --- Pagination ---
-    paginator = Paginator(appointments_list, 10) # Show 10 appointments per page
+
+    paginator = Paginator(appointments_list, 10)
     page_number = request.GET.get('page')
     try:
         page_obj = paginator.get_page(page_number)
@@ -285,8 +279,7 @@ def manage_appointments_view(request):
     context = {
         'page_obj': page_obj,
         'services': services,
-        # Optionally pass 'today' to the template if needed for display logic
-        # 'today': today
+
     }
     return render(request, 'admin/manage_appointments.html', context)
 
@@ -299,8 +292,7 @@ def create_appointment_admin_view(request):
     if request.method == 'POST':
         form = AppointmentAdminCreateForm(request.POST)
         if form.is_valid():
-            # Si el formulario es válido (incluyendo validaciones en clean()),
-            # procedemos a crear la cita.
+
             patient = form.cleaned_data['patient']
             service = form.cleaned_data['service']
             date = form.cleaned_data['date']
@@ -308,11 +300,9 @@ def create_appointment_admin_view(request):
             end_hour_str = form.cleaned_data['selected_end_hour']
 
             try:
-                # Convertir las horas de string a objetos time
                 start_time = timezone.datetime.strptime(start_hour_str, '%H:%M').time()
                 end_time = timezone.datetime.strptime(end_hour_str, '%H:%M').time()
 
-                # Crear la instancia de Appointment
                 new_appointment = Appointment.objects.create(
                     patient=patient,
                     service=service,
@@ -321,36 +311,33 @@ def create_appointment_admin_view(request):
                     end_hour=end_time
                 )
 
-                # ¡Éxito! Limpiar mensajes anteriores y añadir solo el mensaje de éxito
                 storage = messages.get_messages(request)
                 for _ in storage:
-                    pass  # Esto limpiará todos los mensajes previos
+                    pass
 
-                # Añadir el mensaje de éxito
                 messages.success(
                     request,
                     f"Cita para {patient.first_name} {patient.last_name} el {date.strftime('%d/%m/%Y')} a las {start_hour_str} creada exitosamente."
                 )
-                # Redirigir a la vista de gestión de citas
+
                 return redirect('manage_appointments')
 
             except IntegrityError:
-                # Capturar errores de integridad de base de datos
+
                 messages.error(request, "Ya existe una cita con estos datos. Por favor, verifica la información.")
             except (ValueError, TypeError) as e:
-                # Error si las horas no tienen el formato esperado
+
                 messages.error(request, f"Error interno al procesar la hora seleccionada: {e}")
             except Exception as e:
-                # Capturar cualquier otro error inesperado durante la creación
+
                 messages.error(request, f"Ocurrió un error inesperado al crear la cita: {str(e)}")
         else:
-            # Solo mostrar mensaje de error si el formulario no es válido
+
             messages.error(request, "El formulario contiene errores. Por favor, revíselos.")
 
-    else:  # GET request
+    else:
         form = AppointmentAdminCreateForm()
 
-    # Contexto para la plantilla
     context = {
         'form': form,
     }
@@ -365,17 +352,17 @@ def edit_appointment_admin_view(request, pk):
     Vista para que un administrador modifique una cita existente.
     """
     appointment = get_object_or_404(Appointment.objects.select_related('patient', 'service'), pk=pk)
-    service = appointment.service # Puede ser None si blank=True
+    service = appointment.service
     patient = appointment.patient
 
-    # Calcular duración (similar a tu vista original)
+
     service_duration = 30 # Valor por defecto si no se puede calcular
     if service and appointment.start_hour and appointment.end_hour:
         start_time = appointment.start_hour
         end_time = appointment.end_hour
         start_minutes = start_time.hour * 60 + start_time.minute
         end_minutes = end_time.hour * 60 + end_time.minute
-        if end_minutes < start_minutes: # Cruza medianoche
+        if end_minutes < start_minutes:
             end_minutes += 24 * 60
         calculated_duration = end_minutes - start_minutes
         if calculated_duration > 0:
@@ -384,14 +371,12 @@ def edit_appointment_admin_view(request, pk):
     service_name = service.name if service else "Servicio no asignado"
 
     if request.method == 'POST':
-        # Pasamos la instancia para que el form sepa que estamos editando
         form = ModifyAppointmentsForm(request.POST, instance=appointment)
 
-        # Extraer datos directamente del POST para validación
-        start_hour_str = request.POST.get('start_hour')  # Obtener hora seleccionada por JS
+
+        start_hour_str = request.POST.get('start_hour')
         date_str = request.POST.get('date')
 
-        # Validar manualmente los datos que no están directamente en el form visible
         valid_post = True
         form_errors = []
         start_time = None
@@ -420,56 +405,53 @@ def edit_appointment_admin_view(request, pk):
                 form_errors.append("Formato de hora inválido.")
                 valid_post = False
 
-        # Si las validaciones básicas pasan y tenemos start_time y date
+
         if valid_post and start_time and date:
-            # Calcular end_time basado en start_time y duración
             start_minutes = start_time.hour * 60 + start_time.minute
             end_minutes = start_minutes + service_duration
-            end_hour = (end_minutes // 60) % 24 # Asegurar que esté dentro de 0-23
+            end_hour = (end_minutes // 60) % 24
             end_minute = end_minutes % 60
             end_time = dt_time(hour=end_hour, minute=end_minute)
 
-            # Comprobar solapamientos (excluyendo la cita actual)
+
             overlapping_appointments = Appointment.objects.filter(
                 date=date,
-                # Comprobar si la nueva franja (start_time a end_time)
-                # solapa con alguna cita existente en esa fecha
-                start_hour__lt=end_time, # Cita existente empieza antes de que termine la nueva
-                end_hour__gt=start_time  # Cita existente termina después de que empiece la nueva
-            ).exclude(pk=pk) # ¡Importante excluir la cita actual!
+
+                start_hour__lt=end_time,
+                end_hour__gt=start_time
+            ).exclude(pk=pk)
 
             if overlapping_appointments.exists():
                 messages.error(request, f"El horario seleccionado ({start_hour_str} - {end_time.strftime('%H:%M')}) se solapa con otra cita existente.")
-                # No redirigir, dejar que se re-renderice el formulario con el error
-                valid_post = False # Marcar como inválido para no guardar
+
+                valid_post = False
             else:
-                # Si no hay errores y no hay solapamiento, intentamos guardar
+
                 try:
-                    # Actualizar la instancia con los datos validados
+
                     appointment.date = date
                     appointment.start_hour = start_time
                     appointment.end_hour = end_time
-                    # El servicio no se cambia (es readonly en el form)
+
                     appointment.save()
 
                     messages.success(request, f"Cita de {patient} modificada exitosamente para el {date.strftime('%d/%m/%Y')} a las {start_hour_str}.")
-                    return redirect('manage_appointments') # Redirigir a la lista de citas admin
+                    return redirect('manage_appointments')
                 except Exception as e:
                     messages.error(request, f"Error al guardar los cambios: {e}")
-                    valid_post = False # Marcar como inválido si falla el guardado
+                    valid_post = False
 
-        # Si hubo algún error en validaciones o solapamiento, añadir mensajes
+
         if not valid_post:
             for error in form_errors:
                 messages.error(request, error)
-        # Si llegamos aquí, significa que o bien hubo un error o es una petición GET,
-        # o la validación POST falló. Se renderizará el formulario.
 
-    else: # GET request
-        # Creamos el formulario con los datos actuales de la cita
+
+    else:
+
         form = ModifyAppointmentsForm(instance=appointment)
 
-    # Obtener todas las citas para la comprobación de JS (igual que en tu vista original)
+
     all_appointments = Appointment.objects.filter(date__gte=timezone.now().date() - timedelta(days=1)).values(
         'id', 'date', 'service_id', 'start_hour', 'end_hour'
     )
@@ -487,18 +469,18 @@ def edit_appointment_admin_view(request, pk):
     context = {
         'form': form,
         'appointment': appointment,
-        'patient': patient, # Pasar paciente por si se necesita mostrar info
+        'patient': patient,
         'service_name': service_name,
         'service_duration': service_duration,
         'service_id': service.id if service else None,
-        'booked_appointments': booked_appointments_json, # Pasar citas reservadas a JS
-        'current_appointment_id': pk, # Pasar ID actual a JS
+        'booked_appointments': booked_appointments_json,
+        'current_appointment_id': pk,
     }
-    # Renderizar una nueva plantilla específica para la edición admin
+
     return render(request, 'admin/edit_appointment.html', context)
 
 
-# --- VERY SIMPLE View for Cancelling Appointments ---
+
 @admin_required
 def cancel_appointment_admin_view(request, pk):
     """

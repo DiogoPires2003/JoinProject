@@ -1,0 +1,21 @@
+:root {
+    --azul-profesional: #005F99;
+}
+
+.table th,
+.table td {
+    vertical-align: middle;
+}
+
+.action-buttons .btn {
+    margin-right: 5px;
+}
+
+.action-buttons .btn:last-child {
+    margin-right: 0;
+}
+
+h1 {
+    color: var(--azul-profesional);
+    font-weight: 700;
+}
