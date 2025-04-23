@@ -29,6 +29,7 @@ urlpatterns = [
     path('cancel_appointment/<int:appointment_id>/', cancel_appointment, name='cancel_appointment'),
     path('appointment-history/', appointment_history, name='appointment_history'),
     path('administrator-area/', admin_area, name='admin_area'),
+    path('manage-appointments/', manage_appointments_view, name='manage_appointments'),
     path('manage-patients/', manage_patients_view, name='manage_patients'),
     path('patients/edit/<int:pk>/', edit_patient_view, name='edit_patient'),
     path('patients/history/<int:pk>/', patient_appointment_history_view, name='patient_appointment_history'),

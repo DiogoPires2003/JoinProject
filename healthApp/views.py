@@ -217,6 +217,13 @@ def patient_appointment_history_view(request, pk):
     }
     return render(request, 'admin/patient_appointment_history.html', context)
 
+@admin_required
+def manage_appointments_view(request):
+
+    context = {
+
+    }
+    return render(request, 'admin/manage_appointments.html', context)
 
 def logout_view(request):
     if request.session.get('is_admin'):
