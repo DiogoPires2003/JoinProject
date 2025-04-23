@@ -1,0 +1,213 @@
+{% load static %}
+{% load bootstrap5 %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Cita (Admin) | Better Health</title>
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    {# Ya no necesitamos Select2 CSS #}
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/png">
+    <style>
+        /* Estilos para los botones de hora (igual que en create_appointment) */
+        .available-hours-container { display: flex; flex-wrap: wrap; gap: 0.5rem; padding-top: 0.5rem; }
+        .hour-btn { flex-grow: 1; min-width: 100px; /* Ajusta según necesites */ }
+        .hour-btn.active { background-color: #005F99; color: white; border-color: #005F99; }
+        /* Otros estilos como service-info-box */
+        .service-info-box { background-color: #e9ecef; padding: 1rem; border-radius: 0.25rem; margin-bottom: 1.5rem; }
+        .service-info-box h5 { margin-bottom: 0.25rem; color: #005F99; }
+        .service-info-box p { margin-bottom: 0; color: #495057; }
+    </style>
+</head>
+<body>
+    <div class="navbar-wrapper">
+        {% include 'base/navbar.html' %}
+    </div>
+
+    <div class="container admin-container my-5">
+         <div class="card shadow-lg rounded-3 overflow-hidden">
+            <div class="card-body p-4 p-lg-5">
+
+                <h1 class="h3 text-center mb-4">Modificar Cita Médica (Admin)</h1>
+                {# Mostrar paciente actual (NO editable) #}
+                <p class="text-center text-muted mb-4">Paciente: <strong>{{ patient.first_name }} {{ patient.last_name }}</strong></p>
+
+                {% bootstrap_messages %}
+
+                 {# Mostrar info del servicio fijo #}
+                 <div class="service-info-box">
+                    <h5><i class="fas fa-briefcase-medical me-2"></i>Servicio: {{ service_name }}</h5>
+                    <p><i class="far fa-clock me-2"></i>Duración estimada: {{ service_duration }} minutos</p>
+                 </div>
+
+                <form method="post" id="editAppointmentForm" novalidate>
+                    {% csrf_token %}
+
+                     {# Campo de Fecha #}
+                     <div class="mb-3">
+                        {% bootstrap_field form.date layout='vertical' %}
+                     </div>
+
+
+
+                    {# Hidden input for Start Hour - populated by JS #}
+                    {# Usamos el name del form field 'selected_start_hour' #}
+                    <input type="hidden" id="selectedHour" name="selected_start_hour" value="{{ form.selected_start_hour.value|default:'' }}">
+
+                    {# Available Hours Section - ESTILO DE BOTONES #}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nuevas Horas Disponibles:</label>
+                        <div id="availableHours" class="available-hours-container border rounded p-3 bg-light">
+                            {# Botones se cargan aquí con JS #}
+                            <small class="text-muted w-100 text-center">Seleccione una fecha para ver las horas.</small>
+                        </div>
+                        {# Placeholder para errores de selección de hora #}
+                        <div id="hour-error-message-container" class="mt-2 text-danger"></div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    {# Botones de acción #}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'manage_appointments' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+
+            </div> {# End card-body #}
+        </div> {# End card #}
+    </div> {# End container #}
+
+    {% include 'base/footer.html' %}
+
+    {# --- JavaScript Includes --- #}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% bootstrap_javascript %}
+    {# Ya no necesitamos Select2 JS #}
+
+    {# --- Page Specific JavaScript --- #}
+    <script>
+        // Pasamos datos desde el context de Django a variables JS
+        var bookedAppointments = {{ booked_appointments|safe }};
+        var currentAppointmentId = {{ current_appointment_id }};
+        var serviceId = {{ service_id|default:'null' }};
+        var serviceDuration = {{ service_duration }};
+        // Usar el valor actual del campo fecha (puede ser el inicial o el de un POST fallido)
+        var initialDate = "{{ form.date.value|date:'Y-m-d' }}";
+        // Usar el valor actual del campo oculto (puede ser el inicial o el de un POST fallido)
+        var initialStartHour = "{{ form.selected_start_hour.value|default:appointment.start_hour|time:'H:i' }}";
+
+    </script>
+    <script>
+    $(document).ready(function() {
+        // Ya no necesitamos inicializar Select2
+
+        const dateInput = $('#id_date'); // ID por defecto de Django Forms
+        const hoursContainer = $('#availableHours');
+        const selectedStartHourInput = $('#selectedHour'); // ID que le dimos al input hidden
+        const form = $('#editAppointmentForm');
+        const hourErrorContainer = $('#hour-error-message-container');
+
+        // --- Función para obtener y mostrar horas (DEBES USAR TU AJAX REAL) ---
+        function fetchAndDisplayAvailableHours(selectedDateStr) {
+             hoursContainer.html('<small class="text-muted w-100 text-center">Cargando horas...</small>');
+             hourErrorContainer.empty();
+             selectedStartHourInput.val(''); // Reset hidden field
+
+             if (!serviceId || !selectedDateStr) {
+                  hoursContainer.html('<small class="text-muted w-100 text-center">Seleccione una fecha.</small>');
+                 return;
+             }
+
+             console.log("Fetching hours for:", selectedDateStr, "Service:", serviceId); // Log para debug
+
+
+            hoursContainer.empty();
+            const simulatedHours = [];
+            let currentHour = 8; let currentMinute = 0; const endDayHour = 20;
+            while (currentHour < endDayHour) {
+                const startStr = `${String(currentHour).padStart(2, '0')}:${String(currentMinute).padStart(2, '0')}`;
+                let endTotalMinutes = (currentHour * 60 + currentMinute) + serviceDuration;
+                let endH = Math.floor(endTotalMinutes / 60) % 24;
+                let endM = endTotalMinutes % 60;
+                const endStr = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+                let isBooked = false;
+                for(const booked of bookedAppointments) {
+                    if(booked.date === selectedDateStr && booked.id !== currentAppointmentId) {
+                        if (startStr < booked.end && endStr > booked.start) {
+                            isBooked = true; break;
+                        }
+                    }
+                }
+                if (!isBooked) simulatedHours.push({ start: startStr, end: endStr });
+                currentMinute += 30; // Asumiendo slots de 30 min para simulación
+                currentHour += Math.floor(currentMinute / 60);
+                currentMinute %= 60;
+            }
+            if (simulatedHours.length > 0) {
+                let hourSet = false;
+                simulatedHours.forEach(hour => {
+                    const isActive = (selectedDateStr === initialDate && hour.start === initialStartHour);
+                    // Aquí está el cambio: mostramos tanto la hora de inicio como la de fin
+                    const button = `<button type="button" class="btn btn-outline-primary hour-btn ${isActive ? 'active' : ''}"
+                                    data-start="${hour.start}" data-end="${hour.end}">
+                                        ${hour.start} - ${hour.end}
+                                    </button>`;
+                    hoursContainer.append(button);
+                    if(isActive) { selectedStartHourInput.val(hour.start); hourSet = true; }
+                });
+                if (selectedDateStr === initialDate && !hourSet) { selectedStartHourInput.val(''); initialStartHour = ''; }
+            } else {
+                hoursContainer.html('<p class="text-info w-100 text-center">No hay horas disponibles (simulación).</p>');
+                selectedStartHourInput.val('');
+            }
+            // --- FIN SIMULACIÓN ---
+              // --- FIN SIMULACIÓN ---
+
+
+        } // Fin fetchAndDisplayAvailableHours
+
+        // --- Evento cambio de fecha ---
+        dateInput.on('change', function() {
+            const selectedDate = $(this).val();
+            // Cuando cambia la fecha, la hora inicial ya no es relevante para preselección
+            initialStartHour = '';
+            fetchAndDisplayAvailableHours(selectedDate);
+        });
+
+        // --- Evento click en botón de hora ---
+        hoursContainer.on('click', '.hour-btn', function() {
+            const $this = $(this);
+            selectedStartHourInput.val($this.data('start')); // Actualiza hidden input
+            $('.hour-btn', hoursContainer).removeClass('active'); // Deselecciona otros
+            $this.addClass('active'); // Marca este como activo
+            hourErrorContainer.empty(); // Limpia error si seleccionan hora
+        });
+
+        // --- Validación frontend antes de enviar ---
+        form.on('submit', function(event) {
+            hourErrorContainer.empty(); // Limpia errores previos
+            if (!selectedStartHourInput.val()) {
+                 hourErrorContainer.html('Debe seleccionar una hora disponible.');
+                 event.preventDefault(); // Detiene el envío
+                 return false;
+            }
+        });
+
+        // --- Cargar horas iniciales al cargar la página ---
+        // Usamos el valor actual del campo de fecha (puede venir de GET o POST fallido)
+        fetchAndDisplayAvailableHours(dateInput.val());
+
+    });
+    </script>
+    {# --- End Page Specific JavaScript --- #}
+
+</body>
+</html>

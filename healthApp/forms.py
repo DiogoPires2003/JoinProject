@@ -246,3 +246,38 @@ class AppointmentAdminCreateForm(forms.Form):
                  raise forms.ValidationError("La hora seleccionada no es válida.", code='invalid_time_format')
 
         return cleaned_data
+
+
+class ModifyAppointmentsForm_administrator(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        # Campos que el admin modificará principalmente
+        fields = ['service', 'start_hour', 'end_hour', 'date']
+        widgets = {
+            # Usaremos 'text' para que el JS pueda poner el valor,
+            # pero podríamos usar 'time' si el navegador lo soporta bien con JS
+            'start_hour': forms.TimeInput(attrs={'type': 'hidden'}), # Lo haremos hidden, se rellena con JS
+            'end_hour': forms.TimeInput(attrs={'type': 'hidden'}),   # Lo haremos hidden, se calcula en la vista
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'service': forms.TextInput(attrs={'readonly': 'readonly', 'class': 'form-control bg-light'}) # Hacemos servicio no editable aquí
+        }
+        labels = { # Etiquetas más claras para el admin
+            'date': 'Nueva Fecha',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Rellenar el campo service_display si hay instancia
+        if self.instance and self.instance.pk and self.instance.service:
+            self.fields['service_display'].initial = self.instance.service.name
+        elif self.instance and self.instance.pk:
+            self.fields['service_display'].initial = "Servicio no asignado"
+
+        # Pre-rellenar la fecha y hora inicial en los campos correspondientes
+        if self.instance and self.instance.pk:
+            self.fields['date'].initial = self.instance.date
+            # El valor inicial del campo oculto se pondrá en la plantilla
+            # self.fields['selected_start_hour'].initial = self.instance.start_hour.strftime('%H:%M') # No necesario aquí
+
+
+
