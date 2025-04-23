@@ -11,7 +11,7 @@ from decouple import config
 from datetime import datetime, time, timedelta
 import requests
 import json
-
+import logging
 def check_attendance(request):
     today = now().date()
 
@@ -251,6 +251,7 @@ def get_available_hours(request):
 
         token_response = requests.post(token_url, data=payload)
         if token_response.status_code != 200:
+            logging.error("Failed to fetch API token.")
             return JsonResponse({'error': 'Failed to fetch API token.'}, status=500)
 
         access_token = token_response.json().get("access_token")
@@ -259,14 +260,19 @@ def get_available_hours(request):
         services_url = "https://example-mutua.onrender.com/servicios-clinica/"
         services_response = requests.get(services_url, headers=headers)
         if services_response.status_code != 200:
+            logging.error("Failed to fetch services from the API.")
             return JsonResponse({'error': 'Failed to fetch services from the API.'}, status=500)
 
         services = services_response.json()
+        logging.info(f"Services fetched from API: {services}")
+
         service = next((s for s in services if s["id"] == int(service_id)), None)
         if not service:
+            logging.warning(f"Service ID {service_id} not found in API response.")
             return JsonResponse({'error': 'Service not found.'}, status=404)
 
         duration = service.get("duracion_minutos", 30)  # Default to 30 minutes if not provided
+        logging.info(f"Service ID {service_id} duration: {duration} minutes")
 
         # Define working hours (e.g., 9:00 AM to 5:00 PM)
         start_time = time(9, 0)
@@ -301,6 +307,9 @@ def get_available_hours(request):
                 })
 
             current_time += timedelta(minutes=15)  # Increment by 15 minutes
+
+        if not available_hours:
+            logging.info(f"No available hours for service ID {service_id} on {date}.")
 
         return JsonResponse({'available_hours': available_hours})
     return JsonResponse({'error': 'Invalid request method.'}, status=405)

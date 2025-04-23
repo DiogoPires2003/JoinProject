@@ -13,6 +13,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            if ($.fn.select2) {
+                $('#servicioInput').select2();
+            } else {
+                console.error("Select2 is not loaded. Please check your script includes.");
+            }
+        });
+    </script>
     <link rel="stylesheet" href="{% static 'css/appointments.css' %}">
 </head>
 <div class="navbar-wrapper">
@@ -40,7 +49,8 @@
                     <div class="col-lg-6 form-section">
                         <div class="text-center mb-4">
                             {% load static %}
-                            <img src="{% static 'images/LogoBetterHealth.webp' %}" alt="Logo de la Clínica" class="logo">
+                            <img src="{% static 'images/LogoBetterHealth.webp' %}" alt="Logo de la Clínica"
+                                 class="logo">
                             <h4 class="mt-2">Clínica Salud y Bienestar</h4>
                         </div>
 
@@ -61,7 +71,7 @@
                                 <select class="form-control" name="service_id" id="servicioInput" required>
                                     <option value="" disabled selected>Seleccione el tipo de servicio</option>
                                     {% for service in services %}
-                                    <option value="{{ service.id }}">{{ service.name }}</option>
+                                        <option value="{{ service.id }}">{{ service.name }}</option>
                                     {% endfor %}
                                 </select>
                                 <label for="servicioInput">Tipo de servicio médico</label>
@@ -105,7 +115,7 @@
                                     if (serviceId && date) {
                                         $.ajax({
                                             url: "{% url 'get_available_hours' %}",
-                                            data: { service_id: serviceId, date: date },
+                                            data: {service_id: serviceId, date: date},
                                             success: function (response) {
                                                 const hoursContainer = $('#horaDisponibles');
                                                 hoursContainer.empty();
