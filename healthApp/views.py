@@ -3,7 +3,7 @@ from .forms import PatientForm, AppointmentForm, PatientEditForm, ModifyAppointm
 from .models import Appointment, Patient, Service, Employee, Attendance
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import check_password, make_password
-from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseForbidden, HttpResponse
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.utils.timezone import now, timezone
@@ -12,6 +12,8 @@ from datetime import datetime, time, timedelta
 import requests
 import json
 import logging
+from django.db.models import Q # Import Q object for complex lookups
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 def check_attendance(request):
     today = now().date()
 
@@ -219,11 +221,92 @@ def patient_appointment_history_view(request, pk):
 
 @admin_required
 def manage_appointments_view(request):
+    # Start with the base queryset, optimize by selecting related objects
+    appointments_list = Appointment.objects.select_related('patient', 'service').order_by('-date', 'start_hour')
+    services = Service.objects.all() # For the service filter dropdown
+
+    # Get filter parameters from GET request
+    patient_name = request.GET.get('patient_name', '').strip() # Get name and remove leading/trailing whitespace
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    service_id = request.GET.get('service')
+
+    # --- Apply Filters ---
+    if patient_name:
+        # Filter by first name OR last name containing the search term (case-insensitive)
+        appointments_list = appointments_list.filter(
+            Q(patient__first_name__icontains=patient_name) |
+            Q(patient__last_name__icontains=patient_name)
+        )
+    if date_from:
+        try:
+            appointments_list = appointments_list.filter(date__gte=date_from)
+        except ValueError: # Handle invalid date format if necessary
+             messages.error(request, f"Formato de fecha inválido para 'Fecha Desde': {date_from}")
+             # Optionally redirect or clear the filter
+    if date_to:
+        try:
+            appointments_list = appointments_list.filter(date__lte=date_to)
+        except ValueError: # Handle invalid date format if necessary
+             messages.error(request, f"Formato de fecha inválido para 'Fecha Hasta': {date_to}")
+             # Optionally redirect or clear the filter
+    if service_id:
+        appointments_list = appointments_list.filter(service_id=service_id)
+
+    # --- Pagination ---
+    paginator = Paginator(appointments_list, 10) # Show 10 appointments per page
+    page_number = request.GET.get('page')
+
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        page_obj = paginator.page(paginator.num_pages)
+
 
     context = {
-
+        # Pass the paginated page object, NOT the full list anymore
+        'page_obj': page_obj,
+        'services': services,
+        # 'appointments': appointments, # Remove this if using page_obj
     }
+    # Pass the request context to keep filter values in pagination links
     return render(request, 'admin/manage_appointments.html', context)
+
+@admin_required
+def create_appointment_admin_view(request):
+    # Just return a simple text response. No form, no template needed yet.
+    return HttpResponse("Placeholder: Admin - Create Appointment Page")
+
+
+# --- VERY SIMPLE Placeholder View for Editing Appointments ---
+@admin_required
+def edit_appointment_admin_view(request, pk):
+    # Use get_object_or_404 to ensure the ID is valid, otherwise return 404
+    appointment = get_object_or_404(Appointment, pk=pk)
+    # Just return a simple text response indicating which appointment would be edited.
+    return HttpResponse(f"Placeholder: Admin - Edit Appointment Page for ID: {pk}")
+
+
+# --- VERY SIMPLE View for Cancelling Appointments ---
+@admin_required
+def cancel_appointment_admin_view(request, pk):
+    # Use get_object_or_404 to ensure the ID is valid
+    appointment = get_object_or_404(Appointment, pk=pk)
+    # This view expects a POST from the modal form
+    if request.method == 'POST':
+        # Don't actually delete anything yet
+        messages.info(request, f"Placeholder: Would cancel appointment ID {pk}. (Not actually cancelled)")
+        # Redirect back to the list view
+        # *** Make sure 'your_app_name' matches the app_name in your urls.py ***
+        return redirect('your_app_name:manage_appointments')
+    else:
+        # If someone tries to access this URL directly via GET, redirect them away
+        messages.warning(request, "Invalid request method for cancelling.")
+        return redirect('your_app_name:manage_appointments')
 
 def logout_view(request):
     if request.session.get('is_admin'):

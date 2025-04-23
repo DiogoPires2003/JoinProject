@@ -1,150 +1,241 @@
 <!DOCTYPE html>
 <html lang="es">
 {% load static %}
-{% load bootstrap5 %} {# Load Bootstrap 5 tags #}
+{% load bootstrap5 %}
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestionar Citas | Admin | Better Health</title>
-    {% bootstrap_css %} {# Include Bootstrap CSS #}
+    {% bootstrap_css %}
     <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    {# Link to your custom admin CSS if you have one #}
     <link rel="stylesheet" href="{% static 'css/admin_styles.css' %}">
     <style>
-        /* Optional: Add some specific styles here or in admin_styles.css */
-        .table th, .table td {
-            vertical-align: middle; /* Align content vertically centered */
+
+        :root {
+            --azul-profesional: #005F99;
         }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+        }
+
         .action-buttons .btn {
-            margin-right: 5px; /* Spacing between action buttons */
+            margin-right: 5px;
         }
+
         .action-buttons .btn:last-child {
             margin-right: 0;
         }
+
+        h1 {
+            color: var(--azul-profesional);
+            font-weight: 700;
+        }
+
     </style>
 </head>
 
 <body>
-<div class="navbar-wrapper">
-    {% include 'base/navbar.html' %}
-</div>
+    <div class="navbar-wrapper">
+        {% include 'base/navbar.html' %}
+    </div>
 
-<div class="page-wrapper d-flex flex-column min-vh-100">
-    <main class="flex-grow-1 py-5">
-        <div class="container">
-            <h1 class="mb-4 text-center">Gestionar Citas Médicas</h1>
+    <div class="page-wrapper d-flex flex-column min-vh-100">
+        <main class="flex-grow-1 py-5">
+            <div class="container">
+                <br>
+                <h1 class="mb-4 text-center">Gestionar Citas Médicas</h1>
+                <br>
 
-            {# Optional: Add filters or search functionality here later #}
-            {# <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Filtrar Citas</h5>
-                    <form method="get">
-                        <!-- Filter fields (e.g., date range, patient search) -->
-                    </form>
+
+                {# --- Top Action Buttons Row --- #}
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    {# NEW: Back Button #}
+                    <div>
+                        {# *** Make sure 'admin_dashboard' is the correct name of your dashboard URL *** #}
+                        <a href="{% url 'admin_area' %}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-1"></i> Volver al Panel
+                        </a>
+                    </div>
+                    {# MOVED: Create Button #}
+                    <div>
+                         {# *** Make sure 'create_appointment_admin' is the correct name of your create URL *** #}
+                        <a href="{% url 'create_appointment_admin' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i> Crear Nueva Cita
+                        </a>
+                    </div>
                 </div>
-            </div> #}
+                {# --- End Top Action Buttons Row --- #}
 
-            {# Button to trigger creation - links to a new URL/view #}
-            <div class="text-end mb-3">
-                <a href="#" class="btn btn-primary">
-                    <i class="fas fa-plus me-1"></i> Crear Nueva Cita
-                </a>
-            </div>
 
-            {# Display Messages (e.g., success/error after actions) #}
-            {% bootstrap_messages %}
-
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    Listado de Citas Programadas
+                {# --- Filter Section --- #}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Filtrar Citas</h5>
+                        <form method="get">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-3">
+                                    <label for="patient_name" class="form-label">Nombre del Paciente:</label>
+                                    <input type="text" class="form-control" id="patient_name" name="patient_name" placeholder="Buscar por nombre..." value="{{ request.GET.patient_name }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="date_from" class="form-label">Fecha Desde:</label>
+                                    <input type="date" class="form-control" id="date_from" name="date_from" value="{{ request.GET.date_from }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="date_to" class="form-label">Fecha Hasta:</label>
+                                    <input type="date" class="form-control" id="date_to" name="date_to" value="{{ request.GET.date_to }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="service" class="form-label">Servicio:</label>
+                                    <select class="form-select" id="service" name="service">
+                                        <option value="">Todos los Servicios</option>
+                                        {% for service in services %}
+                                        <option value="{{ service.id }}" {% if request.GET.service == service.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ service.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-filter me-1"></i> Aplicar Filtros
+                                </button>
+                                {# *** Make sure 'manage_appointments' URL name is correct *** #}
+                                <a href="{% url 'manage_appointments' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-1"></i> Limpiar Filtros
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th scope="col">Paciente</th>
-                                    <th scope="col">Servicio</th>
-                                    <th scope="col">Fecha</th>
-                                    <th scope="col">Hora Inicio</th>
-                                    <th scope="col">Hora Fin</th>
-                                    <th scope="col" class="text-center">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {# Loop through appointments passed from the view context #}
-                                {% for appointment in appointments %}
-                                <tr>
-                                    <td>
-                                        {# Link to patient detail or just display name #}
-                                        {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}
-                                        <small class="d-block text-muted">{{ appointment.patient.dni }}</small>
-                                    </td>
-                                    <td>{{ appointment.service.name|default:"N/A" }}</td>
-                                    <td>{{ appointment.date|date:"d/m/Y" }}</td> {# Format date #}
-                                    <td>{{ appointment.start_hour|time:"H:i" }}</td> {# Format time #}
-                                    <td>{{ appointment.end_hour|time:"H:i" }}</td> {# Format time #}
-                                    <td class="text-center action-buttons">
-                                        {# Button to Edit - links to an edit URL/view #}
-                                        <a href="#" class="btn btn-sm btn-warning" title="Editar Cita">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        {# Button to Cancel - could trigger a modal confirmation #}
-                                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal{{ appointment.id }}" title="Cancelar Cita">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                        {# Add more actions if needed #}
-                                    </td>
-                                </tr>
+                {# --- End Filter Section --- #}
 
-                                {# --- Cancellation Confirmation Modal (Example) --- #}
-                                <div class="modal fade" id="cancelModal{{ appointment.id }}" tabindex="-1" aria-labelledby="cancelModalLabel{{ appointment.id }}" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="cancelModalLabel{{ appointment.id }}">Confirmar Cancelación</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                ¿Está seguro de que desea cancelar la cita de <strong>{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</strong> para el servicio <strong>{{ appointment.service.name|default:'N/A' }}</strong> el día <strong>{{ appointment.date|date:"d/m/Y" }}</strong> a las <strong>{{ appointment.start_hour|time:"H:i" }}</strong>?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                {# Form to submit the cancellation request #}
-                                                <form action="#" method="post" style="display: inline;">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="btn btn-danger">Sí, Cancelar Cita</button>
-                                                </form>
+                {# Display Messages #}
+                {% bootstrap_messages %}
+
+                {# --- Appointments Table Card --- #}
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        Listado de Citas Programadas {% if page_obj and page_obj.paginator.count > 0 %} (Mostrando {{ page_obj.start_index }}-{{ page_obj.end_index }} de {{ page_obj.paginator.count }}){% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Paciente</th>
+                                        <th scope="col">Servicio</th>
+                                        <th scope="col">Fecha</th>
+                                        <th scope="col">Hora Inicio</th>
+                                        <th scope="col">Hora Fin</th>
+                                        <th scope="col" class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in page_obj.object_list %}
+                                    <tr>
+                                        <td>
+                                            {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}
+                                            <small class="d-block text-muted">{{ appointment.patient.dni }}</small>
+                                        </td>
+                                        <td>{{ appointment.service.name|default:"N/A" }}</td>
+                                        <td>{{ appointment.date|date:"d/m/Y" }}</td>
+                                        <td>{{ appointment.start_hour|time:"H:i" }}</td>
+                                        <td>{{ appointment.end_hour|time:"H:i" }}</td>
+                                        <td class="text-center action-buttons">
+                                             {# *** Make sure 'edit_appointment_admin' URL name is correct *** #}
+                                            <a href="{% url 'edit_appointment_admin' appointment.id %}" class="btn btn-sm btn-primary" title="Editar Cita">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal{{ appointment.id }}" title="Cancelar Cita">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                    {# --- Cancellation Modal --- #}
+                                    <div class="modal fade" id="cancelModal{{ appointment.id }}" tabindex="-1" aria-labelledby="cancelModalLabel{{ appointment.id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="cancelModalLabel{{ appointment.id }}">Confirmar Cancelación</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    ¿Está seguro de que desea cancelar la cita de
+                                                    <strong>{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</strong> para el servicio
+                                                    <strong>{{ appointment.service.name|default:'N/A' }}</strong> el día
+                                                    <strong>{{ appointment.date|date:"d/m/Y" }}</strong> a las
+                                                    <strong>{{ appointment.start_hour|time:"H:i" }}</strong>?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                    {# *** Make sure 'cancel_appointment_admin' URL name is correct *** #}
+                                                    <form action="{% url 'cancel_appointment_admin' appointment.id %}" method="post" style="display: inline;">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-danger">Sí, Cancelar Cita</button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                {# --- End Modal --- #}
+                                    {# --- End Modal --- #}
 
-                                {% empty %}
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted">No hay citas programadas.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div> {# End table-responsive #}
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">No se encontraron citas que coincidan con los filtros aplicados.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div> {# End table-responsive #}
 
-                    {# Optional: Add pagination controls here if needed #}
+                         {# --- Pagination Controls --- #}
+                        {% if page_obj and page_obj.has_other_pages %}
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item"><a class="page-link" href="?page=1&{{ request.GET.urlencode|cut:'page=' }}">««</a></li>
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode|cut:'page=' }}">«</a></li>
+                                    {% else %}
+                                        <li class="page-item disabled"><span class="page-link">««</span></li>
+                                        <li class="page-item disabled"><span class="page-link">«</span></li>
+                                    {% endif %}
+                                    {% for i in page_obj.paginator.get_elided_page_range %}
+                                        {% if page_obj.number == i %}
+                                            <li class="page-item active" aria-current="page"><span class="page-link">{{ i }}</span></li>
+                                        {% elif i == page_obj.paginator.ELLIPSIS %}
+                                             <li class="page-item disabled"><span class="page-link">{{ i }}</span></li>
+                                        {% else %}
+                                            <li class="page-item"><a class="page-link" href="?page={{ i }}&{{ request.GET.urlencode|cut:'page=' }}">{{ i }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode|cut:'page=' }}">»</a></li>
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&{{ request.GET.urlencode|cut:'page=' }}">»»</a></li>
+                                    {% else %}
+                                        <li class="page-item disabled"><span class="page-link">»</span></li>
+                                        <li class="page-item disabled"><span class="page-link">»»</span></li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                        {# --- End Pagination Controls --- #}
 
-                </div> {# End card-body #}
-            </div> {# End card #}
-        </div> {# End container #}
-    </main>
+                    </div> {# End card-body #}
+                </div> {# End card #}
+            </div> {# End container #}
+        </main>
 
-    {% include 'base/footer.html' %}
-</div> {# End page-wrapper #}
+        {% include 'base/footer.html' %}
+    </div> {# End page-wrapper #}
 
-{% bootstrap_javascript %} {# Include Bootstrap JS #}
-{# Add links to custom JS files if needed #}
-{# <script src="{% static 'js/admin_appointments.js' %}"></script> #}
+    {% bootstrap_javascript %}
 </body>
 </html>
