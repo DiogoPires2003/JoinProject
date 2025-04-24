@@ -40,60 +40,117 @@
                             <img src="{% static 'images/LogoBetterHealth.webp' %}" class="img-fluid mb-3 w-50" alt="logo" style="max-width: 200px;">
                             <h5 class="mb-5 pb-1">Tu bienestar, nuestra prioridad.</h5>
                         </div>
-                        <form method="post">
+                        <form method="post" novalidate>
                             {% csrf_token %}
-                            {% if form.errors %}
+
+                            {% if form.non_field_errors %}
                                 <div class="alert alert-danger">
-                                    Por favor corrige los errores en el formulario.
+                                    {% for error in form.non_field_errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                             {% endif %}
 
                             <div class="mb-3 form-floating">
-                                <input type="text" name="first_name" required class="form-control" id="firstNameInput"
+                                <input type="text" name="first_name" required class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" id="firstNameInput"
                                        placeholder="First Name" value="{{ form.first_name.value|default:'' }}">
                                 <label for="firstNameInput">Nombre</label>
+                                {% for error in form.first_name.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
                             </div>
+
                             <div class="mb-3 form-floating">
-                                <input type="text" name="last_name" required class="form-control" id="lastNameInput"
+                                <input type="text" name="last_name" required class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" id="lastNameInput"
                                        placeholder="Last Name" value="{{ form.last_name.value|default:'' }}">
                                 <label for="lastNameInput">Apellido</label>
+                                {% for error in form.last_name.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
                             </div>
+
                             <div class="mb-3 form-floating">
-                                <input type="text" name="dni" required class="form-control" id="dniInput"
+                                <input type="text" name="dni" required class="form-control {% if form.dni.errors %}is-invalid{% endif %}" id="dniInput"
                                        placeholder="DNI" value="{{ form.dni.value|default:'' }}">
                                 <label for="dniInput">DNI/NIE</label>
+                                {% for error in form.dni.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
                             </div>
+
                             <div class="mb-3 form-floating">
-                                <input type="email" name="email" required class="form-control" id="emailInput"
+                                <input type="email" name="email" required class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="emailInput"
                                        placeholder="Email" value="{{ form.email.value|default:'' }}">
                                 <label for="emailInput">Correo electrónico</label>
+                                {% for error in form.email.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
                             </div>
+
                             <div class="mb-3 form-floating">
-                                <input type="text" name="phone" required class="form-control" id="phoneInput"
+                                <input type="text" name="phone" required class="form-control {% if form.phone.errors %}is-invalid{% endif %}" id="phoneInput"
                                        placeholder="Phone" value="{{ form.phone.value|default:'' }}">
                                 <label for="phoneInput">Número de teléfono</label>
+                                {% for error in form.phone.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
                             </div>
+
                             <div class="mb-3 form-floating">
-                                <input type="password" name="password" required class="form-control" id="passwordInput"
+                                <input type="password" name="password" required class="form-control {% if form.password.errors %}is-invalid{% endif %}" id="passwordInput"
                                        placeholder="Password">
                                 <label for="passwordInput">Contraseña</label>
+                                {% for error in form.password.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
                             </div>
+
                             <div class="mb-3 form-floating">
-                                <input type="password" name="confirm_password" required class="form-control"
+                                <input type="password" name="confirm_password" required class="form-control {% if form.confirm_password.errors %}is-invalid{% endif %}"
                                        id="confirmPasswordInput" placeholder="Confirm Password">
                                 <label for="confirmPasswordInput">Confirmar contraseña</label>
+                                {% for error in form.confirm_password.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
                             </div>
+
                             <div class="mb-3 form-check">
                                 <input type="checkbox" name="has_insurance" class="form-check-input"
                                        id="id_has_insurance" {% if form.has_insurance.value %}checked{% endif %}>
                                 <label class="form-check-label" for="id_has_insurance">¿Tienes mutua?</label>
+                                {% for error in form.has_insurance.errors %}
+                                    <div class="text-danger small">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
                             </div>
+
                             <div id="insuranceNumberContainer" style="display: none;" class="mb-3 form-floating">
-                                <input type="text" name="insurance_number" class="form-control" id="id_insurance_number"
+                                <input type="text" name="insurance_number" class="form-control {% if form.insurance_number.errors %}is-invalid{% endif %}" id="id_insurance_number"
                                        placeholder="Insurance Number"
                                        value="{{ form.insurance_number.value|default:'' }}">
                                 <label for="id_insurance_number">Número de mutua</label>
+                                {% for error in form.insurance_number.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
                             </div>
+
                             <div class="text-center pt-1 mb-4">
                                 <button class="btn btn-primary btn-block" type="submit">Registrarse</button>
                             </div>
