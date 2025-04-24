@@ -747,9 +747,7 @@ def register(request):
     if request.method == 'POST':
         form = PatientForm(request.POST)
         if form.is_valid():
-            patient = form.save(commit=False)
-            patient.password = make_password(form.cleaned_data['password'])
-            patient.save()
+            form.save()
             return redirect('login')
     else:
         form = PatientForm()
