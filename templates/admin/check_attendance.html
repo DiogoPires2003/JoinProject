@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobar Asistencias | Better Health</title>
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+</head>
+<body>
+<!-- Include Navbar -->
+<div class="navbar-wrapper">
+    {% include "base/navbar.html" %}
+</div>
+
+<div class="page-wrapper d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container admin-container my-5">
+            <div class="card shadow-lg rounded-3 overflow-hidden">
+                <div class="card-body p-lg-5">
+                    <h1 class="text-center mb-4">Comprobar Asistencias</h1>
+                    <p class="text-center text-muted mb-4">Lista de asistencias de pacientes para las citas
+                        programadas.</p>
+                    <form method="get" class="mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <input type="text" name="patient" class="form-control" placeholder="Buscar por paciente"
+                                       value="{{ request.GET.patient }}">
+                            </div>
+                            <div class="col-md-4">
+                                <select name="service" class="form-select">
+                                    <option value="">Todos los servicios</option>
+                                    {% for service_id, service_name in service_map.items %}
+                                        <option value="{{ service_id }}"
+                                                {% if request.GET.service == service_id|stringformat:"s" %}
+                                                selected{% endif %}>
+                                            {{ service_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select name="attended" class="form-select">
+                                    <option value="">Todos</option>
+                                    <option value="1" {% if request.GET.attended == "1" %}selected{% endif %}>Asistió
+                                    </option>
+                                    <option value="0" {% if request.GET.attended == "0" %}selected{% endif %}>No
+                                        asistió
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                            <a href="{% url 'check_attendance' %}" class="btn btn-secondary">Restablecer</a>
+                        </div>
+                    </form>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped align-middle">
+                                <thead class="table-dark">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Servicio</th>
+                                    <th>Hora</th>
+                                    <th>Acción</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in appointments %}
+                                    <tr>
+                                        <td>
+                                            <i class="fas fa-user me-2 text-primary-light"></i>
+                                            {{ item.patient }}
+                                        </td>
+                                        <td>
+                                            <i class="fas fa-stethoscope me-2 text-muted"></i>
+                                            {{ item.service_name }}
+                                        </td>
+                                        <td>
+                                            <i class="fas fa-clock me-2 text-muted"></i>
+                                            {{ item.start_hour }}
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="form-check me-3">
+                                                    <input type="checkbox" class="form-check-input" name="attended"
+                                                           id="attended-{{ item.id }}"
+                                                           {% if item.attended %}checked{% endif %}>
+                                                    <label class="form-check-label"
+                                                           for="attended-{{ item.id }}">Asistió</label>
+                                                </div>
+                                                <button type="submit" class="btn btn-sm btn-outline-primary"
+                                                        name="appointment_id" value="{{ item.id }}">
+                                                    <i class="fas fa-save"></i> Guardar
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+
+                    {% if not appointments %}
+                        <div class="alert alert-info text-center mt-4" role="alert">
+                            <i class="fas fa-info-circle me-2"></i> No hay asistencias registradas actualmente.
+                        </div>
+                    {% endif %}
+
+                    <div class="text-center mt-5">
+                        <a href="{% url 'admin_area' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i> Volver al Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% include "base/footer.html" %}
+</div>
+
+{% bootstrap_javascript %}
+</body>
+</html>
+<style>
+    .table thead th {
+    background-color: var(--azul-profesional); /* Azul profesional */
+    color: var(--blanco); /* Texto blanco para contraste */
+}
+</style>

@@ -1,0 +1,94 @@
+{% load static %}
+{% load bootstrap5 %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Cita (Admin) | Better Health</title>
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css/edit_appointments.css' %}">
+
+</head>
+<body>
+    <div class="navbar-wrapper">
+        {% include 'base/navbar.html' %}
+    </div>
+
+    <div class="container admin-container my-5">
+         <div class="card shadow-lg rounded-3 overflow-hidden">
+            <div class="card-body p-4 p-lg-5">
+
+                <h1 class="h3 text-center mb-4">Modificar Cita Médica (Admin)</h1>
+                <p class="text-center text-muted mb-4">Paciente: <strong>{{ patient.first_name }} {{ patient.last_name }}</strong></p>
+
+                {% bootstrap_messages %}
+
+                 <div class="service-info-box">
+                    <h5><i class="fas fa-briefcase-medical me-2"></i>Servicio: {{ service_name }}</h5>
+                    <p><i class="far fa-clock me-2"></i>Duración estimada: {{ service_duration }} minutos</p>
+                 </div>
+
+                <form method="post" id="editAppointmentForm" novalidate>
+                    {% csrf_token %}
+
+                     <div class="mb-3">
+                        {% bootstrap_field form.date layout='vertical' %}
+                     </div>
+
+                    <input type="hidden" id="selectedHour" name="start_hour" value="{{ form.start_hour.value|default:appointment.start_hour|time:'H:i' }}">
+
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nuevas Horas Disponibles:</label>
+                        <div id="availableHours" class="available-hours-container border rounded p-3 bg-light">
+
+                            <small class="text-muted w-100 text-center">Seleccione una fecha para ver las horas.</small>
+                        </div>
+
+                        <div id="hour-error-message-container" class="mt-2 text-danger"></div>
+                    </div>
+
+                    <hr class="my-4">
+
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'manage_appointments' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    {% include 'base/footer.html' %}
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% bootstrap_javascript %}
+
+
+    <script>
+
+        var bookedAppointments = {{ booked_appointments|safe }};
+        var currentAppointmentId = {{ current_appointment_id }};
+        var serviceId = {{ service_id|default:'null' }};
+        var serviceDuration = {{ service_duration }};
+
+        var initialDate = "{{ form.date.value|date:'Y-m-d' }}";
+
+        var initialStartHour = "{{ form.start_hour.value|default:appointment.start_hour|time:'H:i' }}";
+    </script>
+    {% bootstrap_javascript %}
+    <script src="{% static 'js/edit_apointments_1.js' %}"></script>
+
+</body>
+</html>

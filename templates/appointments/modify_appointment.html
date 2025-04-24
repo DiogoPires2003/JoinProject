@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Cita</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/appointments.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modify_appointments.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+{% include 'base/navbar.html' %}
+
+<div class="container mt-5 mb-5">
+    <h2 class="mb-4 modify-title">Modificar Cita</h2>
+    {% if messages %}
+        <div class="alert alert-info">
+            <ul class="mb-0">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="post" class="card p-4 shadow-sm modify-form">
+        {% csrf_token %}
+
+        <div class="mb-3 appointment-info">
+            <h3 class="service-name">{{ appointment_service_name }}</h3>
+            <p class="duration-text">Duración: {{ service_duration }} minutos</p>
+            <input type="hidden" name="service_id" value="{{ appointment.service_id }}">
+            <input type="hidden" id="serviceDuration" value="{{ service_duration }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="date" class="form-label">Selecciona una nueva fecha para tu cita:</label>
+            {{ form.date }}
+        </div>
+
+        <!-- Available Hours -->
+        <div class="mb-3">
+            <label class="form-label">Horas Disponibles:</label>
+            <div id="horaDisponibles" class="available-hours">
+                <!-- Hours will be dynamically loaded here -->
+            </div>
+        </div>
+
+        <!-- Hidden inputs for selected hour -->
+        <input type="hidden" id="selectedHour" name="start_hour" value="{{ appointment.start_hour|time:'H:i' }}"/>
+        <input type="hidden" id="selectedEndHour" name="end_hour" value="{{ appointment.end_hour|time:'H:i' }}"/>
+
+        <div class="d-flex justify-content-between mt-4 form-actions">
+            <a href="{% url 'my_appointments' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> <span class="btn-text">Cancelar</span>
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> <span class="btn-text">Guardar Cambios</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+{% include 'base/footer.html' %}
+<script>
+    var bookedAppointments = {{ booked_appointments|safe }};
+    var currentAppointmentId = {{ appointment.id }};
+</script>
+<script src="{% static 'js/modify_appointments.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Dialog de confirmación -->
+<dialog id="reservaExitosaDialog" class="reserva-dialog">
+    <div class="dialog-content">
+        <div class="success-icon">
+            <i class="bi bi-check-circle"></i>
+        </div>
+        <h1 class="dialog-title">¡Cita Modificada con Éxito!</h1>
+        <p>Tu cita médica ha sido modificada correctamente. Recibirás un recordatorio por correo electrónico antes de la
+            fecha programada.</p>
+        <div class="dialog-buttons">
+            <a href="{% url 'my_appointments' %}" class="btn btn-primary view-appointments-btn">
+                <i class="bi bi-calendar-check me-1"></i> Ver Mis Citas
+            </a>
+        </div>
+    </div>
+</dialog>
+
+</body>
+</html>

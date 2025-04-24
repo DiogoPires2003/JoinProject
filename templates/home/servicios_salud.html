@@ -1,0 +1,50 @@
+{% load bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Better Health - Servicios de Salud</title>
+  {% bootstrap_css %}
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Open Sans', sans-serif; background-color: #F5F5F5; color: #03222F; margin: 0; padding: 0; }
+    h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+    .brand-logo { font-weight: bold; font-size: 1.5rem; color: #fff; }
+    .info-section { padding: 3rem 0; background-color: #F5F5F5; }
+    .content { padding: 2rem 120px; }
+    footer { background-color: #03222F; color: #fff; padding: 2rem 0; }
+
+  </style>
+</head>
+<div class="navbar-wrapper">
+    {% include 'base/navbar.html' %}
+</div>
+<body>
+
+<!-- Contenido de Servicios de Salud -->
+<main>
+  <section class="info-section">
+    <div class="container content">
+      <h1>Servicios de Salud</h1>
+      <p>
+        En Better Health ofrecemos una amplia variedad de servicios de salud, 
+        desde consultas generales y especializadas hasta pruebas diagnósticas de alta tecnología.
+      </p>
+      <p>
+        Nuestro equipo de profesionales está comprometido a brindarte atención personalizada 
+        para cuidar de tu salud y bienestar, adaptándonos a tus necesidades.
+      </p>
+      <!-- Se pueden listar servicios o incluir imágenes descriptivas -->
+    </div>
+  </section>
+</main>
+
+{% include 'base/footer.html' %}
+
+
+{% bootstrap_javascript %}
+</body>
+</html>
