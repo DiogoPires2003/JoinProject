@@ -1,0 +1,133 @@
+/* static/css/admin_dashboard.css */
+
+:root {
+    /* Colores de la guía de estilos Better Health */
+    --azul-profesional: #005F99;  /* Color primario */
+    --verde-salud: #4CAF50;       /* Énfasis, elementos relacionados a éxito o salud */
+    --gris-claro: #F5F5F5;        /* Fondo de páginas, tarjetas y formularios */
+    --gris-oscuro: #333333;       /* Texto principal */
+    --blanco: #FFFFFF;            /* Fondo y contrastes */
+    --rojo-alerta: #D32F2F;       /* Errores, alertas o atención médica urgente */
+}
+
+/* General Body and Layout Styles (similar to appointments.css) */
+body {
+    background-color: var(--gris-claro);
+    font-family: 'Inter', 'Open Sans', sans-serif;
+    color: var(--gris-oscuro);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex-grow: 1;
+}
+
+/* Inherit Navbar and Footer styles from base/includes */
+/* (Assuming base/navbar.html and base/footer.html have their own styling or rely on bootstrap) */
+
+/* Admin Container */
+.admin-container {
+    max-width: 960px; /* Adjust width as needed */
+}
+
+/* Main Admin Card */
+.admin-container .card {
+    border: none;
+    background-color: var(--blanco);
+}
+
+/* Title and Paragraph Styles */
+h1 {
+    color: var(--azul-profesional);
+    font-weight: 700;
+}
+
+h5.card-title {
+    color: var(--gris-oscuro);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.text-muted {
+    color: #6c757d !important; /* Bootstrap's muted color */
+}
+
+/* Admin Action Cards */
+.admin-action-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    background-color: var(--blanco);
+}
+
+.admin-action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 95, 153, 0.15); /* Subtle shadow with primary color hint */
+}
+
+.admin-action-card .card-body {
+    padding: 1.75rem 1rem; /* More padding */
+}
+
+.admin-action-card i.text-primary {
+    color: var(--azul-profesional) !important;
+}
+
+.admin-action-card .btn-outline-primary {
+    border-color: var(--azul-profesional);
+    color: var(--azul-profesional);
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px; /* Pill shape button */
+}
+
+.admin-action-card .btn-outline-primary:hover {
+    background-color: var(--azul-profesional);
+    color: var(--blanco);
+}
+
+/* Logout Button */
+.btn-danger {
+    background-color: var(--rojo-alerta);
+    border-color: var(--rojo-alerta);
+    color: var(--blanco);
+    padding: 12px 25px; /* Larger padding */
+    font-weight: 600;
+    border-radius: 50px; /* Pill shape */
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-danger:hover {
+    background-color: #b71c1c; /* Darker red */
+    border-color: #b71c1c;
+}
+
+/* Ensure icons have some space */
+.btn i {
+    margin-right: 8px;
+}
+
+/* Responsive adjustments if needed */
+@media (max-width: 767px) {
+    .admin-container .card-body {
+        padding: 2rem; /* Adjust padding for smaller screens */
+    }
+    h1 {
+        font-size: 2rem; /* Slightly smaller title */
+    }
+    .admin-action-card .card-body {
+        padding: 1.5rem 0.75rem;
+    }
+}

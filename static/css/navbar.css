@@ -1,0 +1,46 @@
+
+navbar-toggler {
+    position: relative;
+    margin-left: 10px; /* Pushes the button to the right */
+    margin-right: 3rem; /* Adds spacing from the edge */
+    z-index: 1050; /* Ensures it stays above other elements */
+    display: block; /* Ensures visibility */
+}
+.navbar {
+    display: flex;
+    justify-content: center; /* Centers all items horizontally */
+    align-items: center; /* Centers all items vertically */
+    flex-wrap: wrap; /* Ensures items wrap if needed */
+    width: 100%; /* Full width */
+    
+}
+
+.navbar-brand {
+    display: flex;
+    justify-content: center; /* Centers logo and brand name horizontally */
+    align-items: center; /* Centers logo and brand name vertically */
+    margin-right: 20px; /* Adds spacing between brand and nav items */
+}
+
+.navbar-nav {
+    display: flex;
+    justify-content: center; /* Centers nav items horizontally */
+    align-items: center; /* Centers nav items vertically */
+    flex-wrap: wrap; /* Ensures items wrap if needed */
+    margin: auto; /* Centers the navbar items */
+}
+
+.navbar-collapse {
+    position: absolute; /* Ensures the menu is positioned relative to the navbar */
+    top: 100%; /* Positions the menu just below the navbar */
+    width: 100%; /* Ensures the menu spans the full width of the navbar */
+    margin-bottom: 5px;
+    z-index: 1040; /* Keeps it above other elements but below the toggler */
+    overflow: hidden; /* Prevents content from overflowing */
+    background-color: #005f99;
+    text-align: center; /* Center-aligns the items */
+}
+
+.navbar-collapse.show {
+    display: block; /* Ensures the menu is visible when expanded */
+}

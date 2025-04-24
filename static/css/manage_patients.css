@@ -1,0 +1,149 @@
+.patient-card {
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    background-color: var(--blanco);
+    border-top: 3px solid var(--azul-profesional);
+    display: flex;
+    flex-direction: column;
+}
+
+.patient-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 95, 153, 0.15);
+}
+
+.patient-card .card-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
+}
+
+.patient-name {
+    color: var(--azul-profesional);
+    font-weight: 600;
+    font-size: 1.1rem;
+    line-height: 1.3;
+}
+
+.patient-name i.text-primary-light {
+    color: #4da7dd;
+    opacity: 0.9;
+}
+
+.patient-core-details {
+}
+
+.patient-info-item {
+    font-size: 0.88rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    line-height: 1.5;
+}
+
+.patient-info-item i.fa-fw {
+    width: 1.4em;
+    text-align: center;
+    color: #a0a0a0;
+    margin-right: 8px;
+}
+
+.patient-info-item .info-label {
+    font-weight: 600;
+    color: #333;
+    margin-right: 5px;
+    flex-shrink: 0;
+}
+
+.patient-email {
+    color: var(--azul-profesional);
+    word-break: break-all;
+}
+.patient-email:hover {
+    text-decoration: underline !important;
+}
+
+.patient-insurance-details {
+    border-top: 1px solid #f0f0f0;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+}
+
+.badge.bg-success-soft { }
+.badge.text-success { }
+.badge.bg-danger-soft { }
+.badge.text-danger { }
+.badge { }
+
+.patient-core-details .patient-info-item {
+    margin-bottom: 0.3rem;
+}
+.patient-core-details .patient-info-item:last-child {
+    margin-bottom: 0;
+}
+
+.patient-insurance-details .patient-info-item.small {
+    font-size: 0.8rem;
+    color: #777;
+}
+.patient-insurance-details .patient-info-item i.fa-fw {
+    color: #b0b0b0;
+}
+
+@media (max-width: 767px) {
+    .patient-card .card-body {
+        padding: 1rem;
+    }
+    .patient-name {
+        font-size: 1.05rem;
+    }
+    .patient-info-item {
+        font-size: 0.85rem;
+    }
+}
+
+.input-group .form-control:focus {
+    border-color: var(--azul-profesional);
+    box-shadow: 0 0 0 0.25rem rgba(0, 95, 153, 0.25);
+}
+
+.input-group-text {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+#noResultsMessage .alert {
+    margin-top: 1rem;
+}
+
+.patient-actions {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+    text-align: end;
+}
+
+.patient-actions .btn-sm {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.75rem;
+}
+
+.patient-actions .btn i {
+    margin-right: 4px;
+}
+
+#noResultsMessage {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .patient-actions .btn span.d-none.d-md-inline {
+        display: none !important;
+    }
+    .patient-actions .btn i {
+        margin-right: 0;
+    }
+}

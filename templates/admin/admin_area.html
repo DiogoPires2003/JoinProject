@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración | Better Health</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+</head>
+
+<body>
+<div class="navbar-wrapper">
+    {# Assuming 'base/navbar.html' is the correct path for your navbar #}
+    {% include 'base/navbar.html' %}
+</div>
+
+<div class="page-wrapper d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container admin-container my-5 d-flex flex-column justify-content-center"
+             style="min-height: 65vh;">
+            <div class="card shadow-lg rounded-3 overflow-hidden">
+                <div class="card-body p-lg-5">
+                    <h1 class="text-center mb-4">Panel de Administración</h1>
+                    <p class="text-center text-muted mb-5">Gestione la información y operaciones de la clínica.</p>
+
+                    <div class="row g-4 mb-5">
+                        {# --- Gestionar Pacientes Card --- #}
+                        {# Changed col-md-6 to col-md-4 #}
+                        <div class="col-md-4">
+                            <div class="card admin-action-card h-100">
+                                <div class="card-body d-flex flex-column align-items-center text-center">
+                                    <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Gestionar Pacientes</h5>
+                                    <p class="card-text small">Ver y editar datos de los pacientes registrados.</p>
+                                    <a href="{% url 'manage_patients' %}" class="btn btn-outline-primary mt-auto">Acceder</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# --- Comprobar Asistencias Card --- #}
+                        {# Changed col-md-6 to col-md-4 #}
+                        <div class="col-md-4">
+                            <div class="card admin-action-card h-100">
+                                <div class="card-body d-flex flex-column align-items-center text-center">
+                                    <i class="fas fa-check-circle fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Comprobar Asistencias</h5>
+                                    <p class="card-text small">Marcar y verificar la asistencia de pacientes a sus citas.</p>
+                                    <a href="{% url 'check_attendance' %}" class="btn btn-outline-primary mt-auto">Acceder</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# --- NEW: Gestionar Citas Card --- #}
+                        {# Added new card with col-md-4 #}
+                        <div class="col-md-4">
+                            <div class="card admin-action-card h-100">
+                                <div class="card-body d-flex flex-column align-items-center text-center">
+                                    {# Using fa-calendar-alt icon #}
+                                    <i class="fas fa-calendar-alt fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Gestionar Citas</h5>
+                                    <p class="card-text small">Crear, modificar o cancelar citas médicas.</p>
+                                    {# Link to a new URL 'manage_appointments' #}
+                                    <a href="{% url 'manage_appointments' %}" class="btn btn-outline-primary mt-auto">Acceder</a>
+                                </div>
+                            </div>
+                        </div>
+                        {# --- End of New Card --- #}
+
+                    </div> {# End row #}
+                </div> {# End card-body #}
+            </div> {# End card #}
+        </div> {# End container #}
+    </main>
+
+    {# Assuming 'base/footer.html' is the correct path for your footer #}
+    {% include 'base/footer.html' %}
+</div> {# End page-wrapper #}
+
+{% bootstrap_javascript %}
+</body>
+</html>

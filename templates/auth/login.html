@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LogIn</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+</head>
+<body>
+<div class="navbar-wrapper">
+    {% include 'base/navbar.html' %}
+</div>
+
+<section class="h-100 gradient-form" style="background-color:#F5F5F5;">
+    <div class="container-fluid py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-xl-10">
+                <div class="card rounded-3 text-black">
+                    <div class="row g-0">
+                        <div class="col-lg-6">
+                            <div class="card-body p-md-5 mx-md-4">
+
+                                <div class="text-center">
+                                    <img src="{% static 'images/LogoBetterHealth.webp' %}"
+                                         class="img-fluid" style="width: 50%; margin-bottom: 15%;" alt="logo">
+                                </div>
+                                <div class="text-center">
+                                    {% if error_message %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error_message }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <form class="text-center" method="post">
+                                    {% csrf_token %}
+                                    <div class="mb-3 form-floating {% if error_message %}has-danger{% endif %}">
+                                        <input type="email" name="email" required=""
+                                               class="form-control {% if error_message %}is-invalid{% endif %}"
+                                               id="emailInput" placeholder="name@example.com">
+                                        <label for="emailInput">Correo electrónico</label>
+                                    </div>
+                                    <div class="mb-4 form-floating {% if error_message %}has-danger{% endif %}">
+                                        <input type="password" name="password" required=""
+                                               class="form-control {% if error_message %}is-invalid{% endif %}"
+                                               id="passwordInput" placeholder="name@example.com">
+                                        <label for="passwordInput">Contraseña</label>
+                                    </div>
+
+                                    <div class="text-center pt-1 mb-5 pb-1">
+                                        <button data-mdb-button-init data-mdb-ripple-init
+                                                class="btn btn-primary btn-block fa-lg color:#005F99"
+                                                type="submit">Acceder
+                                        </button>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-center pb-4 flex-column">
+                                        <p class="mb-0 me-2">¿No tienes cuenta?</p>
+                                        <a href="{% url 'register' %}" class="btn btn-outline-primary mt-2"
+                                           data-mdb-button-init data-mdb-ripple-init>
+                                            Registrarse
+                                        </a>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
+                            <div class="text-content px-3 py-4 p-md-5 mx-md-4">
+                                <h4 class="mb-4 text-center text-lg-start">Tu bienestar, nuestra prioridad.</h4>
+                                <p class="small mb-0 text-center text-lg-start">Bienvenido a Better Health Clinic, donde tu bienestar es nuestra
+                                    máxima prioridad. Nuestro equipo de profesionales experimentados está dedicado a
+                                    proporcionar atención personalizada y tratamientos médicos avanzados. Únete a
+                                    nosotros en el camino hacia una mejor salud y experimenta la diferencia en nuestras
+                                    instalaciones de vanguardia.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;600;700&display=swap');
+
+    .gradient-custom-2 {
+        background: linear-gradient(to left, #4CAF50, #4CAF7A, #47A89E, rgb(43, 169, 165));
+    }
+
+    @media (min-width: 768px) {
+        .gradient-form {
+            height: 100vh !important;
+        }
+    }
+
+    @media (min-width: 769px) {
+        .gradient-custom-2 {
+            border-top-right-radius: .3rem;
+            border-bottom-right-radius: .3rem;
+        }
+    }
+
+    body {
+        font-family: 'Inter', 'Open Sans', 'Roboto', sans-serif;
+        color: #333333;
+    }
+
+    h1, h2, h3, body, p, small {
+        color: #333333;
+    }
+
+    .text-content {
+        color: #333333;
+    }
+</style>
+{% include 'base/footer.html' %}
+</body>
+</html>
