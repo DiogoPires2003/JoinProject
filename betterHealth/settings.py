@@ -35,6 +35,10 @@ EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_SSL_CONTEXT = ssl._create_unverified_context()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+CSRF_TRUSTED_ORIGINS = [
+    'https://joinproject.onrender.com',
+]
+
 AUTHENTICATION_BACKENDS = [
     'healthApp.backends.PatientAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -45,8 +49,7 @@ MIDDLEWARE = [
     'healthApp.middleware.PatientAuthenticationMiddleware',
 ]
 
-ALLOWED_HOSTS = []
-# Application definition
+ALLOWED_HOSTS = ['joinproject.onrender.com', '0.0.0.0']# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -68,7 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-  
+
 ]
 
 ROOT_URLCONF = 'betterHealth.urls'
@@ -134,22 +137,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",  # Esto asume que la carpeta 'assets' está en la raíz del proyecto.
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    BASE_DIR / 'static', 
-]
-
-STATIC_ROOT = BASE_DIR / 'staticfiles'  
