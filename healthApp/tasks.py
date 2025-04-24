@@ -15,9 +15,9 @@ def send_appointment_reminder(appointment_id):
 
         # Send the email
         send_mail(
-            subject="Appointment Reminder",
-            message=f"Dear {appointment.patient_name},\n\nThis is a reminder for your appointment on {appointment.date}.",
-            from_email="your_email@example.com",  # Replace with your email
+            subject="Recordatorio de cita",
+            message=f"Estimado/a {appointment.patient_name},\n\nEste es un recordatorio de su cita el {appointment.date}.",
+            from_email="tu_correo@example.com",  # Reemplaza con tu correo
             recipient_list=[appointment.patient_email],
         )
     except Appointment.DoesNotExist:
