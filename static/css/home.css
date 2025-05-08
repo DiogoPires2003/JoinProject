@@ -1,10 +1,10 @@
 /* 1. Variables globales y reset */
 :root {
-  --primary: #004d80;
+  --primary: #000000;
   --secondary: #007acc;
-  --accent: #ffb400;
+  --accent: #ffffff;
   --bg-light: #f4f7fa;
-  --text-dark: #1a2a33;
+  --text-dark: #346d8f;
   --white: #ffffff;
 }
 
