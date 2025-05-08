@@ -15,13 +15,13 @@ body {
     background-color: #005F99;
     width: 100%;
     display: flex;
-    align-items: flex-start;       /* alinea al inicio para aplicar padding-top */
+    align-items: flex-start;
     justify-content: space-between;
     height: 125px;
-    padding: 10px 2.5rem;
+    padding: 10px 2.5rem; /* Mantenemos padding general */
 }
 
-/* Logo y texto */
+/* Logo y texto (sin cambios) */
 .navbar-brand {
     display: flex;
     align-items: center;
@@ -40,22 +40,22 @@ body {
     margin-left: 0.5rem;
 }
 
-/* Menú principal */
+/* Menú principal - Modificado */
 .navbar-menu {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.65rem; /* Reducido de 1rem */
     list-style: none;
     height: 100%;
-    margin-left: -5px;
+    margin-left: -30px; /* Aumentado el margen negativo */
 }
 
-/* Enlaces normales */
+/* Enlaces normales - Modificado */
 .navbar-menu .nav-link {
     color: #fff;
     text-decoration: none;
     font-weight: 500;
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 0.6rem; /* Reducido padding horizontal */
     border-radius: 0.25rem;
     transition: background-color 0.2s, color 0.2s;
     line-height: 1;
@@ -66,11 +66,11 @@ body {
     color: #f1f1f1;
 }
 
-/* Botones “success” */
+/* Botones “success” - Modificado */
 .navbar-menu .btn-success {
     background-color: #4CAF50;
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.8rem; /* Reducido de 1rem */
     font-weight: 600;
     border-radius: 0.25rem;
     transition: background-color 0.2s;
