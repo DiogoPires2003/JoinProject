@@ -1,63 +1,84 @@
-body {
+/* Reset básico */
+* {
     margin: 0;
     padding: 0;
-    font-family: 'Open Sans', sans-serif;
-}
-
-.navbar {
-    background-color: #003366;
-    padding: 0.5rem 2.55rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
     box-sizing: border-box;
 }
 
+/* Body */
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
+/* Navbar contenedor */
+.navbar {
+    background-color: #005F99;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;       /* alinea al inicio para aplicar padding-top */
+    justify-content: space-between;
+    height: 125px;
+    padding: 10px 2.5rem;
+}
+
+/* Logo y texto */
 .navbar-brand {
     display: flex;
     align-items: center;
+    height: 100%;
+}
+
+.navbar-brand img {
+    height: 95px;
+    width: auto;
 }
 
 .navbar-brand span {
+    color: #fff;
     font-weight: 600;
-    color: white;
     font-size: 1.2rem;
-    margin-left: 10px;
+    margin-left: 0.5rem;
 }
 
+/* Menú principal */
 .navbar-menu {
     display: flex;
-    gap: 1rem;
     align-items: center;
-    margin: 0;
-    padding: 0;
+    gap: 1rem;
     list-style: none;
+    height: 100%;
+    margin-left: -5px;
 }
 
-.nav-link {
-    color: white !important;
+/* Enlaces normales */
+.navbar-menu .nav-link {
+    color: #fff;
+    text-decoration: none;
     font-weight: 500;
     padding: 0.5rem 0.75rem;
-    text-decoration: none;
-    transition: color 0.2s ease, background-color 0.2s ease;
     border-radius: 0.25rem;
+    transition: background-color 0.2s, color 0.2s;
+    line-height: 1;
 }
 
-.nav-link:hover {
-    color: #a6e1fa !important;
+.navbar-menu .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
+    color: #f1f1f1;
 }
 
-.btn-success {
-    background-color: #28a745;
+/* Botones “success” */
+.navbar-menu .btn-success {
+    background-color: #4CAF50;
     border: none;
     padding: 0.5rem 1rem;
     font-weight: 600;
-    transition: background-color 0.2s ease;
     border-radius: 0.25rem;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    height: auto;
 }
 
-.btn-success:hover {
-    background-color: #218838;
+.navbar-menu .btn-success:hover {
+    background-color: #45a049;
 }

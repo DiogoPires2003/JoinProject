@@ -7,21 +7,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Better Health - Contacto</title>
   {% bootstrap_css %}
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <!-- CSS específico para Contacto -->
   <link rel="stylesheet" href="{% static 'css/contacto.css' %}">
 </head>
 <body>
+  <!-- Navbar -->
   <div class="navbar-wrapper">
     {% include 'navbar.html' %}
   </div>
 
   <main>
-    <section class="contact-section py-5">
+    <!-- Sección de contacto -->
+    <section class="contact-section">
       <div class="container content">
         <h1>Contacto</h1>
         <p>¿Tienes alguna pregunta o necesitas más información? Completa el siguiente formulario y nos pondremos en contacto contigo lo antes posible.</p>
 
+        <!-- Formulario principal con validación -->
         <form method="post" action="" class="needs-validation" novalidate>
           {% csrf_token %}
           <div class="form-group mb-3">
@@ -45,7 +51,7 @@
     </section>
 
     <!-- Información de contacto -->
-    <section class="contact-info-section py-4 bg-light">
+    <section class="contact-info-section">
       <div class="container content">
         <h2>Información de Contacto</h2>
         <p><i class="fas fa-phone-alt"></i> Teléfono: <strong>+34 973 000 123</strong></p>
@@ -54,23 +60,24 @@
       </div>
     </section>
 
-    <!-- Botón flotante para solicitar llamada -->
-    <div class="call-request position-fixed bottom-0 end-0 m-3">
-      <p>¿Prefieres que te llamemos?</p>
-      <form method="post" action="" class="needs-validation" novalidate>
+    <!-- Botón flotante para solicitar llamada (no obligatorio) -->
+    <div class="call-request position-fixed">
+      <p class="call-request-header"><i class="fas fa-phone-alt"></i> ¿Prefieres que te llamemos?</p>
+      <form method="post" action="">
         {% csrf_token %}
         <div class="input-group">
-          <input type="tel" name="telefono" class="form-control" placeholder="Tu número de teléfono" required>
-          <button class="btn btn-success" type="submit">Solicitar</button>
-          <div class="invalid-feedback">Introduce tu teléfono.</div>
+          <input type="tel" name="telefono" class="form-control" placeholder="Tu número de teléfono">
+          <button class="btn-call btn" type="submit">Solicitar</button>
         </div>
       </form>
     </div>
   </main>
 
+  <!-- Footer -->
   {% include 'footer.html' %}
   {% bootstrap_javascript %}
 
+  <!-- Script de validación -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       var forms = document.querySelectorAll('.needs-validation');
