@@ -1,46 +1,84 @@
-
-navbar-toggler {
-    position: relative;
-    margin-left: 10px; /* Pushes the button to the right */
-    margin-right: 3rem; /* Adds spacing from the edge */
-    z-index: 1050; /* Ensures it stays above other elements */
-    display: block; /* Ensures visibility */
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
+
+/* Body */
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
+/* Navbar contenedor */
 .navbar {
+    background-color: #005F99;
+    width: 100%;
     display: flex;
-    justify-content: center; /* Centers all items horizontally */
-    align-items: center; /* Centers all items vertically */
-    flex-wrap: wrap; /* Ensures items wrap if needed */
-    width: 100%; /* Full width */
-    
+    align-items: flex-start;
+    justify-content: space-between;
+    height: 125px;
+    padding: 10px 2.5rem; /* Mantenemos padding general */
 }
 
+/* Logo y texto (sin cambios) */
 .navbar-brand {
     display: flex;
-    justify-content: center; /* Centers logo and brand name horizontally */
-    align-items: center; /* Centers logo and brand name vertically */
-    margin-right: 20px; /* Adds spacing between brand and nav items */
+    align-items: center;
+    height: 100%;
 }
 
-.navbar-nav {
+.navbar-brand img {
+    height: 95px;
+    width: auto;
+}
+
+.navbar-brand span {
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-left: 0.5rem;
+}
+
+/* Menú principal - Modificado */
+.navbar-menu {
     display: flex;
-    justify-content: center; /* Centers nav items horizontally */
-    align-items: center; /* Centers nav items vertically */
-    flex-wrap: wrap; /* Ensures items wrap if needed */
-    margin: auto; /* Centers the navbar items */
+    align-items: center;
+    gap: 1.65rem; /* Reducido de 1rem */
+    list-style: none;
+    height: 100%;
+    margin-left: -30px; /* Aumentado el margen negativo */
 }
 
-.navbar-collapse {
-    position: absolute; /* Ensures the menu is positioned relative to the navbar */
-    top: 100%; /* Positions the menu just below the navbar */
-    width: 100%; /* Ensures the menu spans the full width of the navbar */
-    margin-bottom: 5px;
-    z-index: 1040; /* Keeps it above other elements but below the toggler */
-    overflow: hidden; /* Prevents content from overflowing */
-    background-color: #005f99;
-    text-align: center; /* Center-aligns the items */
+/* Enlaces normales - Modificado */
+.navbar-menu .nav-link {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 0.6rem; /* Reducido padding horizontal */
+    border-radius: 0.25rem;
+    transition: background-color 0.2s, color 0.2s;
+    line-height: 1;
 }
 
-.navbar-collapse.show {
-    display: block; /* Ensures the menu is visible when expanded */
+.navbar-menu .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #f1f1f1;
+}
+
+/* Botones “success” - Modificado */
+.navbar-menu .btn-success {
+    background-color: #4CAF50;
+    border: none;
+    padding: 0.5rem 0.8rem; /* Reducido de 1rem */
+    font-weight: 600;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    height: auto;
+}
+
+.navbar-menu .btn-success:hover {
+    background-color: #45a049;
 }

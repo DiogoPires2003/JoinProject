@@ -1,0 +1,31 @@
+{% load static %}
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+</head>
+
+<nav class="navbar">
+  <!-- Logo / Marca -->
+  <a class="navbar-brand" href="{% url 'home' %}">
+    <img src="{% static 'images/LogoBetterHealthPetit.png' %}" alt="Better Health Logo">
+    <span>Better Health</span>
+  </a>
+
+  <!-- Menú horizontal -->
+  <ul class="navbar-menu">
+    <li><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+    <li><a class="nav-link" href="{% url 'nosotros' %}">Nosotros</a></li>
+    <li><a class="nav-link" href="{% url 'centros' %}">Centros</a></li>
+    <li><a class="nav-link" href="{% url 'servicios_salud' %}">Servicios de salud</a></li>
+    <li><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+    <li><a class="nav-link" href="{% url 'my_appointments' %}">Mis Citas</a></li>
+    <li><a class="btn btn-success" href="{% url 'appointment_list' %}">Pedir Cita</a></li>
+    <li>
+      {% if request.session.patient_id %}
+        <a class="btn btn-success" href="{% url 'logout' %}">Cerrar sesión</a>
+      {% else %}
+        <a class="btn btn-success" href="{% url 'login' %}">Acceder/Registrar-se</a>
+      {% endif %}
+    </li>
+  </ul>
+</nav>

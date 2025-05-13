@@ -1,0 +1,134 @@
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #F5F5F5;
+    color: #03222F;
+    margin: 0;
+    padding: 0;
+  }
+  
+  h1, h2, h3 {
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  /* Sección de Información */
+  .info-section {
+    padding: 3rem 0;
+    background-color: #F5F5F5;
+  }
+  
+  .container.content {
+    padding: 2rem 120px;
+  }
+  
+  h1 {
+    text-align: center;
+    font-size: 2.75rem;
+    margin-bottom: 1.5rem;
+    color: #005F99;
+  }
+  
+  p {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    text-align: justify;
+  }
+  
+  /* Lista de Centros */
+  .centers-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+  }
+  
+  .center-card {
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .center-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  }
+  
+  .center-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .center-info {
+    padding: 1.5rem;
+  }
+  
+  .center-info h2 {
+    font-size: 1.75rem;
+    color: #005F99;
+    margin-bottom: 0.75rem;
+  }
+  
+  .center-info p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1rem;
+  }
+  
+  .center-info a.btn {
+    background-color: #005F99;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .center-info a.btn:hover {
+    background-color: #00477a;
+  }
+  
+  /* Sección del Mapa */
+  .map-section {
+    text-align: center;
+    margin-top: 3rem;
+  }
+  
+  .map-section h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #005F99;
+  }
+  
+  .map-section p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 2rem;
+  }
+  
+  .map-image {
+    width: 100%;
+    max-width: 800px;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Responsividad */
+  @media (max-width: 768px) {
+    .container.content {
+      padding: 2rem 30px;
+    }
+    .centers-list {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  

@@ -7,44 +7,262 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Better Health - Servicios de Salud</title>
   {% bootstrap_css %}
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <style>
     body { font-family: 'Open Sans', sans-serif; background-color: #F5F5F5; color: #03222F; margin: 0; padding: 0; }
     h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-    .brand-logo { font-weight: bold; font-size: 1.5rem; color: #fff; }
-    .info-section { padding: 3rem 0; background-color: #F5F5F5; }
+    .info-section { padding: 4rem 0; background-color: #F5F5F5; }
     .content { padding: 2rem 120px; }
+    .service-item .card {
+      border: none;
+      border-radius: 0.75rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .service-item .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }
+    .service-icon {
+      font-size: 2.5rem;
+      color: #0d6efd;
+      margin-bottom: 0.75rem;
+    }
+    .card-body { text-align: center; }
+    .card-title { font-family: 'Montserrat', sans-serif; font-weight: 600; color: #03222F; margin-bottom: 0.5rem; }
+    .card-text { font-size: 0.95rem; line-height: 1.5; color: #4a4a4a; }
     footer { background-color: #03222F; color: #fff; padding: 2rem 0; }
-
   </style>
 </head>
-<div class="navbar-wrapper">
-    {% include 'base/navbar.html' %}
-</div>
 <body>
+  <div class="navbar-wrapper">
+    {% include 'navbar.html' %}
+  </div>
 
-<!-- Contenido de Servicios de Salud -->
-<main>
-  <section class="info-section">
-    <div class="container content">
-      <h1>Servicios de Salud</h1>
-      <p>
-        En Better Health ofrecemos una amplia variedad de servicios de salud, 
-        desde consultas generales y especializadas hasta pruebas diagnósticas de alta tecnología.
-      </p>
-      <p>
-        Nuestro equipo de profesionales está comprometido a brindarte atención personalizada 
-        para cuidar de tu salud y bienestar, adaptándonos a tus necesidades.
-      </p>
-      <!-- Se pueden listar servicios o incluir imágenes descriptivas -->
-    </div>
-  </section>
-</main>
+  <main>
+    <section class="info-section">
+      <div class="container content">
+        <h1 class="mb-4 text-center">Servicios de Salud</h1>
+         <p class="lead">
+          En <strong>Better Health</strong> nos comprometemos a ofrecer un servicio de salud integral, orientado a cubrir todas las etapas de tu cuidado médico. Nuestra misión es brindar soluciones clínicas de alta calidad, respaldadas por la última tecnología diagnóstica y un equipo multidisciplinar de profesionales especializados.
+        </p>
+        <p>
+          Disponemos de <strong>consultas médicas generales</strong> para el seguimiento preventivo de tu estado de salud, así como <strong>consultas de especialidad</strong> en Cardiología, Dermatología, Neurología, Ginecología y Pediatría. Cada una de ellas está diseñada para proporcionar diagnósticos precisos y planes de tratamiento personalizados.
+        </p>
+        <p>
+          Nuestra área de <strong>pruebas diagnósticas</strong> incluye desde análisis de sangre completos y electrocardiogramas, hasta ecografías abdominales, resonancias magnéticas y colonoscopias. Gracias a equipos de última generación, garantizamos resultados fiables en tiempos reducidos.
+        </p>
+        <p>
+          Además, ofrecemos <strong>terapias</strong> como fisioterapia rehabilitadora y sesiones de psicología clínica, orientadas a recuperar tu bienestar físico y emocional. Para intervenciones menores, contamos con procedimientos como extracción de lunar, y en materia de <strong>prevención</strong> disponemos de programas de vacunación antigripal y pruebas de esfuerzo.
+        </p>
+        <p>
+          En cada servicio, nuestro objetivo es ser tu aliado en el camino hacia una vida más saludable, brindando atención cercana, profesional y centrada en tus necesidades reales.
+        </p>
+        <div class="row mt-5">
+          <!-- Consulta médica general -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-stethoscope service-icon"></i>
+                <h5 class="card-title">Consulta médica general</h5>
+                <p class="card-text">Revisión completa de tu salud y orientación preventiva para disfrutar de una vida saludable.</p>
+              </div>
+            </div>
+          </div>
 
-{% include 'base/footer.html' %}
+          <!-- Cardiología -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-heartbeat service-icon"></i>
+                <h5 class="card-title">Consulta de especialidad (Cardiología)</h5>
+                <p class="card-text">Evaluación avanzada del sistema cardiovascular con pruebas específicas de diagnóstico.</p>
+              </div>
+            </div>
+          </div>
 
+          <!-- Dermatología -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-user-md service-icon"></i>
+                <h5 class="card-title">Consulta de especialidad (Dermatología)</h5>
+                <p class="card-text">Diagnóstico y tratamiento de afecciones cutáneas para una piel saludable y radiante.</p>
+              </div>
+            </div>
+          </div>
 
-{% bootstrap_javascript %}
+          <!-- Neurología -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-brain service-icon"></i>
+                <h5 class="card-title">Consulta de especialidad (Neurología)</h5>
+                <p class="card-text">Valoración de trastornos neurológicos con técnicas de diagnóstico y seguimiento especializados.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Análisis de sangre completo -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-tint service-icon"></i>
+                <h5 class="card-title">Análisis de sangre completo</h5>
+                <p class="card-text">Examen detallado de tu perfil hematológico para descubrir indicadores clave de salud.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Electrocardiograma -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-heart service-icon"></i>
+                <h5 class="card-title">Electrocardiograma (ECG)</h5>
+                <p class="card-text">Registro preciso de la actividad eléctrica cardíaca para detectar arritmias y bloqueos.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ecografía abdominal -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-wave-square service-icon"></i>
+                <h5 class="card-title">Ecografía abdominal</h5>
+                <p class="card-text">Imágenes por ultrasonido para evaluar órganos y detectar patologías abdominales.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resonancia Magnética -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-microscope service-icon"></i>
+                <h5 class="card-title">Resonancia Magnética (RMN)</h5>
+                <p class="card-text">Imágenes de alta resolución que facilitan diagnósticos sin exposición a radiación.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Radiografía de tórax -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-x-ray service-icon"></i>
+                <h5 class="card-title">Radiografía de tórax</h5>
+                <p class="card-text">Exploración rápida del tórax para evaluar pulmones, corazón y estructuras óseas.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Colonoscopia -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-notes-medical service-icon"></i>
+                <h5 class="card-title">Colonoscopia</h5>
+                <p class="card-text">Inspección endoscópica para detección y prevención de patologías del colon.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fisioterapia rehabilitadora -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-wheelchair service-icon"></i>
+                <h5 class="card-title">Fisioterapia rehabilitadora</h5>
+                <p class="card-text">Programas personalizados para recuperación funcional tras lesiones o cirugías.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Psicología clínica -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-hands-holding-heart service-icon"></i>
+                <h5 class="card-title">Sesión de psicología clínica</h5>
+                <p class="card-text">Acompañamiento terapéutico para tu bienestar emocional y mental.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Consulta de ginecología -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-female service-icon"></i>
+                <h5 class="card-title">Consulta de ginecología</h5>
+                <p class="card-text">Atención integral en salud reproductiva y prevención de enfermedades ginecológicas.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Consulta de pediatría -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-baby service-icon"></i>
+                <h5 class="card-title">Consulta de pediatría</h5>
+                <p class="card-text">Cuidado especializado para el desarrollo y bienestar de los más pequeños.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Extracción de lunar -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-cut service-icon"></i>
+                <h5 class="card-title">Extracción de lunar</h5>
+                <p class="card-text">Procedimiento seguro para eliminación y análisis de pequeñas lesiones cutáneas.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vacunación antigripal -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-syringe service-icon"></i>
+                <h5 class="card-title">Vacunación antigripal</h5>
+                <p class="card-text">Protección anual contra la gripe estacional para ti y tu familia.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ergometría -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-running service-icon"></i>
+                <h5 class="card-title">Ergometría (Prueba de esfuerzo)</h5>
+                <p class="card-text">Monitorización exhaustiva de la respuesta cardiovascular al ejercicio.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Holter de presión arterial -->
+          <div class="col-md-6 col-lg-4 service-item mb-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <i class="fas fa-procedures service-icon"></i>
+                <h5 class="card-title">Holter de presión arterial</h5>
+                <p class="card-text">Seguimiento de la presión arterial 24/7 para análisis preciso de tu salud cardiovascular.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  {% include 'footer.html' %}
+  {% bootstrap_javascript %}
 </body>
 </html>

@@ -5,51 +5,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Better Health - Nosotros</title>
+  <title>Better Health - Sobre Nosotros</title>
   {% bootstrap_css %}
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <style>
-    html, body {
-      height: 100%; margin: 0; padding: 0;
-      font-family: 'Open Sans', sans-serif;
-      background-color: #F5F5F5;
-      color: #03222F;
-    }
-    h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-    .brand-logo { font-weight: bold; font-size: 1.5rem; color: #fff; }
-    .info-section { padding: 3rem 0; background-color: #F5F5F5; }
-    .content { padding: 2rem 120px; }
-    .navbar .nav-link {
-      white-space: nowrap; display: flex; align-items: center;
-    }
-  </style>
+  <!-- Enlace al archivo CSS optimizado -->
+  <link href="{% static 'css/nosotros.css' %}" rel="stylesheet">
 </head>
-<div class="navbar-wrapper">
-    {% include 'base/navbar.html' %}
-</div>
 <body>
+  <div class="navbar-wrapper">
+    {% include 'navbar.html' %}
+  </div>
+
+  <!-- Sección Hero -->
+  <header class="hero">
+    <div class="container">
+      <h1 class="hero-title">Bienvenido a Better Health</h1>
+      <p class="hero-subtitle">Excelencia en Atención Médica Integral</p>
+    </div>
+  </header>
 
   <main>
+    <!-- Sección Sobre Nosotros -->
     <section class="info-section">
       <div class="container content">
         <h1>Sobre Nosotros</h1>
         <p>
-          En Better Health, nos dedicamos a ofrecer servicios médicos integrales, 
-          combinando tecnología de punta y un equipo profesional comprometido con tu salud.
+          En <strong>Better Health</strong>, creemos que la salud es el pilar fundamental para una vida plena. Por ello, trabajamos cada día con pasión, responsabilidad y excelencia para brindar una atención médica de calidad, humana y cercana. Nuestra misión es clara: ofrecer soluciones integrales de salud que mejoren la calidad de vida de nuestros pacientes.
         </p>
         <p>
-          Nuestra clínica cuenta con modernas instalaciones y centros distribuidos en diversas ubicaciones. 
-          Nuestro compromiso es brindar atención personalizada en cada consulta.
+          Contamos con un equipo multidisciplinario de profesionales altamente cualificados, especialistas en áreas como medicina general, pediatría, ginecología, cardiología, dermatología, entre muchas otras. Cada uno de ellos aporta no solo su conocimiento y experiencia, sino también un trato personalizado que genera confianza y tranquilidad en quienes nos eligen.
+        </p>
+        <p>
+          En Better Health apostamos por la innovación. Incorporamos constantemente tecnología médica de última generación, desde sistemas digitales de gestión clínica hasta equipamiento diagnóstico avanzado. Esto nos permite ofrecer un servicio eficiente, seguro y adaptado a las necesidades de cada persona.
+        </p>
+        <p>
+          Además, trabajamos bajo los más altos estándares éticos y de calidad. Nos comprometemos con la mejora continua, la formación constante de nuestro personal y la implementación de prácticas sostenibles y responsables con la sociedad.
+        </p>
+        <p>
+          Better Health es más que una clínica: es un espacio de confianza, donde tu salud y la de tus seres queridos es nuestra prioridad. Gracias por permitirnos acompañarte en cada etapa de tu vida.
         </p>
       </div>
     </section>
+
+    <!-- Galería de Imágenes -->
+    <section class="image-gallery">
+      <img src="{% static 'images/sala.jpg' %}" alt="Interior de clínica moderna">
+      <img src="{% static 'images/betterhealth.jpg' %}" alt="Interior de clínica moderna">
+    </section>
+
+    <!-- Sección de Contacto -->
+    <section class="contact-section">
+      <div class="container">
+        <h2>Contacto</h2>
+        <p><strong>Dirección:</strong> Calle Inventada, 23, 25000 Lleida, España</p>
+        <p><strong>Teléfono:</strong> +34 973 000 123</p>
+        <p><strong>Email:</strong> contacto@betterhealthclinic.es</p>
+      </div>
+    </section>
   </main>
-<!-- Footer -->
 
-{% include 'base/footer.html' %}
-
-
-{% bootstrap_javascript %}
+  {% include 'footer.html' %}
+  {% bootstrap_javascript %}
 </body>
 </html>

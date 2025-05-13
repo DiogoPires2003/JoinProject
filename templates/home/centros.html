@@ -7,42 +7,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Better Health - Centros</title>
   {% bootstrap_css %}
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <style>
-    body { font-family: 'Open Sans', sans-serif; background-color: #F5F5F5; color: #03222F; margin: 0; padding: 0; }
-    h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
-    .brand-logo { font-weight: bold; font-size: 1.5rem; color: #fff; }
-    .info-section { padding: 3rem 0; background-color: #F5F5F5; }
-    .content { padding: 2rem 120px; }
-    footer { background-color: #03222F; color: #fff; padding: 2rem 0; }
-
-  </style>
+  <!-- Enlace al CSS específico para Centros -->
+  <link rel="stylesheet" href="{% static 'css/centros.css' %}">
 </head>
-<div class="navbar-wrapper">
-    {% include 'base/navbar.html' %}
-</div>
 <body>
+  <div class="navbar-wrapper">
+    {% include 'navbar.html' %}
+  </div>
 
-<!-- Contenido de Centros -->
-<main>
-  <section class="info-section">
-    <div class="container content">
-      <h1>Nuestros Centros</h1>
-      <p>
-        Conoce nuestros centros de atención médica, distribuidos en las principales ciudades. 
-        Cada centro está equipado con tecnología de punta y un equipo profesional comprometido
-        con tu salud.
-      </p>
-      <!-- Se podría incluir un mapa o listado -->
-      <img src="{% static 'images/centros.webp' %}" alt="Mapa de centros" style="width:100%; max-width:800px;">
-    </div>
-  </section>
-</main>
+  <main>
+    <!-- Sección de Información y Presentación de Centros -->
+    <section class="info-section">
+      <div class="container content">
+        <h1>Nuestros Centros</h1>
+        <p>
+          Conoce nuestros centros de atención médica, distribuidos en las principales ciudades. Cada centro está equipado con tecnología de punta y un equipo profesional comprometido con tu salud. Nos esforzamos por ofrecer una atención personalizada y accesible en cada ubicación.
+        </p>
+        
+        <!-- Lista de Centros -->
+        <div class="centers-list">
+          <!-- Centro Activo -->
+          <article class="center-card">
+            <img src="{% static 'images/betterhealth.jpg' %}" alt="Centro Salud Lleida" class="center-image">
+            <div class="center-info">
+              <h2>Centro Salud Lleida</h2>
+              <p>
+                Ubicado en el corazón de Lleida, nuestro centro cuenta con modernas instalaciones, personal especializado y tecnología avanzada para ofrecer la mejor atención a nuestros pacientes.
+              </p>
+              <a href="#" class="btn btn-primary">Ver más</a>
+            </div>
+          </article>
+          
+          <!-- Centro en Construcción -->
+          <article class="center-card">
+            <img src="{% static 'images/centro_construcción.jpg' %}" alt="Centro en Construcción" class="center-image">
+            <div class="center-info">
+              <h2>Centro en Construcción</h2>
+              <p>
+                Próximamente inauguraremos este centro para ampliar nuestra red de atención médica. ¡Mantente atento a las novedades y sé el primero en conocer nuestras innovadoras instalaciones!
+              </p>
+              <a href="#" class="btn btn-secondary disabled">Próximamente</a>
+            </div>
+          </article>
+        </div>
 
-{% include 'base/footer.html' %}
+        <!-- Sección Mapa Interactivo -->
+        <div class="map-section">
+          <h2>Encuentra tu Centro</h2>
+          <p>
+            Utiliza nuestro mapa interactivo para localizar el centro de atención más cercano a tu ubicación y descubre cómo llegar de forma rápida y sencilla.
+          </p>
+          <img src="{% static 'images/mapa.jpg' %}" alt="Mapa de centros" class="map-image">
+        </div>
+      </div>
+    </section>
+  </main>
 
-
-{% bootstrap_javascript %}
+  {% include 'footer.html' %}
+  {% bootstrap_javascript %}
 </body>
 </html>

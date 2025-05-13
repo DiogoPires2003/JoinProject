@@ -3,93 +3,91 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Better Health - Home</title>
-    {% bootstrap_css %}
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap"
-          rel="stylesheet">
-    <!-- Font Awesome for icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Better Health - Home</title>
+  {% bootstrap_css %}
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <!-- Enlace al CSS optimizado para la Home -->
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
-<!-- Navbar -->
-<div class="navbar-wrapper">
-    {% include 'base/navbar.html' %}
-</div>
 <body>
-<main>
-    <!-- Hero -->
-    <section class="hero">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h1 class="hero-title">Bienvenido a Better Health</h1>
-                    <p class="hero-subtitle">
-                        Descubre cómo acceder a tus resultados y gestiona tus citas en un solo lugar.
-                    </p>
-                    <div class="mb-4">
-                        <a href="#" class="btn-info">Más información</a>
-                    </div>
-                </div>
-                <div class="col-md-6 text-center">
-                    <img src="{% static 'images/hero-image.webp' %}" alt="Persona usando móvil para gestionar salud"
-                         class="hero-img">
-                </div>
+  <div class="navbar-wrapper">
+    {% include 'navbar.html' %}
+  </div>
+
+  <main>
+    <!-- Sección Hero con efecto parallax y animación -->
+    <header class="hero">
+      <div class="overlay"></div>
+      <div class="container hero-content">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <h1 class="hero-title">Bienvenido a Better Health</h1>
+            <p class="hero-subtitle">
+              Descubre una nueva forma de cuidar tu salud a través de tecnología y atención de calidad.
+            </p>
+            <div class="hero-buttons">
+              <a href="{% url 'nosotros' %}" class="btn btn-info hero-btn">Más información</a>
             </div>
+          </div>
+          <div class="col-md-6 text-center">
+            <img src="{% static 'images/hero-image.jpg' %}" alt="Persona usando móvil para gestionar salud" class="hero-img">
+          </div>
         </div>
-    </section>
+      </div>
+    </header>
 
-    <!-- Servicios -->
-    <section class="info-section">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2>¿Qué podemos ofrecerte?</h2>
-                <p>Servicios de salud integrales para ti y tu familia</p>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card info-card p-3">
-                        <img src="{% static 'images/servicio1.webp' %}" class="card-img-top" alt="Consulta médica">
-                        <div class="card-body">
-                            <h5 class="card-title">Consulta Médica</h5>
-                            <p class="card-text">Realiza consultas presenciales u online con nuestros especialistas.</p>
-                            <a href="#" class="btn btn-primary">Saber más</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card info-card p-3">
-                        <img src="{% static 'images/servicio2.webp' %}" class="card-img-top" alt="Pruebas diagnósticas">
-                        <div class="card-body">
-                            <h5 class="card-title">Pruebas Diagnósticas</h5>
-                            <p class="card-text">Accede a análisis clínicos, radiografías y otros servicios de
-                                diagnóstico.</p>
-                            <a href="#" class="btn btn-primary">Saber más</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card info-card p-3">
-                        <img src="{% static 'images/servicio3.webp' %}" class="card-img-top"
-                             alt="Atención médica 24 horas">
-                        <div class="card-body">
-                            <h5 class="card-title">Atención 24/7</h5>
-                            <p class="card-text">Recibe asistencia médica de urgencia en nuestros centros
-                                disponibles.</p>
-                            <a href="#" class="btn btn-primary">Saber más</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Sección de Servicios con animación de aparición -->
+    <section class="info-section fade-in">
+      <div class="container">
+        <div class="section-header text-center mb-5">
+          <h2>Nuestros Servicios</h2>
+          <p>Soluciones integrales de salud para ti y tu familia</p>
         </div>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="card info-card">
+              <img src="{% static 'images/servicio1.jpg' %}" class="card-img-top" alt="Consulta Médica">
+              <div class="card-body">
+                <h5 class="card-title">Consulta Médica</h5>
+                <p class="card-text">Realiza consultas presenciales u online con nuestros especialistas.</p>
+                <a href="{% url 'contacto' %}" class="btn btn-primary">Saber más</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card info-card">
+              <img src="{% static 'images/servicio2.jpg' %}" class="card-img-top" alt="Pruebas Diagnósticas">
+              <div class="card-body">
+                <h5 class="card-title">Pruebas Diagnósticas</h5>
+                <p class="card-text">Accede a análisis clínicos, radiografías y otros servicios de diagnóstico en nuestro catalogo.</p>
+                <a href="{% url 'servicios_salud' %}" class="btn btn-primary">Saber más</a>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card info-card">
+              <img src="{% static 'images/servicio3.jpg' %}" class="card-img-top" alt="Atención 24/7">
+              <div class="card-body">
+                <h5 class="card-title">Gestión de Citas Online</h5>
+                <p class="card-text">Reserva, consulta o cancela tus citas fácilmente desde nuestra plataforma web.
+                  .</p>
+                <!-- Botón modificado para redirigir a la página de Centros -->
+                <a href="{% url 'my_appointments' %}" class="btn btn-primary">Saber más</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
-</main>
+  </main>
 
-{% include 'base/footer.html' %}
-
-{% bootstrap_javascript %}
+  {% include 'footer.html' %}
+  {% bootstrap_javascript %}
 </body>
 </html>
