@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Better Health - Centros</title>
+  <title>Better Health - Información Útil</title>
   {% bootstrap_css %}
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -24,24 +24,21 @@
 </div>
 <body>
 
-<!-- Contenido de Centros -->
+<!-- Contenido de Información Útil -->
 <main>
   <section class="info-section">
     <div class="container content">
-      <h1>Nuestros Centros</h1>
+      <h1>Información Útil</h1>
       <p>
-        Conoce nuestros centros de atención médica, distribuidos en las principales ciudades. 
-        Cada centro está equipado con tecnología de punta y un equipo profesional comprometido
-        con tu salud.
+        Encuentra consejos, guías y recursos para cuidar tu salud y bienestar. 
+        Aquí publicamos artículos y novedades sobre prevención, nutrición, ejercicio y más.
       </p>
-      <!-- Se podría incluir un mapa o listado -->
-      <img src="{% static 'images/centros.webp' %}" alt="Mapa de centros" style="width:100%; max-width:800px;">
+      <!-- Se pueden incluir listados o enlaces a artículos -->
     </div>
   </section>
 </main>
 
 {% include 'base/footer.html' %}
-
 
 {% bootstrap_javascript %}
 </body>
