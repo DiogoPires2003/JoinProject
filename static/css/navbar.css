@@ -15,24 +15,36 @@ body {
     background-color: #005F99;
     width: 100%;
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center; /* Center the container */
     height: 125px;
-    padding: 10px 2.5rem; /* Mantenemos padding general */
+    padding: 10px 1.5rem;
 }
 
-/* Logo y texto (sin cambios) */
+/* Inner container for navbar elements */
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center logo and menu on larger screens */
+    width: 100%;
+    max-width: 1200px; /* Limit width for larger screens */
+}
+
+/* Logo y texto */
 .navbar-brand {
     display: flex;
     align-items: center;
     height: 100%;
+    margin-right: 0.5rem; /* Reduced margin to keep menu close */
 }
 
+/* Logo image */
 .navbar-brand img {
     height: 95px;
     width: auto;
 }
 
+/* Logo text */
 .navbar-brand span {
     color: #fff;
     font-weight: 600;
@@ -40,45 +52,131 @@ body {
     margin-left: 0.5rem;
 }
 
-/* Menú principal - Modificado */
+/* Menú principal */
 .navbar-menu {
     display: flex;
     align-items: center;
-    gap: 1.65rem; /* Reducido de 1rem */
+    gap: 0.8rem; /* Reduced gap for tighter menu */
     list-style: none;
     height: 100%;
-    margin-left: -30px; /* Aumentado el margen negativo */
+    margin: 0;
 }
 
-/* Enlaces normales - Modificado */
+/* Enlaces normales */
 .navbar-menu .nav-link {
     color: #fff;
     text-decoration: none;
     font-weight: 500;
-    padding: 0.5rem 0.6rem; /* Reducido padding horizontal */
+    padding: 0.5rem 0.6rem;
     border-radius: 0.25rem;
     transition: background-color 0.2s, color 0.2s;
     line-height: 1;
 }
 
+/* Hover effect for nav links */
 .navbar-menu .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
     color: #f1f1f1;
 }
 
-/* Botones “success” - Modificado */
+/* Botones “success” */
 .navbar-menu .btn-success {
     background-color: #4CAF50;
     border: none;
-    padding: 0.5rem 0.8rem; /* Reducido de 1rem */
+    padding: 0.5rem 0.8rem;
     font-weight: 600;
     border-radius: 0.25rem;
     transition: background-color 0.2s;
     display: flex;
     align-items: center;
     height: auto;
+    color: #fff;
+    text-decoration: none;
 }
 
+/* Hover effect for success buttons */
 .navbar-menu .btn-success:hover {
     background-color: #45a049;
+}
+
+/* Hamburger menu */
+.navbar-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* Hamburger menu lines */
+.navbar-toggle span {
+    width: 100%;
+    height: 3px;
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1300px) {
+    .navbar {
+        padding: 10px 1.5rem;
+        height: auto;
+        flex-wrap: wrap;
+    }
+
+    .navbar-container {
+        flex-wrap: wrap;
+        justify-content: space-between; /* Logo left, hamburger right */
+    }
+
+    .navbar-toggle {
+        display: flex;
+        margin-left: auto; /* Push hamburger to the right */
+    }
+
+    .navbar-menu {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 1rem 0;
+        align-items: center; /* Center menu items when expanded */
+    }
+
+    .navbar-menu.active {
+        display: flex;
+    }
+
+    .navbar-menu .nav-link,
+    .navbar-menu .btn-success {
+        width: 100%;
+        text-align: center;
+        padding: 0.75rem;
+    }
+
+    .navbar-brand img {
+        height: 70px;
+    }
+
+    .navbar-brand span {
+        font-size: 1rem;
+    }
+}
+
+/* Animation for hamburger menu when toggled */
+.navbar-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.navbar-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.navbar-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
 }
