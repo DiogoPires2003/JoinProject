@@ -45,12 +45,18 @@
                     {% endif %}
                 </li>
 
+                <!-- Nuevo enlace al Perfil -->
+                <li class="nav-item mb-2">
+                    {% if request.session.patient_id %}
+                        <a class="nav-link" href="{% url 'profile' %}" style="color: white;">Perfil</a>
+                    {% endif %}
+                </li>
+
                 <li class="nav-item mb-2">
                     {% if not request.session.employee_id %}
                     <a style="margin-right: 2px" class="btn btn-success"
                        href="{% url 'appointment_list' %}">Pedir Cita</a>
                     {% endif %}
-
                 </li>
                 <li class="nav-item mb-2">
                     {% if request.session.patient_id %}

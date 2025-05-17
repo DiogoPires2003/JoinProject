@@ -45,12 +45,19 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 MIDDLEWARE = [
-    # ... other middleware
-    'healthApp.middleware.PatientAuthenticationMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'healthApp.middleware.PatientAuthenticationMiddleware',  # Tu middleware personalizado
 ]
 
 
 INSTALLED_APPS = [
+    'widget_tweaks',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -78,7 +85,10 @@ ROOT_URLCONF = 'betterHealth.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'templates',  # Templates globales del proyecto
+            BASE_DIR / 'healthApp' / 'templates',  # Templates específicos de la app
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from healthApp.views import *
+from sprint2.views import profile_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -49,5 +50,5 @@ urlpatterns = [
     path('logout2/', logout_view, name='logout_view'),
     path('get-available-hours/', get_available_hours, name='get_available_hours'),
     path("check-attendance/", check_attendance, name="check_attendance"),
-
+    path('profile/', profile_view, name='profile'),
 ]
