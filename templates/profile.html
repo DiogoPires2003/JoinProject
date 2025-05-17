@@ -1,0 +1,50 @@
+c{% load bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Better Health - Perfil</title>
+  {% bootstrap_css %}
+  <link href="{% static 'css/profiles.css' %}" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="navbar-wrapper">
+    {% include 'base/navbar.html' %}
+  </div>
+
+  <main>
+    <section class="info-section">
+      <div class="container content">
+        <h1>Editar Perfil</h1>
+        <form method="post" action="">
+          {% csrf_token %}
+          <div>
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" value="{{ user.first_name }}" required />
+          </div>
+          <div>
+            <label for="email">Correo electrónico:</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" required />
+          </div>
+          <div>
+            <label for="password">Nueva contraseña: <small class="optional">(Opcional)</small></label>
+            <input type="password" id="password" name="password" placeholder="Dejar en blanco para no cambiar" />
+          </div>
+          <div>
+            <label for="password_confirm">Confirmar nueva contraseña:</label>
+            <input type="password" id="password_confirm" name="password_confirm" placeholder="Repite la contraseña" />
+          </div>
+          <button type="submit">Guardar cambios</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  {% include 'base/footer.html' %}
+
+  {% bootstrap_javascript %}
+</body>
+</html>

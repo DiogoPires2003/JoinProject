@@ -1,13 +1,53 @@
 # forms.py
 from django import forms
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.validators import MinLengthValidator
+
 from .models import Appointment, Patient, Service
 import requests, time
 from decouple import config
 from django.utils import timezone
 
+class ProfileForm(forms.ModelForm):
+    current_password = forms.CharField(
+        widget=forms.PasswordInput,
+        label="Contraseña actual",
+        required=True
+    )
+    new_password = forms.CharField(
+        widget=forms.PasswordInput,
+        label="Nueva contraseña",
+        required=False,
+        validators=[MinLengthValidator(8)]
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput,
+        label="Confirmar nueva contraseña",
+        required=False
+    )
 
+    class Meta:
+        model = Patient
+        fields = ['first_name', 'last_name', 'email', 'phone']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs['readonly'] = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        confirm_password = cleaned_data.get('confirm_password')
+        current_password = cleaned_data.get('current_password')
+
+        if not check_password(current_password, self.instance.password):
+            raise forms.ValidationError("La contraseña actual es incorrecta")
+
+        if new_password and new_password != confirm_password:
+            raise forms.ValidationError("Las contraseñas nuevas no coinciden")
+
+        return cleaned_data
 class PatientForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)
