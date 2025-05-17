@@ -49,7 +49,8 @@
                                 <div class="card-body d-flex flex-column align-items-center text-center">
                                     <i class="fas fa-check-circle fa-3x mb-3 text-primary"></i>
                                     <h5 class="card-title">Comprobar Asistencias</h5>
-                                    <p class="card-text small">Marcar y verificar la asistencia de pacientes a sus citas.</p>
+                                    <p class="card-text small">Marcar y verificar la asistencia de pacientes a sus
+                                        citas.</p>
                                     <a href="{% url 'check_attendance' %}" class="btn btn-outline-primary mt-auto">Acceder</a>
                                 </div>
                             </div>
@@ -70,16 +71,30 @@
                             </div>
                         </div>
                         {# --- End of New Card --- #}
-
-                    </div> {# End row #}
-                </div> {# End card-body #}
-            </div> {# End card #}
-        </div> {# End container #}
+                        <div class="col-md-4">
+                            <div class="card admin-action-card h-100">
+                                <div class="card-body d-flex flex-column align-items-center text-center">
+                                    <i class="fas fa-hospital-user fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Editar Servicios Clínicos</h5>
+                                    <p class="card-text small">Gestionar los servicios ofrecidos por la clínica.</p>
+                                    <a href="#" class="btn btn-outline-primary mt-auto">Acceder</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {# End row #}
+                </div>
+                {# End card-body #}
+            </div>
+            {# End card #}
+        </div>
+        {# End container #}
     </main>
 
     {# Assuming 'base/footer.html' is the correct path for your footer #}
     {% include 'base/footer.html' %}
-</div> {# End page-wrapper #}
+</div>
+{# End page-wrapper #}
 
 {% bootstrap_javascript %}
 </body>
