@@ -26,10 +26,15 @@ class ProfileForm(forms.ModelForm):
         label="Confirmar nueva contraseña",
         required=False
     )
+    insurance_number = forms.CharField(
+        required=False,
+        label="Número de aseguradora",
+        widget=forms.TextInput(attrs={'placeholder': 'Ingresa tu número de aseguradora'})
+    )
 
     class Meta:
         model = Patient
-        fields = ['first_name', 'last_name', 'email', 'phone']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'insurance_number']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -41,7 +46,6 @@ class ProfileForm(forms.ModelForm):
         confirm_password = cleaned_data.get('confirm_password')
         current_password = cleaned_data.get('current_password')
 
-        # Revisa que la instancia tenga la contraseña en el campo esperado
         if not check_password(current_password, self.instance.password):
             raise forms.ValidationError("La contraseña actual es incorrecta")
 

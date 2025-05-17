@@ -20,41 +20,41 @@
     }
     main {
       flex: 1;
-      padding: 2rem 1rem;
+      padding: 2rem 0;
     }
     .info-section {
       background: white;
-      border-radius: 0.5rem;
-      padding: 2rem 2.5rem;
+      border-radius: 8px;
+      padding: 2rem;
       max-width: 600px;
-      margin: 0 auto 3rem;
+      margin: 0 auto;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
     h1 {
       font-family: 'Montserrat', sans-serif;
       font-weight: 700;
       margin-bottom: 1.5rem;
-      color: #0d6efd; /* Bootstrap primary */
+      color: #007bff;
       text-align: center;
     }
     .user-info {
       background: #e9ecef;
-      padding: 1.25rem 1.5rem;
-      border-radius: 0.5rem;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
       margin-bottom: 2rem;
       text-align: center;
-      font-size: 1.125rem;
+      font-size: 1.1rem;
       color: #495057;
     }
     .user-info span {
       font-weight: 700;
-      color: #0d6efd;
+      color: #007bff;
     }
     #edit-form {
       display: none;
     }
     .errorlist {
-      color: #dc3545;
+      color: red;
       margin-bottom: 1rem;
       list-style: none;
       padding-left: 0;
@@ -67,11 +67,11 @@
   </div>
 
   <main>
-    <section class="info-section shadow-sm">
+    <section class="info-section">
       <h1>Perfil de {{ patient.first_name }} {{ patient.last_name }}</h1>
 
       <!-- Datos estáticos -->
-      <div id="user-info" class="user-info mb-4 rounded">
+      <div id="user-info" class="user-info mb-4">
         <p><strong>Nombre completo:</strong> <span>{{ patient.first_name }} {{ patient.last_name }}</span></p>
         <p><strong>Email:</strong> <span>{{ patient.email }}</span></p>
         <p><strong>Teléfono:</strong> <span>{{ patient.phone }}</span></p>
@@ -80,7 +80,7 @@
 
       <!-- Botón para mostrar el formulario -->
       <div class="text-center mb-4">
-        <button id="edit-profile-btn" class="btn btn-primary px-4">Editar Perfil</button>
+        <button id="edit-profile-btn" class="btn btn-primary">Editar Perfil</button>
       </div>
 
       <!-- Formulario oculto al inicio -->
@@ -106,22 +106,18 @@
             <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
             {{ form.first_name|add_class:"form-control" }}
           </div>
-
           <div class="mb-3">
             <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
             {{ form.last_name|add_class:"form-control" }}
           </div>
-
           <div class="mb-3">
             <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
             {{ form.email|add_class:"form-control" }}
           </div>
-
           <div class="mb-3">
             <label for="{{ form.phone.id_for_label }}" class="form-label">{{ form.phone.label }}</label>
             {{ form.phone|add_class:"form-control" }}
           </div>
-
           <div class="mb-3">
             <label for="{{ form.insurance_number.id_for_label }}" class="form-label">{{ form.insurance_number.label }}</label>
             {{ form.insurance_number|add_class:"form-control" }}
@@ -134,25 +130,18 @@
             <label for="{{ form.current_password.id_for_label }}" class="form-label">{{ form.current_password.label }}</label>
             {{ form.current_password|add_class:"form-control" }}
           </div>
-
           <div class="mb-3">
-            <label for="{{ form.new_password.id_for_label }}" class="form-label">
-              {{ form.new_password.label }}
-              <span data-bs-toggle="tooltip" data-bs-placement="right" title="Dejar vacío si no quieres cambiar la contraseña" style="cursor: help;">
-                <i class="bi bi-info-circle-fill text-secondary"></i>
-              </span>
-            </label>
+            <label for="{{ form.new_password.id_for_label }}" class="form-label">{{ form.new_password.label }} <small class="text-muted">(Opcional)</small></label>
             {{ form.new_password|add_class:"form-control" }}
           </div>
-
           <div class="mb-3">
             <label for="{{ form.confirm_password.id_for_label }}" class="form-label">{{ form.confirm_password.label }}</label>
             {{ form.confirm_password|add_class:"form-control" }}
           </div>
 
-          <div class="d-flex justify-content-between mt-4">
-            <button type="submit" class="btn btn-success px-4">Guardar cambios</button>
-            <button type="button" id="cancel-edit-btn" class="btn btn-outline-secondary px-4">Cancelar</button>
+          <div class="d-flex justify-content-between mt-3">
+            <button type="submit" class="btn btn-success">Guardar cambios</button>
+            <button type="button" id="cancel-edit-btn" class="btn btn-secondary">Cancelar</button>
           </div>
         </form>
       </div>
@@ -162,7 +151,6 @@
   {% include 'base/footer.html' %}
 
   {% bootstrap_javascript %}
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.js"></script>
   <script>
     const editBtn = document.getElementById('edit-profile-btn');
     const cancelBtn = document.getElementById('cancel-edit-btn');
@@ -173,10 +161,6 @@
       userInfo.style.display = 'none';
       editBtn.style.display = 'none';
       editForm.style.display = 'block';
-      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-      tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-      });
     });
 
     cancelBtn.addEventListener('click', () => {
@@ -185,15 +169,11 @@
       editBtn.style.display = 'inline-block';
     });
 
-    // Mostrar formulario si hay errores
+    // Si hay errores, mostrar formulario directamente
     {% if form.errors %}
       userInfo.style.display = 'none';
       editBtn.style.display = 'none';
       editForm.style.display = 'block';
-      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-      tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-      });
     {% endif %}
   </script>
 </body>
