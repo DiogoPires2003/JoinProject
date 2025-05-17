@@ -41,6 +41,7 @@ class ProfileForm(forms.ModelForm):
         confirm_password = cleaned_data.get('confirm_password')
         current_password = cleaned_data.get('current_password')
 
+        # Revisa que la instancia tenga la contraseña en el campo esperado
         if not check_password(current_password, self.instance.password):
             raise forms.ValidationError("La contraseña actual es incorrecta")
 
@@ -48,6 +49,7 @@ class ProfileForm(forms.ModelForm):
             raise forms.ValidationError("Las contraseñas nuevas no coinciden")
 
         return cleaned_data
+
 class PatientForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)
