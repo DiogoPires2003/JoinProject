@@ -263,10 +263,6 @@ def manage_appointments_view(request):
 
 @admin_required
 def create_appointment_admin_view(request):
-    """
-    Vista para que un administrador cree una nueva cita médica
-    usando un formulario personalizado con selección de hora dinámica.
-    """
     if request.method == 'POST':
         form = AppointmentAdminCreateForm(request.POST)
         if form.is_valid():
@@ -324,9 +320,6 @@ def create_appointment_admin_view(request):
 
 @admin_required
 def edit_appointment_admin_view(request, pk):
-    """
-    Vista para que un administrador modifique una cita existente.
-    """
     appointment = get_object_or_404(Appointment.objects.select_related('patient', 'service'), pk=pk)
     service = appointment.service
     patient = appointment.patient
@@ -532,7 +525,7 @@ def get_available_hours(request):
 
             # Define working hours
             start_time = time(8, 0)  # 8:00 AM
-            end_time = time(20, 0)   # 8:00 PM
+            end_time = time(20, 0)  # 8:00 PM
 
             # Get all existing appointments for the date
             existing_appointments = Appointment.objects.filter(
@@ -559,7 +552,7 @@ def get_available_hours(request):
                 # Check if slot overlaps with any existing appointment
                 for booked in booked_slots:
                     if (current_time < booked['end'] and
-                        slot_end > booked['start']):
+                            slot_end > booked['start']):
                         is_available = False
                         # Move current_time to the end of this booked slot
                         current_time = booked['end']
@@ -594,9 +587,8 @@ def appointment_list(request):
         return redirect('login')
 
     patient = Patient.objects.get(id=patient_id)
-    services = Service.objects.all()
+    services = Service.objects.filter(available=True)  # Only get available services
 
-    # Handle POST request for creating an appointment
     reserva_exitosa = False
     if request.method == 'POST':
         service_id = request.POST.get('service_id')
@@ -620,7 +612,7 @@ def appointment_list(request):
             end_datetime = f"{date} {end_time}"
             end_datetime_obj = timezone.make_aware(datetime.strptime(end_datetime, '%Y-%m-%d %H:%M'))
 
-            service = Service.objects.get(id=service_id)
+            service = Service.objects.get(id=service_id, available=True)  # Ensure service is available
             Appointment.objects.create(
                 patient=patient,
                 service=service,
@@ -629,10 +621,11 @@ def appointment_list(request):
                 date=start_datetime_obj.date()
             )
             reserva_exitosa = True
+        except Service.DoesNotExist:
+            messages.error(request, "El servicio seleccionado no está disponible.")
         except Exception as e:
             messages.error(request, f"Error creating appointment: {str(e)}")
 
-    # Fetch all appointments for JavaScript
     appointments = Appointment.objects.all()
     booked_appointments_json = [
         {
