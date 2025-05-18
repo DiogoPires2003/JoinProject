@@ -21,7 +21,8 @@ from sprint2.views import *
 
 urlpatterns = [
     path('/manage-services/', manage_services_view, name='manage_services'),
-    path('admin/services/edit/<int:service_id>/',edit_service_view, name='edit_service'),
+    path('admin/services/edit/<int:service_id>/', edit_service_view, name='edit_service'),
+    path('services/download-csv/', download_services_csv, name='download_services_csv'),
     path('admin/', admin.site.urls),
     path('login/', login_view, name='login'),
     path('register/', register, name='register'),
