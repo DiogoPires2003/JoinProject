@@ -11,6 +11,14 @@
   <link href="{% static 'css/profiles.css' %}" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet" />
   <style>
+    :root {
+      --azul-profesional: #005F99;
+      --verde-salud: #4CAF50;
+      --gris-claro: #F5F5F5;
+      --gris-oscuro: #333333;
+      --blanco: #FFFFFF;
+      --rojo-alerta: #D32F2F;
+    }
     body {
       font-family: 'Open Sans', sans-serif;
       background: #f8f9fa;
@@ -34,7 +42,7 @@
       font-family: 'Montserrat', sans-serif;
       font-weight: 700;
       margin-bottom: 1.5rem;
-      color: #007bff;
+      color: var(--azul-profesional);
       text-align: center;
     }
     .user-info {
@@ -48,7 +56,7 @@
     }
     .user-info span {
       font-weight: 700;
-      color: #007bff;
+      color: var(--azul-profesional);
     }
     #edit-form {
       display: none;
@@ -118,7 +126,11 @@
             <label for="{{ form.phone.id_for_label }}" class="form-label">{{ form.phone.label }}</label>
             {{ form.phone|add_class:"form-control" }}
           </div>
-          <div class="mb-3">
+          <div class="mb-3 form-check">
+            <input type="checkbox" name="has_insurance" id="id_has_insurance" {% if patient.insurance_number %}checked{% endif %}>
+            <label for="id_has_insurance" class="form-check-label">¿Tienes mutua?</label>
+          </div>
+          <div id="insuranceNumberContainer" class="mb-3" style="display: {% if patient.insurance_number %}block{% else %}none{% endif %};">
             <label for="{{ form.insurance_number.id_for_label }}" class="form-label">{{ form.insurance_number.label }}</label>
             {{ form.insurance_number|add_class:"form-control" }}
             <div class="form-text">Número de aseguradora (opcional)</div>
@@ -127,7 +139,7 @@
           <hr />
 
           <div class="mb-3">
-            <label for="{{ form.current_password.id_for_label }}" class="form-label">{{ form.current_password.label }}</label>
+            <label for="{{ form.current_password.id_for_label }}" class="form-label">{{ form.current_password.label }} <small class="text-muted">(Opcional para cambiar contraseña)</small></label>
             {{ form.current_password|add_class:"form-control" }}
           </div>
           <div class="mb-3">
@@ -135,7 +147,7 @@
             {{ form.new_password|add_class:"form-control" }}
           </div>
           <div class="mb-3">
-            <label for="{{ form.confirm_password.id_for_label }}" class="form-label">{{ form.confirm_password.label }}</label>
+            <label for="{{ form.confirm_password.id_for_label }}" class="form-label">{{ form.confirm_password.label }} <small class="text-muted">(Opcional)</small></label>
             {{ form.confirm_password|add_class:"form-control" }}
           </div>
 
@@ -156,6 +168,8 @@
     const cancelBtn = document.getElementById('cancel-edit-btn');
     const userInfo = document.getElementById('user-info');
     const editForm = document.getElementById('edit-form');
+    const hasInsuranceCheckbox = document.getElementById('id_has_insurance');
+    const insuranceNumberContainer = document.getElementById('insuranceNumberContainer');
 
     editBtn.addEventListener('click', () => {
       userInfo.style.display = 'none';
@@ -169,7 +183,14 @@
       editBtn.style.display = 'inline-block';
     });
 
-    // Si hay errores, mostrar formulario directamente
+    hasInsuranceCheckbox.addEventListener('change', function() {
+      if (this.checked) {
+        insuranceNumberContainer.style.display = 'block';
+      } else {
+        insuranceNumberContainer.style.display = 'none';
+      }
+    });
+
     {% if form.errors %}
       userInfo.style.display = 'none';
       editBtn.style.display = 'none';
