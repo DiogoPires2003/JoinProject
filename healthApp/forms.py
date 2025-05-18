@@ -89,7 +89,7 @@ class PatientForm(forms.ModelForm):
         try:
             response = requests.get(api_url, headers=headers)
             if response.status_code != 200:
-                raise forms.ValidationError(f"Error al validar el número de seguro: {response.text}")
+                raise forms.ValidationError(f"El numero de seguro no es válido o no pertenece a la mutua.")
 
             response_data = response.json()
             if not response_data.get("pertenece_mutua", False):
