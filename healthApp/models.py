@@ -158,6 +158,12 @@ class Service(models.Model):
         default=30
     )
 
+    available = models.BooleanField(
+        default=True,
+        verbose_name='Disponible',
+        help_text='Indica si el servicio está disponible actualmente'
+    )
+
     def __str__(self):
         return self.name
 

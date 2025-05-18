@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Servicios | Better Health</title>
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+</head>
+<body>
+<div class="navbar-wrapper">
+    {% include "base/navbar.html" %}
+</div>
+
+<div class="page-wrapper d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container admin-container my-5">
+            <div class="card shadow-lg rounded-3 overflow-hidden">
+                <div class="card-body p-lg-5">
+                    <h1 class="text-center mb-4">Gestionar Servicios</h1>
+                    <p class="text-center text-muted mb-4">Lista de servicios disponibles en la clínica.</p>
+                    <form method="get" class="mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <input type="text" name="name" class="form-control" placeholder="Buscar por nombre"
+                                       value="{{ filters.name }}">
+                            </div>
+                            <div class="col-md-4">
+                                <select name="service_type" class="form-select">
+                                    <option value="">Todos los tipos</option>
+                                    {% for type_code, type_name in service_types %}
+                                        <option value="{{ type_code }}"
+                                                {% if filters.service_type == type_code %}selected{% endif %}>
+                                            {{ type_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select name="available" class="form-select">
+                                    <option value="">Todos</option>
+                                    <option value="1" {% if filters.available == "1" %}selected{% endif %}>Disponible
+                                    </option>
+                                    <option value="0" {% if filters.available == "0" %}selected{% endif %}>No
+                                        disponible
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                            <a href="{% url 'manage_services' %}" class="btn btn-secondary">Restablecer</a>
+                        </div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle">
+                            <thead class="table-dark">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Precio</th>
+                                <th>Duración</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for service in services %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-stethoscope me-2 text-primary-light"></i>
+                                        {{ service.name }}
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-tag me-2 text-muted"></i>
+                                        {{ service.get_service_type_display }}
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-euro-sign me-2 text-muted"></i>
+                                        {{ service.price }}
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-clock me-2 text-muted"></i>
+                                        {{ service.duration }} min
+                                    </td>
+                                    <td>
+                                        {% if service.available %}
+                                            <span class="badge bg-success">Disponible</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">No disponible</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'edit_service' service.id %}"
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i> Editar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if not services %}
+                        <div class="alert alert-info text-center mt-4" role="alert">
+                            <i class="fas fa-info-circle me-2"></i> No hay servicios registrados actualmente.
+                        </div>
+                    {% endif %}
+
+                    <div class="text-center mt-5">
+                        <a href="{% url 'admin_area' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i> Volver al Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% include "base/footer.html" %}
+</div>
+
+{% bootstrap_javascript %}
+</body>
+</html>
+<style>
+    .table thead th {
+        background-color: var(--azul-profesional);
+        color: var(--blanco);
+    }
+</style>
