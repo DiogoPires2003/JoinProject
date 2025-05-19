@@ -6,25 +6,9 @@
     {% load static %}
     {% load bootstrap5 %}
     {% bootstrap_css %}
-    <script>
-        function toggleInsuranceNumber() {
-            var hasInsuranceCheckbox = document.getElementById('id_has_insurance');
-            var insuranceNumberField = document.getElementById('insuranceNumberContainer');
-            if (hasInsuranceCheckbox.checked) {
-                insuranceNumberField.style.display = 'block';
-                document.getElementById('id_insurance_number').setAttribute('required', 'required');
-            } else {
-                insuranceNumberField.style.display = 'none';
-                document.getElementById('id_insurance_number').removeAttribute('required');
-            }
-        }
+    <script src="{% static 'js/register.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
 
-        window.onload = function () {
-            var hasInsuranceCheckbox = document.getElementById('id_has_insurance');
-            hasInsuranceCheckbox.addEventListener('change', toggleInsuranceNumber);
-            toggleInsuranceNumber();
-        };
-    </script>
 </head>
 <body>
 <div class="navbar-wrapper">
@@ -41,7 +25,7 @@
                                  alt="logo" style="max-width: 200px;">
                             <h5 class="mb-5 pb-1">Tu bienestar, nuestra prioridad.</h5>
                         </div>
-                        <form method="post" novalidate>
+                        <form method="post" novalidate id="registrationForm">
                             {% csrf_token %}
 
                             {% if form.non_field_errors %}
@@ -52,95 +36,89 @@
                                 </div>
                             {% endif %}
 
+                            <!-- First Name -->
                             <div class="mb-3 form-floating">
                                 <input type="text" name="first_name" required
                                        class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
                                        id="firstNameInput"
                                        placeholder="First Name" value="{{ form.first_name.value|default:'' }}">
                                 <label for="firstNameInput">Nombre</label>
-                                {% for error in form.first_name.errors %}
-                                    <div class="invalid-feedback">
-                                        {{ error }}
-                                    </div>
-                                {% endfor %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+                                </div>
                             </div>
 
+                            <!-- Last Name -->
                             <div class="mb-3 form-floating">
                                 <input type="text" name="last_name" required
                                        class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
                                        id="lastNameInput"
                                        placeholder="Last Name" value="{{ form.last_name.value|default:'' }}">
                                 <label for="lastNameInput">Apellido</label>
-                                {% for error in form.last_name.errors %}
-                                    <div class="invalid-feedback">
-                                        {{ error }}
-                                    </div>
-                                {% endfor %}
+                                <div class="invalid-feedback">
+                                     {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+                                </div>
                             </div>
 
+                            <!-- DNI -->
                             <div class="mb-3 form-floating">
                                 <input type="text" name="dni" required
                                        class="form-control {% if form.dni.errors %}is-invalid{% endif %}" id="dniInput"
                                        placeholder="DNI" value="{{ form.dni.value|default:'' }}">
                                 <label for="dniInput">DNI/NIE</label>
-                                {% for error in form.dni.errors %}
-                                    <div class="invalid-feedback">
-                                        {{ error }}
-                                    </div>
-                                {% endfor %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.dni.errors %}{{ error }}{% endfor %}
+                                </div>
                             </div>
 
+                            <!-- Email -->
                             <div class="mb-3 form-floating">
                                 <input type="email" name="email" required
                                        class="form-control {% if form.email.errors %}is-invalid{% endif %}"
                                        id="emailInput"
                                        placeholder="Email" value="{{ form.email.value|default:'' }}">
                                 <label for="emailInput">Correo electrónico</label>
-                                {% for error in form.email.errors %}
-                                    <div class="invalid-feedback">
-                                        {{ error }}
-                                    </div>
-                                {% endfor %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.email.errors %}{{ error }}{% endfor %}
+                                </div>
                             </div>
 
+                            <!-- Phone -->
                             <div class="mb-3 form-floating">
                                 <input type="text" name="phone" required
                                        class="form-control {% if form.phone.errors %}is-invalid{% endif %}"
                                        id="phoneInput"
                                        placeholder="Phone" value="{{ form.phone.value|default:'' }}">
                                 <label for="phoneInput">Número de teléfono</label>
-                                {% for error in form.phone.errors %}
-                                    <div class="invalid-feedback">
-                                        {{ error }}
-                                    </div>
-                                {% endfor %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.phone.errors %}{{ error }}{% endfor %}
+                                </div>
                             </div>
 
+                            <!-- Password -->
                             <div class="mb-3 form-floating">
                                 <input type="password" name="password" required
                                        class="form-control {% if form.password.errors %}is-invalid{% endif %}"
                                        id="passwordInput"
                                        placeholder="Password">
                                 <label for="passwordInput">Contraseña</label>
-                                {% for error in form.password.errors %}
-                                    <div class="invalid-feedback">
-                                        {{ error }}
-                                    </div>
-                                {% endfor %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.password.errors %}{{ error }}{% endfor %}
+                                </div>
                             </div>
 
+                            <!-- Confirm Password -->
                             <div class="mb-3 form-floating">
                                 <input type="password" name="confirm_password" required
                                        class="form-control {% if form.confirm_password.errors %}is-invalid{% endif %}"
                                        id="confirmPasswordInput" placeholder="Confirm Password">
                                 <label for="confirmPasswordInput">Confirmar contraseña</label>
-                                {% for error in form.confirm_password.errors %}
-                                    <div class="invalid-feedback">
-                                        {{ error }}
-                                    </div>
-                                {% endfor %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.confirm_password.errors %}{{ error }}{% endfor %}
+                                </div>
                             </div>
 
+                            <!-- Has Insurance Checkbox -->
                             <div class="mb-3 form-check">
                                 <input type="checkbox" name="has_insurance" class="form-check-input"
                                        id="id_has_insurance" {% if form.has_insurance.value %}checked{% endif %}>
@@ -152,6 +130,7 @@
                                 {% endfor %}
                             </div>
 
+                            <!-- Insurance Number -->
                             <div id="insuranceNumberContainer" style="display: none;" class="mb-3 form-floating">
                                 <input type="text" name="insurance_number"
                                        class="form-control {% if form.insurance_number.errors %}is-invalid{% endif %}"
@@ -159,15 +138,13 @@
                                        placeholder="Insurance Number"
                                        value="{{ form.insurance_number.value|default:'' }}">
                                 <label for="id_insurance_number">Número de mutua</label>
-                                {% for error in form.insurance_number.errors %}
-                                    <div class="invalid-feedback">
-                                        {{ error }}
-                                    </div>
-                                {% endfor %}
+                                <div class="invalid-feedback">
+                                     {% for error in form.insurance_number.errors %}{{ error }}{% endfor %}
+                                </div>
                             </div>
 
                             <div class="text-center pt-1 mb-4">
-                                <button class="btn btn-primary btn-block" type="submit">Registrarse</button>
+                                <button class="btn btn-primary btn-block" type="submit" id="registerSubmitButton">Registrarse</button>
                             </div>
                         </form>
                         <div class="d-flex flex-column align-items-center justify-content-center pb-4">
@@ -181,138 +158,7 @@
     </div>
 </section>
 {% include 'base/footer.html' %}
-<style>
-    body {
-        font-family: 'Inter', 'Open Sans', 'Roboto', sans-serif;
-        color: #333333;
-    }
 
-    h1, h2, h3 {
-        color: #333333;
-    }
 
-    .form-control {
-        font-size: 16px;
-    }
-
-    button {
-        font-size: 16px;
-        padding: 10px 20px;
-    }
-</style>
 </body>
-<script>
-    // Add this script after your existing script in register.html
-    function validateForm() {
-        const validators = {
-            firstNameInput: (value) => {
-                if (!value) return 'El nombre es requerido';
-                if (value.length < 2) return 'El nombre debe tener al menos 2 caracteres';
-                return '';
-            },
-            lastNameInput: (value) => {
-                if (!value) return 'El apellido es requerido';
-                if (value.length < 2) return 'El apellido debe tener al menos 2 caracteres';
-                return '';
-            },
-            dniInput: (value) => {
-                if (!value) return 'El DNI/NIE es requerido';
-                const dniRegex = /^[0-9XYZ][0-9]{7}[A-Z]$/i;
-                if (!dniRegex.test(value)) return 'DNI/NIE no válido';
-                return '';
-            },
-            emailInput: (value) => {
-                if (!value) return 'El correo electrónico es requerido';
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(value)) return 'Correo electrónico no válido';
-                return '';
-            },
-            phoneInput: (value) => {
-                if (!value) return 'El teléfono es requerido';
-                const phoneRegex = /^[0-9]{9}$/;
-                if (!phoneRegex.test(value)) return 'Teléfono no válido (9 dígitos)';
-                return '';
-            },
-            passwordInput: (value) => {
-                if (!value) return 'La contraseña es requerida';
-                if (value.length < 8) return 'La contraseña debe tener al menos 8 caracteres';
-                return '';
-            },
-            confirmPasswordInput: (value) => {
-                const password = document.getElementById('passwordInput').value;
-                if (!value) return 'Debe confirmar la contraseña';
-                if (value !== password) return 'Las contraseñas no coinciden';
-                return '';
-            },
-            id_insurance_number: (value) => {
-                const hasInsurance = document.getElementById('id_has_insurance').checked;
-                if (hasInsurance) {
-                    if (!value) return 'El número de mutua es requerido';
-                    if (!/^[A-Z][0-9]{5}$/.test(value)) return 'Debe comenzar con una letra seguida de 5 dígitos';
-                }
-                return '';
-            }
-        };
-
-        function validateField(input) {
-            const errorDiv = input.nextElementSibling;
-            const error = validators[input.id]?.(input.value);
-
-            if (error) {
-                input.classList.add('is-invalid');
-                input.classList.remove('is-valid');
-                errorDiv.textContent = error;
-                errorDiv.style.display = 'block';
-            } else {
-                input.classList.remove('is-invalid');
-                input.classList.add('is-valid');
-                errorDiv.style.display = 'none';
-            }
-
-            return !error;
-        }
-
-        // Add event listeners to all inputs
-        document.querySelectorAll('input').forEach(input => {
-            if (input.type !== 'checkbox') {
-                input.addEventListener('input', () => validateField(input));
-                input.addEventListener('blur', () => validateField(input));
-            }
-        });
-
-        // Special handling for confirm password
-        document.getElementById('passwordInput').addEventListener('input', () => {
-            const confirmPassword = document.getElementById('confirmPasswordInput');
-            if (confirmPassword.value) {
-                validateField(confirmPassword);
-            }
-        });
-
-        // Update form submission
-        document.querySelector('form').addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            let isValid = true;
-            document.querySelectorAll('input').forEach(input => {
-                if (input.type !== 'checkbox') {
-                    if (!validateField(input)) {
-                        isValid = false;
-                    }
-                }
-            });
-
-            if (isValid) {
-                e.target.submit();
-            }
-        });
-    }
-
-    // Add this to your window.onload function
-    window.onload = function () {
-        var hasInsuranceCheckbox = document.getElementById('id_has_insurance');
-        hasInsuranceCheckbox.addEventListener('change', toggleInsuranceNumber);
-        toggleInsuranceNumber();
-        validateForm();
-    };
-</script>
 </html>
