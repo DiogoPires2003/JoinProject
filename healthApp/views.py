@@ -27,7 +27,7 @@ def check_attendance(request):
     # Handle form submission
     if request.method == 'POST':
         appointment_id = request.POST.get('appointment_id')
-        attended = request.POST.get('attended') == 'on'
+        attended = request.POST.get('attended') == 'true'
 
         appointment = Appointment.objects.get(id=appointment_id)
         attendance, created = Attendance.objects.get_or_create(appointment=appointment)
