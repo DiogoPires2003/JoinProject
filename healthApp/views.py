@@ -579,6 +579,7 @@ def get_available_hours(request):
 
 
 @redirect_admin
+@redirect_admin
 def appointment_list(request):
     MAX_APPOINTMENTS_PER_DAY = 5
 
@@ -587,7 +588,17 @@ def appointment_list(request):
         return redirect('login')
 
     patient = Patient.objects.get(id=patient_id)
-    services = Service.objects.filter(available=True)  # Only get available services
+    services = Service.objects.filter(available=True)
+
+    # Get booked appointments for JavaScript
+    booked_appointments = Appointment.objects.all().values('id', 'date', 'service_id', 'start_hour', 'end_hour')
+    booked_appointments_json = [{
+        'id': appt['id'],
+        'date': appt['date'].strftime('%Y-%m-%d'),
+        'service_id': appt['service_id'],
+        'start': appt['start_hour'].strftime('%H:%M'),
+        'end': appt['end_hour'].strftime('%H:%M')
+    } for appt in booked_appointments]
 
     reserva_exitosa = False
     if request.method == 'POST':
@@ -605,37 +616,83 @@ def appointment_list(request):
             start_datetime = f"{date} {start_time}"
             start_datetime_obj = timezone.make_aware(datetime.strptime(start_datetime, '%Y-%m-%d %H:%M'))
 
-            if start_datetime_obj < now():
+            if start_datetime_obj < timezone.now():
                 messages.error(request, "No puedes pedir citas antes del día y hora de hoy.")
                 return redirect('appointment_list')
 
             end_datetime = f"{date} {end_time}"
             end_datetime_obj = timezone.make_aware(datetime.strptime(end_datetime, '%Y-%m-%d %H:%M'))
 
-            service = Service.objects.get(id=service_id, available=True)  # Ensure service is available
-            Appointment.objects.create(
+            service = Service.objects.get(id=service_id, available=True)
+            appointment = Appointment.objects.create(
                 patient=patient,
                 service=service,
                 start_hour=start_datetime_obj.time(),
                 end_hour=end_datetime_obj.time(),
-                date=start_datetime_obj.date()
+                date=start_datetime_obj.date(),
+                state='CON'
             )
-            reserva_exitosa = True
-        except Service.DoesNotExist:
-            messages.error(request, "El servicio seleccionado no está disponible.")
-        except Exception as e:
-            messages.error(request, f"Error creating appointment: {str(e)}")
 
-    appointments = Appointment.objects.all()
-    booked_appointments_json = [
-        {
-            'date': appointment.date.strftime('%Y-%m-%d'),
-            'service_id': appointment.service_id if appointment.service else None,
-            'start': appointment.start_hour.strftime('%H:%M'),
-            'end': appointment.end_hour.strftime('%H:%M')
-        }
-        for appointment in appointments
-    ]
+            if patient.has_insurance:
+                try:
+                    # Get token from insurance API
+                    token_url = "https://example-mutua.onrender.com/token"
+                    token_data = {
+                        "username": config('API_USERNAME'),
+                        "password": config('API_PASSWORD')
+                    }
+                    token_response = requests.post(token_url, data=token_data)
+
+                    if token_response.status_code == 200:
+                        token = token_response.json().get('access_token')
+
+                        # Verify patient insurance number
+                        verify_url = f"https://example-mutua.onrender.com/pacientes/verificar/{patient.insurance_number}"
+                        headers = {'Authorization': f'Bearer {token}'}
+                        verify_response = requests.get(verify_url, headers=headers)
+                        services_url = "https://example-mutua.onrender.com/servicios/"
+
+                        if verify_response.status_code == 200:
+                            patient_data = verify_response.json()
+                            insurance_id = patient_data.get('id')
+                            print (f"Insurance ID: {insurance_id}")
+                            services_response = requests.get(services_url, headers=headers)
+
+                            if services_response.status_code == 200:
+                                insurance_services = services_response.json()
+                                service_id = None
+
+                                for ins_service in insurance_services:
+                                    if ins_service['servicio'] == appointment.service.name:
+                                        service_id = ins_service['id']
+                                        print (f"Service ID: {service_id}")
+                                        break
+
+                                if service_id:
+                                    authorization_url = "https://example-mutua.onrender.com/autorizaciones/"
+                                    authorization_data = {
+                                        "id_paciente": insurance_id,
+                                        "id_tratamiento": service_id,
+                                    }
+                                    authorization_response = requests.post(
+                                        authorization_url,
+                                        json=authorization_data,
+                                        headers=headers
+                                    )
+
+                                    appointment.state = 'AUT' if authorization_response.status_code == 200 else 'DEN'
+                                    appointment.save()
+
+                except Exception as e:
+                    messages.error(request, f"Error al procesar el seguro: {str(e)}")
+
+            reserva_exitosa = True
+            messages.success(request, "Cita reservada exitosamente.")
+            return redirect('appointment_list')
+
+        except Exception as e:
+            messages.error(request, f"Error al crear la cita: {str(e)}")
+            return redirect('appointment_list')
 
     return render(request, 'appointments/appointment_list.html', {
         'services': services,
