@@ -8,9 +8,6 @@ from django.contrib import messages
 from django.db import transaction
 
 
-
-
-
 def manage_services_view(request):
     if request.method == 'POST' and request.FILES.get('csv_file'):
         csv_file = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
@@ -100,3 +97,19 @@ def download_services_csv(request):
         ])
 
     return response
+
+
+def add_service_view(request):
+    if request.method == 'POST':
+        form = ServiceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Servicio añadido correctamente')
+            return redirect('manage_services')
+    else:
+        form = ServiceForm(initial={'available': True})
+
+    return render(request, 'admin/edit_service.html', {
+        'form': form,
+        'is_add': True
+    })

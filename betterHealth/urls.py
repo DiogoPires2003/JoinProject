@@ -35,7 +35,7 @@ urlpatterns = [
     path('administrator-area/', admin_area, name='admin_area'),
     path('manage-appointments/', manage_appointments_view, name='manage_appointments'),
     path('manage-appointments/create/', create_appointment_admin_view, name='create_appointment_admin'),
-
+    path('services/add/', add_service_view, name='add_service'),
     path('manage-appointments/edit/<int:pk>/', edit_appointment_admin_view, name='edit_appointment_admin'),
     path('manage-appointments/cancel/<int:pk>/', cancel_appointment_admin_view, name='cancel_appointment_admin'),
 

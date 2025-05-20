@@ -22,7 +22,13 @@
         <div class="container admin-container my-5">
             <div class="card shadow-lg rounded-3 overflow-hidden">
                 <div class="card-body p-lg-5">
-                    <h1 class="text-center mb-4">Editar Servicio</h1>
+                    <h1 class="text-center mb-4">
+                        {% if is_add %}
+                            Añadir Servicio
+                        {% else %}
+                            Editar Servicio
+                        {% endif %}
+                    </h1>
                     <form method="post" class="needs-validation" novalidate>
                         {% csrf_token %}
                         {% bootstrap_form form %}
