@@ -31,7 +31,6 @@
                             <div class="col-md-4">
                                 <label for="csvFile" class="form-label">Actualizar servicios mediante CSV</label>
                                 <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv">
-
                             </div>
                             <div class="col-md-4">
                                 <button type="submit" class="btn btn-primary">
@@ -43,10 +42,14 @@
                                     <i class="fas fa-download me-2"></i>Descargar CSV actual
                                 </a>
                             </div>
-                            <a href="{% url 'admin_area' %}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left me-2"></i> Volver al Panel
-                            </a>
-
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'add_service' %}" class="btn btn-success">
+                                    <i class="fas fa-plus me-2"></i>Añadir Servicio
+                                </a>
+                                <a href="{% url 'admin_area' %}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Volver al Panel
+                                </a>
+                            </div>
                         </div>
                     </form>
                     <form method="get" class="mb-4">
