@@ -27,25 +27,31 @@
 
                     <form method="post" enctype="multipart/form-data" class="mb-4">
                         {% csrf_token %}
-                        <div class="row g-3 align-items-end">
+                        <div class="row g-3 align-items-end mb-3">
                             <div class="col-md-4">
                                 <label for="csvFile" class="form-label">Actualizar servicios mediante CSV</label>
                                 <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4 text-center">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-upload me-2"></i>Actualizar Servicios
-                                </button>
                             </div>
-                            <div>
+                            <div class="col-md-4 text-center">
+                                </button>
                                 <a href="{% url 'download_services_csv' %}" class="btn btn-secondary">
                                     <i class="fas fa-download me-2"></i>Descargar CSV actual
                                 </a>
                             </div>
-                            <div class="d-flex gap-2">
+                        </div>
+                        <div class="row g-2 align-items-end margin-top-2">
+                            <div class="col-md-4 text-center ">
                                 <a href="{% url 'add_service' %}" class="btn btn-success">
                                     <i class="fas fa-plus me-2"></i>Añadir Servicio
                                 </a>
+                            </div>
+                            <div class="col-md-4 text-center">
+                            </div>
+                            <div class="col-md-4 text-center ">
                                 <a href="{% url 'admin_area' %}" class="btn btn-secondary">
                                     <i class="fas fa-arrow-left me-2"></i>Volver al Panel
                                 </a>
