@@ -28,13 +28,7 @@
                     <a class="nav-link" href="{% url 'centros' %}" style="color: white;">Centros</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a class="nav-link" href="{% url 'informacion_util' %}" style="color: white;">Información útil</a>
-                </li>
-                <li class="nav-item mb-2">
                     <a class="nav-link" href="{% url 'servicios_salud' %}" style="color: white;">Servicios de salud</a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a class="nav-link" href="{% url 'contacto' %}" style="color: white;">Contacto</a>
                 </li>
                 <li class="nav-item mb-2">
                     {% if request.session.employee_id %}

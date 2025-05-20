@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+
+from healthApp import views
 from healthApp.views import *
-from sprint2.views import profile_view
+from sprint2.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,11 +34,8 @@ urlpatterns = [
     path('administrator-area/', admin_area, name='admin_area'),
     path('manage-appointments/', manage_appointments_view, name='manage_appointments'),
     path('manage-appointments/create/', create_appointment_admin_view, name='create_appointment_admin'),
-
     path('manage-appointments/edit/<int:pk>/', edit_appointment_admin_view, name='edit_appointment_admin'),
     path('manage-appointments/cancel/<int:pk>/', cancel_appointment_admin_view, name='cancel_appointment_admin'),
-
-
     path('manage-patients/', manage_patients_view, name='manage_patients'),
     path('patients/edit/<int:pk>/', edit_patient_view, name='edit_patient'),
     path('patients/history/<int:pk>/', patient_appointment_history_view, name='patient_appointment_history'),
@@ -51,4 +50,6 @@ urlpatterns = [
     path('get-available-hours/', get_available_hours, name='get_available_hours'),
     path("check-attendance/", check_attendance, name="check_attendance"),
     path('profile/', profile_view, name='profile'),
+    path('ajax/validar-mutua/', views.validar_mutua, name='ajax_validar_mutua'),
+
 ]

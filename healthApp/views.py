@@ -868,3 +868,39 @@ def my_appointments(request):
 
     except Patient.DoesNotExist:
         return redirect('login')
+
+import requests, time
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from decouple import config
+
+# Función reusable para obtener el token
+def get_api_token():
+    auth_url = "https://example-mutua.onrender.com/token"
+    auth_data = {
+        "username": config("API_USERNAME"),
+        "password": config("API_PASSWORD"),
+    }
+    resp = requests.post(auth_url, data=auth_data)
+    if resp.status_code == 200:
+        return resp.json().get("access_token")
+    return None
+
+@require_GET
+def validar_mutua(request):
+    numero = request.GET.get("numero", "").strip()
+    token = get_api_token()
+    if not token:
+        return JsonResponse({"error": "autenticacion_fail"}, status=500)
+
+    api_url = f"https://example-mutua.onrender.com/pacientes/verificar/{numero}"
+    headers = {"Authorization": f"Bearer {token}"}
+    try:
+        resp = requests.get(api_url, headers=headers, timeout=5)
+    except requests.RequestException:
+        return JsonResponse({"pertenece_mutua": False})
+
+    if resp.status_code != 200:
+        return JsonResponse({"pertenece_mutua": False})
+    data = resp.json()
+    return JsonResponse({"pertenece_mutua": data.get("pertenece_mutua", False)})

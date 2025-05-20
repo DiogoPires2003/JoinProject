@@ -127,13 +127,15 @@
             {{ form.phone|add_class:"form-control" }}
           </div>
           <div class="mb-3 form-check">
-            <input type="checkbox" name="has_insurance" id="id_has_insurance" {% if patient.insurance_number %}checked{% endif %}>
+            <input type="checkbox" name="has_insurance" id="id_has_insurance" class="form-check-input"
+                   {% if patient.insurance_number %}checked{% endif %}>
             <label for="id_has_insurance" class="form-check-label">¿Tienes mutua?</label>
           </div>
           <div id="insuranceNumberContainer" class="mb-3" style="display: {% if patient.insurance_number %}block{% else %}none{% endif %};">
             <label for="{{ form.insurance_number.id_for_label }}" class="form-label">{{ form.insurance_number.label }}</label>
             {{ form.insurance_number|add_class:"form-control" }}
-            <div class="form-text">Número de aseguradora (opcional)</div>
+            <!-- aquí aparece el feedback -->
+            <div id="insuranceFeedback" class="form-text"></div>
           </div>
 
           <hr />
@@ -164,33 +166,75 @@
 
   {% bootstrap_javascript %}
   <script>
+    // Elementos del DOM
     const editBtn = document.getElementById('edit-profile-btn');
     const cancelBtn = document.getElementById('cancel-edit-btn');
     const userInfo = document.getElementById('user-info');
     const editForm = document.getElementById('edit-form');
     const hasInsuranceCheckbox = document.getElementById('id_has_insurance');
     const insuranceNumberContainer = document.getElementById('insuranceNumberContainer');
+    const insuranceInput = document.getElementById('{{ form.insurance_number.id_for_label }}');
+    const feedback = document.getElementById('insuranceFeedback');
 
+    // Mostrar/ocultar formulario
     editBtn.addEventListener('click', () => {
       userInfo.style.display = 'none';
       editBtn.style.display = 'none';
       editForm.style.display = 'block';
     });
-
     cancelBtn.addEventListener('click', () => {
       editForm.style.display = 'none';
       userInfo.style.display = 'block';
       editBtn.style.display = 'inline-block';
     });
 
+    // Función de validación AJAX
+    function validarNumeroSeguro() {
+      const numero = insuranceInput.value.trim();
+      if (!numero) {
+        feedback.textContent = '';
+        feedback.classList.remove('text-success', 'text-danger');
+        return;
+      }
+      feedback.textContent = 'Comprobando número...';
+      feedback.classList.remove('text-success', 'text-danger');
+
+      fetch(`{% url 'ajax_validar_mutua' %}?numero=${encodeURIComponent(numero)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.pertenece_mutua) {
+            feedback.textContent = '✔ Número válido y pertenece a la mutua';
+            feedback.classList.add('text-success');
+          } else {
+            feedback.textContent = '✘ Número inválido o no pertenece a la mutua';
+            feedback.classList.add('text-danger');
+          }
+        })
+        .catch(() => {
+          feedback.textContent = 'Error validando el número';
+          feedback.classList.add('text-danger');
+        });
+    }
+
+    // Mostrar/ocultar campo de número y validar
     hasInsuranceCheckbox.addEventListener('change', function() {
       if (this.checked) {
         insuranceNumberContainer.style.display = 'block';
+        validarNumeroSeguro();
       } else {
         insuranceNumberContainer.style.display = 'none';
+        feedback.textContent = '';
       }
     });
 
+    // Validar al perder foco
+    insuranceInput.addEventListener('blur', () => {
+      if (hasInsuranceCheckbox.checked) {
+        validarNumeroSeguro();
+      }
+    });
+
+    // Si hay errores en el form, mostrarlo
     {% if form.errors %}
       userInfo.style.display = 'none';
       editBtn.style.display = 'none';
