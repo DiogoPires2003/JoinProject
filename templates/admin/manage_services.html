@@ -24,12 +24,14 @@
                 <div class="card-body p-lg-5">
                     <h1 class="text-center mb-4">Gestionar Servicios</h1>
                     <p class="text-center text-muted mb-4">Lista de servicios disponibles en la clínica.</p>
+
                     <form method="post" enctype="multipart/form-data" class="mb-4">
                         {% csrf_token %}
                         <div class="row g-3 align-items-end">
                             <div class="col-md-4">
                                 <label for="csvFile" class="form-label">Actualizar servicios mediante CSV</label>
                                 <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv">
+
                             </div>
                             <div class="col-md-4">
                                 <button type="submit" class="btn btn-primary">
@@ -41,6 +43,10 @@
                                     <i class="fas fa-download me-2"></i>Descargar CSV actual
                                 </a>
                             </div>
+                            <a href="{% url 'admin_area' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Volver al Panel
+                            </a>
+
                         </div>
                     </form>
                     <form method="get" class="mb-4">
@@ -134,11 +140,7 @@
                         </div>
                     {% endif %}
 
-                    <div class="text-center mt-5">
-                        <a href="{% url 'admin_area' %}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left me-2"></i> Volver al Panel
-                        </a>
-                    </div>
+
                 </div>
             </div>
         </div>
