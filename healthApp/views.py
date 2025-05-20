@@ -581,7 +581,7 @@ def get_available_hours(request):
 @redirect_admin
 @redirect_admin
 def appointment_list(request):
-    MAX_APPOINTMENTS_PER_DAY = 5
+    MAX_APPOINTMENTS_PER_DAY = 150
 
     patient_id = request.session.get('patient_id')
     if not patient_id:
@@ -668,20 +668,26 @@ def appointment_list(request):
                                         print (f"Service ID: {service_id}")
                                         break
 
-                                if service_id:
-                                    authorization_url = "https://example-mutua.onrender.com/autorizaciones/"
-                                    authorization_data = {
-                                        "id_paciente": insurance_id,
-                                        "id_tratamiento": service_id,
-                                    }
-                                    authorization_response = requests.post(
-                                        authorization_url,
-                                        json=authorization_data,
-                                        headers=headers
-                                    )
+                                authorization_url = "https://example-mutua.onrender.com/autorizaciones/"
+                                authorization_data = {
+                                    "id_paciente": insurance_id,
+                                    "id_tratamiento": service_id,
+                                }
+                                authorization_response = requests.post(
+                                    authorization_url,
+                                    params=authorization_data,
+                                    headers=headers
+                                )
 
-                                    appointment.state = 'AUT' if authorization_response.status_code == 200 else 'DEN'
+
+                                if authorization_response.status_code == 200:
+                                    authorization_data = authorization_response.json()
+                                    print(f"Authorization Data: {authorization_data}")
+                                    appointment.state = 'AUT'
                                     appointment.save()
+
+                                    messages.success(request, "Cita reservada exitosamente y autorizada por la mutua.")
+                                appointment.save()
 
                 except Exception as e:
                     messages.error(request, f"Error al procesar el seguro: {str(e)}")
