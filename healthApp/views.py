@@ -1,4 +1,4 @@
-from .decorators import admin_required, redirect_admin
+from .decorators import admin_required, redirect_admin, financer_required
 from .forms import PatientForm, AppointmentForm, PatientEditForm, ModifyAppointmentsForm, AppointmentAdminCreateForm
 from .models import Appointment, Patient, Service, Employee, Attendance
 from django.shortcuts import render, redirect, get_object_or_404
@@ -83,30 +83,42 @@ def login_view(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        # Try to authenticate as Employee
         try:
             employee = Employee.objects.get(email=email)
             if check_password(password, employee.password):
+                # Limpiar cualquier sesión anterior
+                request.session.flush()
+
+                # Establecer datos básicos
                 request.session['employee_id'] = employee.id
                 request.session['role_name'] = employee.role.name
-                request.session['is_admin'] = employee.role.name == "Administrator"
-                return redirect('admin_area')
-            else:
-                return render(request, 'auth/login.html', {'error_message': 'Incorrect password.'})
-        except Employee.DoesNotExist:
-            pass
 
-        # Try to authenticate as Patient
-        try:
-            patient = Patient.objects.get(email=email)
-            if check_password(password, patient.password):
-                request.session['patient_id'] = patient.id
+                # Establecer banderas de rol
+                if employee.role.name == "Administrator":
+                    request.session['is_admin'] = True
+                    return redirect('admin_area')
+                elif employee.role.name == "Financier":
+                    request.session['is_financer'] = True
+                    return redirect('financer_area')
+
                 return redirect('home')
             else:
+                raise Employee.DoesNotExist
+
+        except Employee.DoesNotExist:
+            try:
+                patient = Patient.objects.get(email=email)
+                if check_password(password, patient.password):
+                    request.session.flush()
+                    request.session['patient_id'] = patient.id
+                    return redirect('home')
+                else:
+                    return render(request, 'auth/login.html',
+                                  {'error_message': 'El usuario o la contraseña son incorrectos.'})
+
+            except Patient.DoesNotExist:
                 return render(request, 'auth/login.html',
                               {'error_message': 'El usuario o la contraseña son incorrectos.'})
-        except Patient.DoesNotExist:
-            return render(request, 'auth/login.html', {'error_message': 'El usuario o la contraseña son incorrectos.'})
 
     return render(request, 'auth/login.html')
 
@@ -121,6 +133,13 @@ def admin_area(request):
         return render(request, 'admin/admin_area.html')  # Devuelve la plantilla para el área de admin
     else:
         return HttpResponseForbidden("Acceso denegado")
+
+
+@financer_required
+def financer_area(request):
+    if not request.session.get('is_financer'):
+        return redirect('login')
+    return render(request, 'financer/financer_area.html')
 
 
 @admin_required
@@ -495,10 +514,13 @@ def cancel_appointment_admin_view(request, pk):
 
 
 def logout_view(request):
-    if request.session.get('is_admin'):
+    # Comprobar si es admin o financiero
+    if request.session.get('is_admin') or request.session.get('is_financer'):
+        # Limpiar toda la sesión
         request.session.flush()
         return redirect('home')
     else:
+        # Limpiar sesión para otros usuarios
         request.session.flush()
         return redirect('home')
 
