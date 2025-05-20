@@ -157,6 +157,33 @@
         </div>
     </div>
 </section>
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">¡Registro Exitoso!</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="fas fa-check-circle text-success" style="font-size: 48px;"></i>
+                <p class="mt-3">Tu cuenta ha sido creada correctamente.</p>
+                <p>Serás redirigido a la página de inicio de sesión en unos segundos.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if registration_success %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = new bootstrap.Modal(document.getElementById('successModal'));
+        modal.show();
+        setTimeout(function() {
+            window.location.href = "{% url 'login' %}";
+        }, 3000);
+    });
+</script>
+{% endif %}
 {% include 'base/footer.html' %}
 
 

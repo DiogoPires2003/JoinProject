@@ -654,7 +654,7 @@ def register(request):
         form = PatientForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('login')
+            return render(request, 'auth/register.html', {'registration_success': True})
     else:
         form = PatientForm()
 
