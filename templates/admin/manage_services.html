@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,31 +30,30 @@
                         <div class="row g-3 align-items-end mb-3">
                             <div class="col-md-4">
                                 <label for="csvFile" class="form-label">Actualizar servicios mediante CSV</label>
-                                <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv">
-                            </div>
-                            <div class="col-md-4 text-center">
-                                <button type="submit" class="btn btn-primary">
+                                <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv"
+                                       title="Elegir archivo"></div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary d-none" id="updateServicesBtn">
                                     <i class="fas fa-upload me-2"></i>Actualizar Servicios
                             </div>
-                            <div class="col-md-4 text-center">
-                                </button>
+                            <div class="col-md-4 text-end">
+                                <a href="{% url 'admin_area' %}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Volver al Panel
+                                </a>
+
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-end margin-top-2">
+                            <div class="col-md-4 ">
+
                                 <a href="{% url 'download_services_csv' %}" class="btn btn-secondary">
                                     <i class="fas fa-download me-2"></i>Descargar CSV actual
                                 </a>
                             </div>
-                        </div>
-                        <div class="row g-2 align-items-end margin-top-2">
-                            <div class="col-md-4 text-center ">
-                                <a href="{% url 'add_service' %}" class="btn btn-success">
-                                    <i class="fas fa-plus me-2"></i>Añadir Servicio
-                                </a>
-                            </div>
                             <div class="col-md-4 text-center">
                             </div>
                             <div class="col-md-4 text-center ">
-                                <a href="{% url 'admin_area' %}" class="btn btn-secondary">
-                                    <i class="fas fa-arrow-left me-2"></i>Volver al Panel
-                                </a>
+
                             </div>
                         </div>
                     </form>
@@ -87,6 +86,9 @@
                             </div>
                         </div>
                         <div class="text-end mt-3">
+                            <a href="{% url 'add_service' %}" class="btn btn-success" style="margin-right:30.0rem;">
+                                <i class="fas fa-plus me-2"></i>Añadir Servicio
+                            </a>
                             <button type="submit" class="btn btn-primary">Filtrar</button>
                             <a href="{% url 'manage_services' %}" class="btn btn-secondary">Restablecer</a>
                         </div>
@@ -157,7 +159,16 @@
 
     {% include "base/footer.html" %}
 </div>
-
+<script>
+    document.getElementById('csvFile').addEventListener('change', function () {
+        const updateBtn = document.getElementById('updateServicesBtn');
+        if (this.files.length > 0) {
+            updateBtn.classList.remove('d-none');
+        } else {
+            updateBtn.classList.add('d-none');
+        }
+    });
+</script>
 {% bootstrap_javascript %}
 </body>
 </html>
@@ -165,5 +176,8 @@
     .table thead th {
         background-color: var(--azul-profesional);
         color: var(--blanco);
+    }
+    ::file-selector-button {
+        content: "Elegir archivo";
     }
 </style>
