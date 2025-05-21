@@ -8,7 +8,6 @@
     {% load static %}
     {% load bootstrap5 %}
     {% bootstrap_css %}
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
 <div class="navbar-wrapper">
@@ -35,7 +34,7 @@
                                         </div>
                                     {% endif %}
                                 </div>
-                                <form class="text-center" method="post" id="loginForm">
+                                <form class="text-center" method="post">
                                     {% csrf_token %}
                                     <div class="mb-3 form-floating {% if error_message %}has-danger{% endif %}">
                                         <input type="email" name="email" required=""
@@ -51,13 +50,9 @@
                                     </div>
 
                                     <div class="text-center pt-1 mb-5 pb-1">
-                                        <button
-                                            data-mdb-button-init data-mdb-ripple-init
-                                            class="btn btn-primary btn-block fa-lg"
-                                            type="submit"
-                                            id="loginSubmitButton"
-                                        >
-                                            Acceder {% comment %} Keep the original text here {% endcomment %}
+                                        <button data-mdb-button-init data-mdb-ripple-init
+                                                class="btn btn-primary btn-block fa-lg color:#005F99"
+                                                type="submit">Acceder
                                         </button>
                                     </div>
                                     <div class="d-flex align-items-center justify-content-center pb-4 flex-column">
@@ -88,10 +83,39 @@
     </div>
 </section>
 
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;600;700&display=swap');
 
+    .gradient-custom-2 {
+        background: linear-gradient(to left, #4CAF50, #4CAF7A, #47A89E, rgb(43, 169, 165));
+    }
 
-<script src="{% static 'js/login.js' %}"></script>
+    @media (min-width: 768px) {
+        .gradient-form {
+            height: 100vh !important;
+        }
+    }
 
+    @media (min-width: 769px) {
+        .gradient-custom-2 {
+            border-top-right-radius: .3rem;
+            border-bottom-right-radius: .3rem;
+        }
+    }
+
+    body {
+        font-family: 'Inter', 'Open Sans', 'Roboto', sans-serif;
+        color: #333333;
+    }
+
+    h1, h2, h3, body, p, small {
+        color: #333333;
+    }
+
+    .text-content {
+        color: #333333;
+    }
+</style>
 {% include 'base/footer.html' %}
 </body>
 </html>
