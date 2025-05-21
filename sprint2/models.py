@@ -6,10 +6,13 @@ import uuid
 
 from healthApp.models import Patient as HealthAppPatient
 from healthApp.models import Service as HealthAppService
+from healthApp.models import Patient as HealthAppPatient
+from healthApp.models import Service as HealthAppService
+from healthApp.models import Appointment as HealthAppAppointment
 
 
 # También podrías necesitar Appointment si quieres facturar basado en citas completadas
-from healthApp.models import Appointment as HealthAppAppointment
+
 
 
 class Factura(models.Model):
@@ -49,6 +52,14 @@ class Factura(models.Model):
 
     creada_en = models.DateTimeField(auto_now_add=True)
     actualizada_en = models.DateTimeField(auto_now=True)
+
+    cita_origen = models.OneToOneField(
+        'healthApp.Appointment',  # Ajusta si el nombre de la app es diferente
+        on_delete=models.SET_NULL,  # O models.PROTECT
+        null=True, blank=True,
+        related_name='factura_generada_sprint2',  # Evita colisiones con healthapp
+        help_text="Cita que originó esta factura, si aplica."
+    )
 
 
 

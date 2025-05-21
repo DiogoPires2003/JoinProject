@@ -1,11 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es"> {# Cambiado lang a "es" #}
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo_pagina|default:"Emitir Factura Individual" }} | Finanzas | Better Health</title> {# Título dinámico #}
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/png"> {# Ajusta el favicon si es diferente #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    {# Puedes añadir un CSS específico para esta página si es necesario, o usar el admin_dashboard.css si aplica #}
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+    <style>
+        /* Estilos específicos si los necesitas, como los de check_attendance para la tabla */
+        .table thead th {
+            /* Considera usar variables CSS si las tienes definidas globalmente */
+            /* background-color: var(--azul-profesional); */
+            /* color: var(--blanco); */
+            background-color: #005f99; /* Ejemplo de color azul */
+            color: white;
+        }
+        .action-btn { /* Clase para botones de acción en la tabla */
+            min-width: 150px; /* Ajusta según necesidad */
+        }
+    </style>
 </head>
 <body>
-factura individual
+<!-- Include Navbar -->
+<div class="navbar-wrapper">
+    {% include "base/navbar.html" %} {# Asegúrate que esta ruta es correcta #}
+</div>
 
+<div class="page-wrapper d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container admin-container my-5"> {# Usa admin-container si el estilo es similar #}
+            <div class="card shadow-lg rounded-3 overflow-hidden">
+                <div class="card-body p-lg-5">
+                    <h1 class="text-center mb-4">{{ titulo_pagina|default:"Emitir Factura Individual" }}</h1>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show mt-3" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <p class="text-center text-muted mb-4">
+                        A continuación se listan las citas con asistencia confirmada que están pendientes de facturación.
+                        Presiona "Generar Factura" para crear la factura correspondiente.
+                    </p>
+
+                    {% if citas_a_facturar %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover align-middle">
+                            <thead class="table-dark"> {# Usando table-dark como en tu ejemplo #}
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>DNI Paciente</th>
+                                    <th>Servicio</th>
+                                    <th>Fecha Cita</th>
+                                    <th>Hora Cita</th>
+                                    <th class="text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cita in citas_a_facturar %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-user me-2 text-primary"></i> {# Icono de paciente #}
+                                        {{ cita.patient.first_name }} {{ cita.patient.last_name }}
+                                    </td>
+                                    <td>{{ cita.patient.dni }}</td>
+                                    <td>
+                                        {% if cita.service %}
+                                            <i class="fas fa-briefcase-medical me-2 text-muted"></i> {# Icono de servicio #}
+                                            {{ cita.service.name }}
+                                        {% else %}
+                                            Servicio no especificado
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-calendar-alt me-2 text-muted"></i> {# Icono de fecha #}
+                                        {{ cita.date|date:"d/m/Y" }}
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-clock me-2 text-muted"></i> {# Icono de hora #}
+                                        {{ cita.start_hour|time:"H:i" }}
+                                    </td>
+                                    <td class="text-center">
+                                        <form method="POST" action="{% url 'crear_factura_individual' %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="appointment_id" value="{{ cita.id }}">
+                                            <button type="submit" class="btn btn-sm btn-primary action-btn">
+                                                <i class="fas fa-file-invoice-dollar me-1"></i> Generar Factura
+                                            </button>
+                                        </form>
+                                        {% comment %}
+                                        Si quieres un enlace para ver la factura generada (necesita URL y lógica)
+                                        {% if cita.factura_generada_sprint2 %}
+                                        <a href="{% url 'sprint2:ver_factura' numero_factura=cita.factura_generada_sprint2.numero_factura %}" class="btn btn-sm btn-success ms-2 action-btn">
+                                            <i class="fas fa-eye me-1"></i> Ver Factura
+                                        </a>
+                                        {% endif %}
+                                        {% endcomment %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center mt-4" role="alert"> {# Cambiado a alert-info para consistencia #}
+                        <i class="fas fa-check-circle me-2"></i> ¡Buen trabajo! No hay citas con asistencia confirmada pendientes de facturar.
+                    </div>
+                    {% endif %}
+
+                    {# Botón para volver al panel de finanzas (si tienes uno) o al de administración #}
+                    <div class="text-center mt-5">
+                        <a href="{% url 'financer_area' %}" class="btn btn-secondary"> {# Asume una URL 'financier_area_dashboard' #}
+                            <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Finanzas
+                        </a>
+                        {# O si quieres volver al panel de administración general #}
+                        {# <a href="{% url 'admin_area' %}" class="btn btn-secondary"> #}
+                        {# <i class="fas fa-arrow-left me-2"></i> Volver al Panel #}
+                        {# </a> #}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% include "base/footer.html" %} {# Asegúrate que esta ruta es correcta #}
+</div>
+
+{% bootstrap_javascript %}
+{# Script para cerrar alertas de Bootstrap si es necesario #}
+<script>
+    var alertList = document.querySelectorAll('.alert .btn-close');
+    alertList.forEach(function (element) {
+      element.addEventListener('click', function () {
+        var alertNode = this.closest('.alert');
+        if (alertNode) {
+          new bootstrap.Alert(alertNode).close();
+        }
+      })
+    })
+</script>
 </body>
 </html>

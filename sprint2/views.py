@@ -1,4 +1,4 @@
-from healthApp.models import Service
+from healthApp.models import Service, Attendance, Appointment
 from django.shortcuts import render, get_object_or_404, redirect
 from sprint2.forms import ServiceForm
 from django.http import HttpResponse
@@ -7,6 +7,7 @@ from io import TextIOWrapper
 from django.contrib import messages
 from django.db import transaction
 from healthApp.decorators import admin_required, redirect_admin, financer_required
+from sprint2.models import Factura, LineaFactura
 
 
 def manage_services_view(request):
@@ -119,9 +120,75 @@ def add_service_view(request):
 
 @financer_required
 def crear_factura_individual_view(request):
-    # Tu lógica para crear una factura individual
+
+    asistencias_confirmadas = Attendance.objects.filter(attended=True)
+
+
+    citas_pendientes_de_facturar_ids = []
+    for asistencia in asistencias_confirmadas:
+        # Comprobar si ya existe una factura para esta cita
+        if not Factura.objects.filter(cita_origen=asistencia.appointment).exists():
+            citas_pendientes_de_facturar_ids.append(asistencia.appointment.id)
+
+    citas_a_facturar = Appointment.objects.filter(id__in=citas_pendientes_de_facturar_ids).select_related('patient',
+                                                                                                          'service')
+
+
+    if request.method == 'POST':
+        appointment_id_to_bill = request.POST.get('appointment_id')
+        if appointment_id_to_bill:
+            try:
+                cita_a_facturar = Appointment.objects.get(id=appointment_id_to_bill)
+
+                # Verificar de nuevo que no se haya facturado mientras tanto (concurrencia)
+                if Factura.objects.filter(cita_origen=cita_a_facturar).exists():
+                    messages.warning(request, f"La cita para {cita_a_facturar.patient} ya ha sido facturada.")
+                    return redirect('sprint2:crear_factura_individual')
+
+                # Crear la Factura
+                nueva_factura = Factura.objects.create(
+                    paciente=cita_a_facturar.patient,
+                    cita_origen=cita_a_facturar,  # Guardar la referencia a la cita
+
+                )
+
+                # Crear la LineaFactura
+                if cita_a_facturar.service:
+                    LineaFactura.objects.create(
+                        factura=nueva_factura,
+                        servicio=cita_a_facturar.service,
+                        descripcion_manual=cita_a_facturar.service.name,  # O una descripción más detallada
+                        cantidad=1,  # Asumiendo una cita es un servicio
+                        precio_unitario=cita_a_facturar.service.price
+                    )
+                else:
+                    # Manejar el caso de que la cita no tenga un servicio asociado (raro si se va a facturar)
+                    messages.error(request, "La cita no tiene un servicio asociado para facturar.")
+                    # Podrías borrar la factura en borrador o dejarla para edición manual
+                    nueva_factura.delete()
+                    return redirect('sprint2:crear_factura_individual')
+
+                # Calcular totales de la factura
+                nueva_factura.calcular_totales()
+                nueva_factura.estado = 'EMITIDA'  # Opcional: cambiar estado al generar
+                nueva_factura.save()
+
+                messages.success(request,
+                                 f"Factura {nueva_factura.numero_factura} generada para {cita_a_facturar.patient}.")
+
+
+
+                return redirect('sprint2:crear_factura_individual')  # Recargar la página para ver la lista actualizada
+
+            except Appointment.DoesNotExist:
+                messages.error(request, "La cita seleccionada para facturar no existe.")
+            except Exception as e:
+                messages.error(request, f"Error al generar la factura: {e}")
+            return redirect('sprint2:crear_factura_individual')
+
     context = {
-        'titulo_pagina': 'Emitir Factura Individual'
+        'titulo_pagina': 'Emitir Factura Individual desde Asistencias',
+        'citas_a_facturar': citas_a_facturar,
     }
     return render(request, 'financer/crear_factura_individual.html', context)
 
