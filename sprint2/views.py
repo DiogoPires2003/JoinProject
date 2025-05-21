@@ -218,3 +218,17 @@ def crear_factura_individual_view(request):
         'citas_info': citas_para_mostrar,
     }
     return render(request, 'financer/crear_factura_individual.html', context)
+
+
+
+
+
+@financer_required
+def historial_facturas_view(request):
+    facturas = Factura.objects.all().order_by('-fecha_emision').select_related('paciente')
+
+    context = {
+        'titulo_pagina': 'Historial de Facturas',
+        'facturas': facturas
+    }
+    return render(request, 'financer/historial_facturas.html', context)
