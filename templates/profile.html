@@ -10,6 +10,7 @@
   {% bootstrap_css %}
   <link href="{% static 'css/profiles.css' %}" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <style>
     :root {
       --azul-profesional: #005F99;
@@ -32,11 +33,11 @@
     }
     .info-section {
       background: white;
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 2rem;
       max-width: 600px;
       margin: 0 auto;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
     h1 {
       font-family: 'Montserrat', sans-serif;
@@ -52,7 +53,7 @@
       margin-bottom: 2rem;
       text-align: center;
       font-size: 1.1rem;
-      color: #495057;
+      color: #333333;
     }
     .user-info span {
       font-weight: 700;
@@ -66,6 +67,19 @@
       margin-bottom: 1rem;
       list-style: none;
       padding-left: 0;
+    }
+    .form-label {
+      color: var(--azul-profesional);
+      font-weight: 500;
+    }
+    .mb-3 {
+      margin-bottom: 1.5rem !important;
+    }
+    #insuranceNumberContainer {
+      display: none;
+    }
+    #insuranceNumberContainer.visible {
+      display: block;
     }
   </style>
 </head>
@@ -83,7 +97,7 @@
         <p><strong>Nombre completo:</strong> <span>{{ patient.first_name }} {{ patient.last_name }}</span></p>
         <p><strong>Email:</strong> <span>{{ patient.email }}</span></p>
         <p><strong>Teléfono:</strong> <span>{{ patient.phone }}</span></p>
-        <p><strong>Número de aseguradora:</strong> <span>{{ patient.insurance_number|default:"No registrado" }}</span></p>
+        <p><strong>Número de mutua:</strong> <span>{{ patient.insurance_number|default:"No registrado" }}</span></p>
       </div>
 
       <!-- Botón para mostrar el formulario -->
@@ -111,45 +125,51 @@
         <form method="post" action="" novalidate>
           {% csrf_token %}
           <div class="mb-3">
-            <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
+            <label for="{{ form.first_name.id_for_label }}" class="form-label"><i class="bi bi-person"></i> {{ form.first_name.label }}</label>
             {{ form.first_name|add_class:"form-control" }}
           </div>
           <div class="mb-3">
-            <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
+            <label for="{{ form.last_name.id_for_label }}" class="form-label"><i class="bi bi-person"></i> {{ form.last_name.label }}</label>
             {{ form.last_name|add_class:"form-control" }}
           </div>
           <div class="mb-3">
-            <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+            <label for="{{ form.email.id_for_label }}" class="form-label"><i class="bi bi-envelope"></i> {{ form.email.label }}</label>
             {{ form.email|add_class:"form-control" }}
+            <div id="emailFeedback" class="form-text"></div>
           </div>
           <div class="mb-3">
-            <label for="{{ form.phone.id_for_label }}" class="form-label">{{ form.phone.label }}</label>
+            <label for="{{ form.phone.id_for_label }}" class="form-label"><i class="bi bi-telephone"></i> {{ form.phone.label }} <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Ejemplo: +34 123 456 789"></i></label>
             {{ form.phone|add_class:"form-control" }}
+            <div id="phoneFeedback" class="form-text"></div>
           </div>
-          <div class="mb-3 form-check">
-            <input type="checkbox" name="has_insurance" id="id_has_insurance" class="form-check-input"
-                   {% if patient.insurance_number %}checked{% endif %}>
-            <label for="id_has_insurance" class="form-check-label">¿Tienes mutua?</label>
+          <div class="mb-3">
+            <label for="has_insurance" class="form-label">¿Tienes mutua?</label>
+            <select id="has_insurance" name="has_insurance" class="form-select">
+              <option value="no" {% if not patient.insurance_number %}selected{% endif %}>No</option>
+              <option value="yes" {% if patient.insurance_number %}selected{% endif %}>Sí</option>
+            </select>
           </div>
-          <div id="insuranceNumberContainer" class="mb-3" style="display: {% if patient.insurance_number %}block{% else %}none{% endif %};">
+          <div id="insuranceNumberContainer" class="mb-3">
             <label for="{{ form.insurance_number.id_for_label }}" class="form-label">{{ form.insurance_number.label }}</label>
             {{ form.insurance_number|add_class:"form-control" }}
-            <!-- aquí aparece el feedback -->
-            <div id="insuranceFeedback" class="form-text"></div>
+            <div id="insuranceFeedback" class="form-text">Formato esperado: una letra seguida de cinco números (ej. A12345)</div>
           </div>
 
           <hr />
 
           <div class="mb-3">
-            <label for="{{ form.current_password.id_for_label }}" class="form-label">{{ form.current_password.label }} <small class="text-muted">(Opcional para cambiar contraseña)</small></label>
+            <label for="{{ form.current_password.id_for_label }}" class="form-label"><i class="bi bi-lock"></i> {{ form.current_password.label }} <small class="text-muted">(Opcional para cambiar contraseña)</small></label>
             {{ form.current_password|add_class:"form-control" }}
           </div>
           <div class="mb-3">
-            <label for="{{ form.new_password.id_for_label }}" class="form-label">{{ form.new_password.label }} <small class="text-muted">(Opcional)</small></label>
-            {{ form.new_password|add_class:"form-control" }}
+            <label for="{{ form.new_password.id_for_label }}" class="form-label"><i class="bi bi-lock"></i> {{ form.new_password.label }} <small class="text-muted">(Opcional)</small></label>
+            <div class="input-group">
+              {{ form.new_password|add_class:"form-control" }}
+              <button class="btn btn-outline-secondary" type="button" id="togglePassword"><i class="bi bi-eye"></i></button>
+            </div>
           </div>
           <div class="mb-3">
-            <label for="{{ form.confirm_password.id_for_label }}" class="form-label">{{ form.confirm_password.label }} <small class="text-muted">(Opcional)</small></label>
+            <label for="{{ form.confirm_password.id_for_label }}" class="form-label"><i class="bi bi-lock"></i> {{ form.confirm_password.label }} <small class="text-muted">(Opcional)</small></label>
             {{ form.confirm_password|add_class:"form-control" }}
           </div>
 
@@ -171,75 +191,128 @@
     const cancelBtn = document.getElementById('cancel-edit-btn');
     const userInfo = document.getElementById('user-info');
     const editForm = document.getElementById('edit-form');
-    const hasInsuranceCheckbox = document.getElementById('id_has_insurance');
+    const hasInsuranceSelect = document.getElementById('has_insurance');
     const insuranceNumberContainer = document.getElementById('insuranceNumberContainer');
     const insuranceInput = document.getElementById('{{ form.insurance_number.id_for_label }}');
-    const feedback = document.getElementById('insuranceFeedback');
+    const insuranceFeedback = document.getElementById('insuranceFeedback');
+    const emailInput = document.getElementById('{{ form.email.id_for_label }}');
+    const phoneInput = document.getElementById('{{ form.phone.id_for_label }}');
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('{{ form.new_password.id_for_label }}');
 
-    // Mostrar/ocultar formulario
-    editBtn.addEventListener('click', () => {
-      userInfo.style.display = 'none';
-      editBtn.style.display = 'none';
-      editForm.style.display = 'block';
-    });
-    cancelBtn.addEventListener('click', () => {
-      editForm.style.display = 'none';
-      userInfo.style.display = 'block';
-      editBtn.style.display = 'inline-block';
+    // Función para mostrar/ocultar el formulario
+    const toggleForm = (showForm) => {
+      userInfo.style.display = showForm ? 'none' : 'block';
+      editBtn.style.display = showForm ? 'none' : 'inline-block';
+      editForm.style.display = showForm ? 'block' : 'none';
+    };
+
+    editBtn.addEventListener('click', () => toggleForm(true));
+    cancelBtn.addEventListener('click', () => toggleForm(false));
+
+    // Mostrar/ocultar campo de número de mutua
+    hasInsuranceSelect.addEventListener('change', function() {
+      if (this.value === 'yes') {
+        insuranceNumberContainer.classList.add('visible');
+        validarNumeroSeguro();
+      } else {
+        insuranceNumberContainer.classList.remove('visible');
+        insuranceFeedback.textContent = 'Formato esperado: una letra seguida de cinco números (ej. A12345)';
+        insuranceFeedback.classList.remove('text-danger', 'text-success');
+      }
     });
 
-    // Función de validación AJAX
+    // Validación del número de mutua
     function validarNumeroSeguro() {
       const numero = insuranceInput.value.trim();
-      if (!numero) {
-        feedback.textContent = '';
-        feedback.classList.remove('text-success', 'text-danger');
-        return;
+      const regex = /^[A-Za-z]\d{5}$/;
+
+      // Primero, validar el formato
+      if (!regex.test(numero)) {
+        insuranceFeedback.textContent = '✘ Formato inválido. Debe ser una letra seguida de cinco números (ej. A12345).';
+        insuranceFeedback.classList.add('text-danger');
+        insuranceFeedback.classList.remove('text-success');
+        return;  // No continuar si el formato es incorrecto
       }
-      feedback.textContent = 'Comprobando número...';
-      feedback.classList.remove('text-success', 'text-danger');
+
+      // Si el formato es correcto, hacer la solicitud AJAX
+      insuranceFeedback.textContent = 'Comprobando número...';
+      insuranceFeedback.classList.remove('text-danger', 'text-success');
 
       fetch(`{% url 'ajax_validar_mutua' %}?numero=${encodeURIComponent(numero)}`)
-        .then(res => res.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error en la solicitud');
+          }
+          return response.json();
+        })
         .then(data => {
           if (data.pertenece_mutua) {
-            feedback.textContent = '✔ Número válido y pertenece a la mutua';
-            feedback.classList.add('text-success');
+            insuranceFeedback.textContent = '✔ Número válido y pertenece a la mutua';
+            insuranceFeedback.classList.add('text-success');
+            insuranceFeedback.classList.remove('text-danger');
           } else {
-            feedback.textContent = '✘ Número inválido o no pertenece a la mutua';
-            feedback.classList.add('text-danger');
+            insuranceFeedback.textContent = '✘ Número inválido o no pertenece a la mutua';
+            insuranceFeedback.classList.add('text-danger');
+            insuranceFeedback.classList.remove('text-success');
           }
         })
         .catch(() => {
-          feedback.textContent = 'Error validando el número';
-          feedback.classList.add('text-danger');
+          insuranceFeedback.textContent = 'Error al validar el número';
+          insuranceFeedback.classList.add('text-danger');
+          insuranceFeedback.classList.remove('text-success');
         });
     }
 
-    // Mostrar/ocultar campo de número y validar
-    hasInsuranceCheckbox.addEventListener('change', function() {
-      if (this.checked) {
-        insuranceNumberContainer.style.display = 'block';
-        validarNumeroSeguro();
+    insuranceInput.addEventListener('input', validarNumeroSeguro);
+
+    // Validación de email
+    emailInput.addEventListener('input', function() {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const feedback = document.getElementById('emailFeedback');
+      if (!emailRegex.test(this.value) && this.value) {
+        feedback.textContent = 'Por favor, introduce un email válido.';
+        feedback.classList.add('text-danger');
       } else {
-        insuranceNumberContainer.style.display = 'none';
         feedback.textContent = '';
+        feedback.classList.remove('text-danger');
       }
     });
 
-    // Validar al perder foco
-    insuranceInput.addEventListener('blur', () => {
-      if (hasInsuranceCheckbox.checked) {
-        validarNumeroSeguro();
+    // Validación de teléfono
+    phoneInput.addEventListener('input', function() {
+      const phoneRegex = /^\+?\d{9,15}$/;
+      const feedback = document.getElementById('phoneFeedback');
+      if (!phoneRegex.test(this.value) && this.value) {
+        feedback.textContent = 'Introduce un número válido (9-15 dígitos).';
+        feedback.classList.add('text-danger');
+      } else {
+        feedback.textContent = '';
+        feedback.classList.remove('text-danger');
       }
     });
+
+    // Mostrar/ocultar contraseña
+    togglePassword.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      togglePassword.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+    });
+
+    // Inicializar tooltips
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(tooltip => new bootstrap.Tooltip(tooltip));
 
     // Si hay errores en el form, mostrarlo
     {% if form.errors %}
-      userInfo.style.display = 'none';
-      editBtn.style.display = 'none';
-      editForm.style.display = 'block';
+      toggleForm(true);
     {% endif %}
+
+    // Mostrar campo de número de mutua si ya tiene valor
+    if (hasInsuranceSelect.value === 'yes') {
+      insuranceNumberContainer.classList.add('visible');
+      validarNumeroSeguro();
+    }
   </script>
 </body>
 </html>
