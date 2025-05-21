@@ -1,4 +1,4 @@
-from .decorators import admin_required, redirect_admin, financer_required
+from .decorators import admin_required, redirect_admin
 from .forms import PatientForm, AppointmentForm, PatientEditForm, ModifyAppointmentsForm, AppointmentAdminCreateForm
 from .models import Appointment, Patient, Service, Employee, Attendance
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,28 +12,48 @@ from datetime import datetime, time, timedelta
 import requests
 import json
 import logging
-from django.db.models import Q  # Import Q object for complex lookups
+from django.db.models import Q # Import Q object for complex lookups
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import IntegrityError
 from datetime import time as dt_time
-from datetime import datetime
-from django.utils import timezone
-
-
-@admin_required
 def check_attendance(request):
     today = now().date()
+
+    # Fetch the API token
+    token_url = "https://example-mutua.onrender.com/token"
+    payload = {
+        "username": config("API_USERNAME"),
+        "password": config("API_PASSWORD"),
+    }
+
+    token_response = requests.post(token_url, data=payload)
+    if token_response.status_code != 200:
+        return JsonResponse({'error': 'Failed to fetch API token.'}, status=500)
+
+    access_token = token_response.json().get("access_token")
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    # Fetch the services
+    services_url = "https://example-mutua.onrender.com/servicios-clinica/"
+    services_response = requests.get(services_url, headers=headers)
+    if services_response.status_code != 200:
+        return JsonResponse({'error': 'Failed to fetch services from the API.'}, status=500)
+
+    services = services_response.json()
+    service_map = {service['id']: service['nombre'] for service in services}
 
     # Handle form submission
     if request.method == 'POST':
         appointment_id = request.POST.get('appointment_id')
-        attended = request.POST.get('attended') == 'true'
+        attended = request.POST.get('attended') == 'on'  # Checkbox value
 
+        # Update or create attendance record
         appointment = Appointment.objects.get(id=appointment_id)
         attendance, created = Attendance.objects.get_or_create(appointment=appointment)
         attendance.attended = attended
         attendance.save()
 
+        # Redirect to the same page to reflect changes
         return redirect('check_attendance')
 
     # Query today's appointments
@@ -46,8 +66,9 @@ def check_attendance(request):
 
     if patient_filter:
         appointments = appointments.filter(
-            Q(patient__first_name__icontains=patient_filter) |
-            Q(patient__last_name__icontains=patient_filter)
+            patient__first_name__icontains=patient_filter
+        ) | appointments.filter(
+            patient__last_name__icontains=patient_filter
         )
 
     if service_filter:
@@ -61,64 +82,47 @@ def check_attendance(request):
     enriched_appointments = []
     for appointment in appointments:
         attendance = Attendance.objects.filter(appointment=appointment).first()
-        service_name = appointment.service.name if appointment.service else 'No asignado'
-
         enriched_appointments.append({
             'id': appointment.id,
             'patient': f"{appointment.patient.first_name} {appointment.patient.last_name}",
-            'service_name': service_name,
+            'service_name': service_map.get(appointment.service.id, 'Servicio no encontrado') if appointment.service else 'No asignado',
             'start_hour': appointment.start_hour,
             'attended': attendance.attended if attendance else False,
         })
 
     return render(request, 'admin/check_attendance.html', {
         'appointments': enriched_appointments,
-        'services': Service.objects.all(),
+        'service_map': service_map,
     })
-
-
 @redirect_admin
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
 
+        # Try to authenticate as Employee
         try:
             employee = Employee.objects.get(email=email)
             if check_password(password, employee.password):
-                # Limpiar cualquier sesión anterior
-                request.session.flush()
-
-                # Establecer datos básicos
                 request.session['employee_id'] = employee.id
                 request.session['role_name'] = employee.role.name
+                request.session['is_admin'] = employee.role.name == "Administrator"
+                return redirect('admin_area')
+            else:
+                return render(request, 'auth/login.html', {'error_message': 'Incorrect password.'})
+        except Employee.DoesNotExist:
+            pass
 
-                # Establecer banderas de rol
-                if employee.role.name == "Administrator":
-                    request.session['is_admin'] = True
-                    return redirect('admin_area')
-                elif employee.role.name == "Financier":
-                    request.session['is_financer'] = True
-                    return redirect('financer_area')
-
+        # Try to authenticate as Patient
+        try:
+            patient = Patient.objects.get(email=email)
+            if check_password(password, patient.password):
+                request.session['patient_id'] = patient.id
                 return redirect('home')
             else:
-                raise Employee.DoesNotExist
-
-        except Employee.DoesNotExist:
-            try:
-                patient = Patient.objects.get(email=email)
-                if check_password(password, patient.password):
-                    request.session.flush()
-                    request.session['patient_id'] = patient.id
-                    return redirect('home')
-                else:
-                    return render(request, 'auth/login.html',
-                                  {'error_message': 'El usuario o la contraseña son incorrectos.'})
-
-            except Patient.DoesNotExist:
-                return render(request, 'auth/login.html',
-                              {'error_message': 'El usuario o la contraseña son incorrectos.'})
+                return render(request, 'auth/login.html', {'error_message': 'El usuario o la contraseña son incorrectos.'})
+        except Patient.DoesNotExist:
+            return render(request, 'auth/login.html', {'error_message': 'El usuario o la contraseña son incorrectos.'})
 
     return render(request, 'auth/login.html')
 
@@ -133,13 +137,6 @@ def admin_area(request):
         return render(request, 'admin/admin_area.html')  # Devuelve la plantilla para el área de admin
     else:
         return HttpResponseForbidden("Acceso denegado")
-
-
-@financer_required
-def financer_area(request):
-    if not request.session.get('is_financer'):
-        return redirect('login')
-    return render(request, 'financer/financer_area.html')
 
 
 @admin_required
@@ -197,10 +194,11 @@ def patient_appointment_history_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     now = timezone.now()
 
-    # Get all appointments with service information
+    service_names_map = get_service_names()
+
     all_patient_appointments = Appointment.objects.filter(
         patient=patient
-    ).select_related('service').order_by('-date', '-start_hour')
+    ).select_related('service').order_by('-date', '-start_hour')  # Keep select_related for accessing service.id
 
     appointments_with_status = []
     for appointment in all_patient_appointments:
@@ -211,7 +209,10 @@ def patient_appointment_history_view(request, pk):
             is_past = True
 
         appointment.status_label = "Finalizada" if is_past else "Próxima"
-        appointment.service_name = appointment.service.name if appointment.service else "Servicio Desconocido"
+
+        service_id = getattr(appointment.service, 'id', None)
+        appointment.service_name = service_names_map.get(service_id, "Servicio Desconocido")
+
         appointments_with_status.append(appointment)
 
     context = {
@@ -220,9 +221,9 @@ def patient_appointment_history_view(request, pk):
     }
     return render(request, 'admin/patient_appointment_history.html', context)
 
-
 @admin_required
 def manage_appointments_view(request):
+
     now_dt = timezone.now()
     today = now_dt.date()
     now_time = now_dt.time()
@@ -230,10 +231,10 @@ def manage_appointments_view(request):
     future_appointments_filter = Q(date__gt=today) | Q(date=today, start_hour__gte=now_time)
 
     appointments_list = Appointment.objects.filter(future_appointments_filter) \
-        .select_related('patient', 'service') \
-        .order_by('date', 'start_hour')
+                                         .select_related('patient', 'service') \
+                                         .order_by('date', 'start_hour')
 
-    services = Service.objects.all()  # For the filter dropdown
+    services = Service.objects.all() # For the filter dropdown
 
     patient_name = request.GET.get('patient_name', '').strip()
     date_from = request.GET.get('date_from')
@@ -251,17 +252,19 @@ def manage_appointments_view(request):
 
             date_from_obj = timezone.datetime.strptime(date_from, '%Y-%m-%d').date()
             if date_from_obj >= today:
-                appointments_list = appointments_list.filter(date__gte=date_from)
+                 appointments_list = appointments_list.filter(date__gte=date_from)
 
         except (ValueError, TypeError):
-            messages.warning(request, f"Formato de fecha 'Desde' inválido ignorado: {date_from}")
+             messages.warning(request, f"Formato de fecha 'Desde' inválido ignorado: {date_from}")
     if date_to:
         try:
             appointments_list = appointments_list.filter(date__lte=date_to)
         except (ValueError, TypeError):
-            messages.warning(request, f"Formato de fecha 'Hasta' inválido ignorado: {date_to}")
+             messages.warning(request, f"Formato de fecha 'Hasta' inválido ignorado: {date_to}")
     if service_id:
         appointments_list = appointments_list.filter(service_id=service_id)
+
+
 
     paginator = Paginator(appointments_list, 10)
     page_number = request.GET.get('page')
@@ -272,6 +275,7 @@ def manage_appointments_view(request):
     except EmptyPage:
         page_obj = paginator.page(paginator.num_pages)
 
+
     context = {
         'page_obj': page_obj,
         'services': services,
@@ -279,9 +283,12 @@ def manage_appointments_view(request):
     }
     return render(request, 'admin/manage_appointments.html', context)
 
-
 @admin_required
 def create_appointment_admin_view(request):
+    """
+    Vista para que un administrador cree una nueva cita médica
+    usando un formulario personalizado con selección de hora dinámica.
+    """
     if request.method == 'POST':
         form = AppointmentAdminCreateForm(request.POST)
         if form.is_valid():
@@ -337,13 +344,19 @@ def create_appointment_admin_view(request):
     return render(request, 'admin/create_appointment.html', context)
 
 
+
+# --- VERY SIMPLE Placeholder View for Editing Appointments ---
 @admin_required
 def edit_appointment_admin_view(request, pk):
+    """
+    Vista para que un administrador modifique una cita existente.
+    """
     appointment = get_object_or_404(Appointment.objects.select_related('patient', 'service'), pk=pk)
     service = appointment.service
     patient = appointment.patient
 
-    service_duration = 30  # Valor por defecto si no se puede calcular
+
+    service_duration = 30 # Valor por defecto si no se puede calcular
     if service and appointment.start_hour and appointment.end_hour:
         start_time = appointment.start_hour
         end_time = appointment.end_hour
@@ -359,6 +372,7 @@ def edit_appointment_admin_view(request, pk):
 
     if request.method == 'POST':
         form = ModifyAppointmentsForm(request.POST, instance=appointment)
+
 
         start_hour_str = request.POST.get('start_hour')
         date_str = request.POST.get('date')
@@ -391,12 +405,14 @@ def edit_appointment_admin_view(request, pk):
                 form_errors.append("Formato de hora inválido.")
                 valid_post = False
 
+
         if valid_post and start_time and date:
             start_minutes = start_time.hour * 60 + start_time.minute
             end_minutes = start_minutes + service_duration
             end_hour = (end_minutes // 60) % 24
             end_minute = end_minutes % 60
             end_time = dt_time(hour=end_hour, minute=end_minute)
+
 
             overlapping_appointments = Appointment.objects.filter(
                 date=date,
@@ -406,8 +422,7 @@ def edit_appointment_admin_view(request, pk):
             ).exclude(pk=pk)
 
             if overlapping_appointments.exists():
-                messages.error(request,
-                               f"El horario seleccionado ({start_hour_str} - {end_time.strftime('%H:%M')}) se solapa con otra cita existente.")
+                messages.error(request, f"El horario seleccionado ({start_hour_str} - {end_time.strftime('%H:%M')}) se solapa con otra cita existente.")
 
                 valid_post = False
             else:
@@ -420,12 +435,12 @@ def edit_appointment_admin_view(request, pk):
 
                     appointment.save()
 
-                    messages.success(request,
-                                     f"Cita de {patient} modificada exitosamente para el {date.strftime('%d/%m/%Y')} a las {start_hour_str}.")
+                    messages.success(request, f"Cita de {patient} modificada exitosamente para el {date.strftime('%d/%m/%Y')} a las {start_hour_str}.")
                     return redirect('manage_appointments')
                 except Exception as e:
                     messages.error(request, f"Error al guardar los cambios: {e}")
                     valid_post = False
+
 
         if not valid_post:
             for error in form_errors:
@@ -435,6 +450,7 @@ def edit_appointment_admin_view(request, pk):
     else:
 
         form = ModifyAppointmentsForm(instance=appointment)
+
 
     all_appointments = Appointment.objects.filter(date__gte=timezone.now().date() - timedelta(days=1)).values(
         'id', 'date', 'service_id', 'start_hour', 'end_hour'
@@ -464,6 +480,7 @@ def edit_appointment_admin_view(request, pk):
     return render(request, 'admin/edit_appointment.html', context)
 
 
+
 @admin_required
 def cancel_appointment_admin_view(request, pk):
     """
@@ -474,6 +491,7 @@ def cancel_appointment_admin_view(request, pk):
     today = now_dt.date()
     now_time = now_dt.time()
 
+
     appointment = get_object_or_404(Appointment, pk=pk)
 
     try:
@@ -481,8 +499,9 @@ def cancel_appointment_admin_view(request, pk):
             timezone.datetime.combine(appointment.date, appointment.start_hour)
         )
     except ValueError:
-        messages.error(request, "Error al procesar la hora de la cita.")
-        return redirect('manage_appointments')
+         messages.error(request, "Error al procesar la hora de la cita.")
+         return redirect('manage_appointments')
+
 
     if appointment_start_dt <= now_dt:
         messages.error(request, "No se puede cancelar una cita que ya ha comenzado o ha pasado.")
@@ -512,15 +531,11 @@ def cancel_appointment_admin_view(request, pk):
         messages.warning(request, "Método no válido para cancelar. Use el botón de cancelación.")
         return redirect('manage_appointments')
 
-
 def logout_view(request):
-    # Comprobar si es admin o financiero
-    if request.session.get('is_admin') or request.session.get('is_financer'):
-        # Limpiar toda la sesión
-        request.session.flush()
+    if request.session.get('is_admin'):
+        request.session.flush()  
         return redirect('home')
     else:
-        # Limpiar sesión para otros usuarios
         request.session.flush()
         return redirect('home')
 
@@ -540,77 +555,129 @@ def get_available_hours(request):
         if not service_id or not date:
             return JsonResponse({'error': 'Service ID and date are required.'}, status=400)
 
-        try:
-            # Get service and its duration
-            service = Service.objects.get(id=service_id)
-            duration = service.duration
+        # Fetch the service duration from the API
+        token_url = "https://example-mutua.onrender.com/token"
+        payload = {
+            "username": config("API_USERNAME"),
+            "password": config("API_PASSWORD"),
+        }
 
-            # Define working hours
-            start_time = time(8, 0)  # 8:00 AM
-            end_time = time(20, 0)  # 8:00 PM
+        token_response = requests.post(token_url, data=payload)
+        if token_response.status_code != 200:
+            logging.error("Failed to fetch API token.")
+            return JsonResponse({'error': 'Failed to fetch API token.'}, status=500)
 
-            # Get all existing appointments for the date
-            existing_appointments = Appointment.objects.filter(
-                date=date
-            ).order_by('start_hour')
+        access_token = token_response.json().get("access_token")
+        headers = {"Authorization": f"Bearer {access_token}"}
 
-            # Generate available slots
-            available_hours = []
-            current_time = datetime.combine(datetime.strptime(date, '%Y-%m-%d'), start_time)
-            end_datetime = datetime.combine(datetime.strptime(date, '%Y-%m-%d'), end_time)
+        services_url = "https://example-mutua.onrender.com/servicios-clinica/"
+        services_response = requests.get(services_url, headers=headers)
+        if services_response.status_code != 200:
+            logging.error("Failed to fetch services from the API.")
+            return JsonResponse({'error': 'Failed to fetch services from the API.'}, status=500)
 
-            # Convert existing appointments to time ranges
-            booked_slots = []
-            for appt in existing_appointments:
-                booked_slots.append({
-                    'start': datetime.combine(datetime.strptime(date, '%Y-%m-%d'), appt.start_hour),
-                    'end': datetime.combine(datetime.strptime(date, '%Y-%m-%d'), appt.end_hour)
+        services = services_response.json()
+        logging.info(f"Services fetched from API: {services}")
+
+        service = next((s for s in services if s["id"] == int(service_id)), None)
+        if not service:
+            logging.warning(f"Service ID {service_id} not found in API response.")
+            return JsonResponse({'error': 'Service not found.'}, status=404)
+
+        duration = service.get("duracion_minutos", 30)  # Default to 30 minutes if not provided
+        logging.info(f"Service ID {service_id} duration: {duration} minutes")
+
+        # Define working hours (e.g., 9:00 AM to 5:00 PM)
+        start_time = time(8, 0)
+        end_time = time(20, 0)
+
+        # Fetch existing appointments for the selected service and date
+        existing_appointments = Appointment.objects.filter(
+            service_id=service_id,
+            date=date
+        )
+
+        # Generate all possible time slots
+        available_hours = []
+        current_time = datetime.combine(datetime.strptime(date, '%Y-%m-%d'), start_time)
+        end_datetime = datetime.combine(datetime.strptime(date, '%Y-%m-%d'), end_time)
+
+        while current_time + timedelta(minutes=duration) <= end_datetime:
+            slot_start = current_time.time()
+            slot_end = (current_time + timedelta(minutes=duration)).time()
+
+            # Check for overlaps
+            overlap = any(
+                appt.start_hour <= slot_start < appt.end_hour or
+                appt.start_hour < slot_end <= appt.end_hour
+                for appt in existing_appointments
+            )
+
+            if not overlap:
+                available_hours.append({
+                    'start': slot_start.strftime('%H:%M'),
+                    'end': slot_end.strftime('%H:%M')
                 })
 
-            while current_time + timedelta(minutes=duration) <= end_datetime:
-                slot_end = current_time + timedelta(minutes=duration)
-                is_available = True
+            current_time += timedelta(minutes=15)  # Increment by 15 minutes
 
-                # Check if slot overlaps with any existing appointment
-                for booked in booked_slots:
-                    if (current_time < booked['end'] and
-                            slot_end > booked['start']):
-                        is_available = False
-                        # Move current_time to the end of this booked slot
-                        current_time = booked['end']
-                        break
+        if not available_hours:
+            logging.info(f"No available hours for service ID {service_id} on {date}.")
 
-                if is_available:
-                    available_hours.append({
-                        'start': current_time.time().strftime('%H:%M'),
-                        'end': slot_end.time().strftime('%H:%M')
-                    })
-                    current_time = slot_end
-                else:
-                    continue
-
-            return JsonResponse({'available_hours': available_hours})
-
-        except Service.DoesNotExist:
-            return JsonResponse({'error': 'Service not found.'}, status=404)
-        except Exception as e:
-            logging.error(f"Error in get_available_hours: {e}")
-            return JsonResponse({'error': 'Internal server error.'}, status=500)
-
+        return JsonResponse({'available_hours': available_hours})
     return JsonResponse({'error': 'Invalid request method.'}, status=405)
 
 
 @redirect_admin
+@redirect_admin
 def appointment_list(request):
     MAX_APPOINTMENTS_PER_DAY = 5
 
+    # Check if the patient is logged in
     patient_id = request.session.get('patient_id')
     if not patient_id:
         return redirect('login')
 
+    # Fetch the patient
     patient = Patient.objects.get(id=patient_id)
-    services = Service.objects.filter(available=True)  # Only get available services
 
+    # Fetch services from the API
+    token_url = "https://example-mutua.onrender.com/token"
+    payload = {
+        "username": config("API_USERNAME"),
+        "password": config("API_PASSWORD"),
+    }
+
+    token_response = requests.post(token_url, data=payload)
+    if token_response.status_code == 200:
+        access_token = token_response.json().get("access_token")
+        headers = {"Authorization": f"Bearer {access_token}"}
+
+        services_url = "https://example-mutua.onrender.com/servicios-clinica/"
+        services_response = requests.get(services_url, headers=headers)
+        if services_response.status_code == 200:
+            # Filter services to include only valid ones
+            services = [
+                {
+                    "id": service["id"],
+                    "name": service["nombre"],
+                    "description": service["descripcion"],
+                    "type": service["tipo_servicio"],
+                    "price": service["precio"],
+                    "included_in_insurance": service["incluido_mutua"],
+                    "duration": service["duracion_minutos"]
+                }
+                for service in services_response.json()
+                if service.get("id") and service.get("nombre")  # Ensure valid ID and name
+            ]
+        else:
+            services = []
+            messages.error(request, "Error fetching services from the API.")
+    else:
+        services = []
+        messages.error(request, "Error fetching token from the API.")
+
+    # Handle POST request for creating an appointment
     reserva_exitosa = False
     if request.method == 'POST':
         service_id = request.POST.get('service_id')
@@ -622,8 +689,8 @@ def appointment_list(request):
         if appointments_on_date >= MAX_APPOINTMENTS_PER_DAY:
             messages.error(request, f"Solo puedes reservar un máximo de {MAX_APPOINTMENTS_PER_DAY} citas por día.")
             return redirect('appointment_list')
-
         try:
+            # Validate and create the appointment
             start_datetime = f"{date} {start_time}"
             start_datetime_obj = timezone.make_aware(datetime.strptime(start_datetime, '%Y-%m-%d %H:%M'))
 
@@ -634,7 +701,11 @@ def appointment_list(request):
             end_datetime = f"{date} {end_time}"
             end_datetime_obj = timezone.make_aware(datetime.strptime(end_datetime, '%Y-%m-%d %H:%M'))
 
-            service = Service.objects.get(id=service_id, available=True)  # Ensure service is available
+            service = Service.objects.filter(id=service_id).first()
+            if not service:
+                messages.error(request, "El servicio seleccionado no es válido.")
+                return redirect('appointment_list')
+
             Appointment.objects.create(
                 patient=patient,
                 service=service,
@@ -643,12 +714,13 @@ def appointment_list(request):
                 date=start_datetime_obj.date()
             )
             reserva_exitosa = True
-        except Service.DoesNotExist:
-            messages.error(request, "El servicio seleccionado no está disponible.")
         except Exception as e:
             messages.error(request, f"Error creating appointment: {str(e)}")
 
+    # Fetch all appointments for the patient
     appointments = Appointment.objects.all()
+
+    # Convert appointments to JSON for JavaScript
     booked_appointments_json = [
         {
             'date': appointment.date.strftime('%Y-%m-%d'),
@@ -676,7 +748,7 @@ def register(request):
         form = PatientForm(request.POST)
         if form.is_valid():
             form.save()
-            return render(request, 'auth/register.html', {'registration_success': True})
+            return redirect('login')
     else:
         form = PatientForm()
 
@@ -705,87 +777,208 @@ def contacto(request):
     return render(request, 'home/contacto.html')
 
 
+def get_service_names():
+    token_url = "https://example-mutua.onrender.com/token"
+    payload = {
+        "username": config("API_USERNAME"),
+        "password": config("API_PASSWORD"),
+    }
+
+    response = requests.post(token_url, data=payload)
+    if response.status_code != 200:
+        return {}
+
+    access_token = response.json().get("access_token")
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    services_response = requests.get("https://example-mutua.onrender.com/servicios-clinica/", headers=headers)
+    if services_response.status_code != 200:
+        return {}
+
+    services = services_response.json()
+    # Convertimos la lista en un diccionario: id -> nombre
+    return {service["id"]: service["nombre"] for service in services}
+
+
+from datetime import datetime
+from django.utils import timezone
+
+from datetime import datetime
+from django.utils import timezone
+
+
 @redirect_admin
+def my_appointments(request):
+    patient_id = request.session.get('patient_id')
+    if not patient_id:
+        return redirect('login')
+
+    try:
+        patient = Patient.objects.get(id=patient_id)
+
+        # Ordenar las citas de más recientes a más antiguas (por fecha y hora de inicio)
+        appointments = Appointment.objects.filter(patient=patient).order_by('date', 'start_hour')
+
+        # Obtener las citas futuras
+        now = timezone.now()  # Obtener la hora actual "aware"
+        future_appointments = [
+            appointment for appointment in appointments
+            if timezone.make_aware(datetime.combine(appointment.date, appointment.start_hour)) >= now
+        ]
+
+        # Obtener los nombres de los servicios
+        service_names = get_service_names()
+
+        # Enriquecer cada cita con el nombre del servicio
+        for appointment in future_appointments:
+            service_id = getattr(appointment.service, 'id', None) if appointment.service else None
+            appointment.service_name = service_names.get(service_id, "No asignado")
+
+        return render(request, 'appointments/my_appointments.html', {'appointments': future_appointments})
+
+    except Patient.DoesNotExist:
+        return redirect('login')
+
+
 def modify_appointment(request, appointment_id):
     patient_id = request.session.get('patient_id')
+
+    if not patient_id and request.user.is_authenticated:
+        try:
+            patient = Patient.objects.get(user=request.user)
+            request.session['patient_id'] = patient.id
+            patient_id = patient.id
+        except Patient.DoesNotExist:
+            pass
 
     if not patient_id:
         return redirect('login')
 
-    # Get appointment and service from database
+    # Obtener la cita de la base de datos
     appointment = get_object_or_404(Appointment, id=appointment_id, patient_id=patient_id)
+
+    # Obtener servicio y sus detalles
     service = appointment.service
 
-    # Get service duration from the Service model
-    service_duration = service.duration if service else 30  # Use default only if no service
+    # Guardar datos originales de la cita para el log
+    original_date = appointment.date
+    original_start_hour = appointment.start_hour
+    original_end_hour = appointment.end_hour
+    patient_name = appointment.patient.nombre if hasattr(appointment.patient,
+                                                         'nombre') else appointment.patient.user.username if hasattr(
+        appointment.patient, 'user') else str(appointment.patient)
+    service_name = service.name if hasattr(service, 'name') else str(service)
+
+    # Cálculo mejorado de la duración del servicio (en minutos)
+    start_time = appointment.start_hour
+    end_time = appointment.end_hour
+
+    # Convertir a minutos para calcular la diferencia
+    start_minutes = start_time.hour * 60 + start_time.minute
+    end_minutes = end_time.hour * 60 + end_time.minute
+
+    # Si end_minutes es menor que start_minutes, significa que cruza la medianoche
+    if end_minutes < start_minutes:
+        end_minutes += 24 * 60  # Añadimos 24 horas en minutos
+
+    service_duration = end_minutes - start_minutes
+
+    # Si la duración es 0 o negativa, usamos un valor predeterminado de 30 minutos
+    if service_duration <= 0:
+        service_duration = 30
+
+    service_names = get_service_names()
+
+    # Si el servicio asociado a la cita está en el diccionario de servicios, lo asignamos
+    if appointment.service_id in service_names:
+        appointment_service_name = service_names[appointment.service_id]
+    else:
+        appointment_service_name = "Servicio no disponible"
 
     if request.method == 'POST':
         form = ModifyAppointmentsForm(request.POST, instance=appointment)
         if form.is_valid():
+            # Obtener la hora de inicio seleccionada
             start_time = form.cleaned_data['start_hour']
             date = form.cleaned_data['date']
 
-            # Calculate end time based on service duration from database
+            # Calcular end_time basado en start_time y la duración del servicio
             start_minutes = start_time.hour * 60 + start_time.minute
             end_minutes = start_minutes + service_duration
             end_hour = end_minutes // 60
             end_minute = end_minutes % 60
 
+            # Manejar el caso donde la hora excede las 24 horas
             if end_hour >= 24:
                 end_hour = end_hour % 24
 
+            from datetime import time as dt_time
             end_time = dt_time(hour=end_hour, minute=end_minute)
+
+            # Asignar el end_time calculado
             form.instance.end_hour = end_time
+
+            # IMPORTANTE: Asegurar que se conserva el servicio
             form.instance.service = service
 
-            # Check for overlapping appointments
+            # Verificar solapamientos
             overlapping_appointments = Appointment.objects.filter(
                 date=date,
-                service=service
+                service=service,
             ).exclude(id=appointment_id)
 
             overlap_found = False
             for appt in overlapping_appointments:
+                # Convertir tiempos a minutos para comparación
                 appt_start = appt.start_hour.hour * 60 + appt.start_hour.minute
                 appt_end = appt.end_hour.hour * 60 + appt.end_hour.minute
                 new_start = start_time.hour * 60 + start_time.minute
                 new_end = end_time.hour * 60 + end_time.minute
 
-                if new_start < appt_end and new_end > appt_start:
+                # Verificar solapamiento
+                if (new_start < appt_end and new_end > appt_start):
                     overlap_found = True
+                    print(f"SOLAPAMIENTO DETECTADO con cita ID: {appt.id}")
+                    print(f"Cita existente: {appt.date} de {appt.start_hour} a {appt.end_hour}")
                     break
 
             if overlap_found:
                 messages.error(request, "La hora seleccionada se solapa con otra cita existente.")
                 return redirect('modify_appointment', appointment_id=appointment_id)
 
+            # Si llegamos aquí, no hay solapamientos y podemos guardar la cita
             modified_appointment = form.save()
+
+            # Verificar que se haya guardado correctamente el servicio
+            print(f"CITA MODIFICADA CORRECTAMENTE. Service ID: {modified_appointment.service_id}")
+
             return redirect('my_appointments')
     else:
         form = ModifyAppointmentsForm(instance=appointment)
 
     # Get all appointments for JavaScript
-    appointments = Appointment.objects.all().values(
-        'id', 'date', 'service_id', 'start_hour', 'end_hour'
-    )
-    booked_appointments_json = [
-        {
-            'id': appt['id'],
-            'date': appt['date'].strftime('%Y-%m-%d'),
-            'service_id': appt['service_id'],
-            'start': appt['start_hour'].strftime('%H:%M'),
-            'end': appt['end_hour'].strftime('%H:%M')
-        }
-        for appt in appointments
-    ]
+    appointments = Appointment.objects.all()
+
+    # Convert to JSON for JavaScript
+    booked_appointments_json = []
+    for appt in appointments:
+        booked_appointments_json.append({
+            'id': appt.id,
+            'date': appt.date.strftime('%Y-%m-%d'),
+            'service_id': appt.service_id if appt.service else None,
+            'start': appt.start_hour.strftime('%H:%M'),
+            'end': appt.end_hour.strftime('%H:%M')
+        })
 
     return render(request, 'appointments/modify_appointment.html', {
         'form': form,
         'appointment': appointment,
-        'appointment_service_name': appointment.service.name if appointment.service else "No asignado",
+        'appointment_service_name': appointment_service_name,
         'booked_appointments': json.dumps(booked_appointments_json),
-        'service_duration': service_duration,
-        'service_id': service.id if service else None
+        'service_duration': service_duration,  # Pasamos la duración del servicio al template
+        'service_id': service.id if service else None  # Añadimos el service_id para el frontend
     })
 
 
@@ -798,7 +991,6 @@ def cancel_appointment(request, appointment_id):
     return HttpResponseNotAllowed(['POST'])
 
 
-@redirect_admin
 def appointment_history(request):
     patient_id = request.session.get('patient_id')
     if not patient_id:
@@ -808,78 +1000,47 @@ def appointment_history(request):
         patient = Patient.objects.get(id=patient_id)
         now = timezone.now()
 
-        # Get past appointments
-        past_appointments = (
-                Appointment.objects.filter(
-                    patient=patient,
-                    date__lt=now.date()
-                ) |
-                Appointment.objects.filter(
-                    patient=patient,
-                    date=now.date(),
-                    start_hour__lt=now.time()
-                )
-        ).select_related('service')
+        # Obtener citas pasadas
+        past_appointments = Appointment.objects.filter(
+            patient=patient
+        ).filter(
+            date__lt=now.date()
+        ) | Appointment.objects.filter(
+            patient=patient,
+            date=now.date(),
+            start_hour__lt=now.time()
+        )
 
-        # Get future appointments
-        future_appointments = (
-                Appointment.objects.filter(
-                    patient=patient,
-                    date__gt=now.date()
-                ) |
-                Appointment.objects.filter(
-                    patient=patient,
-                    date=now.date(),
-                    start_hour__gte=now.time()
-                )
-        ).select_related('service')
+        # Obtener citas futuras
+        future_appointments = Appointment.objects.filter(
+            patient=patient
+        ).filter(
+            date__gt=now.date()
+        ) | Appointment.objects.filter(
+            patient=patient,
+            date=now.date(),
+            start_hour__gte=now.time()
+        )
 
-        # Add labels to appointments
+        # Añadir etiquetas a las citas
         for appointment in past_appointments:
             appointment.status_label = "Finalizada"
-            appointment.service_name = appointment.service.name if appointment.service else "No asignado"
-
         for appointment in future_appointments:
             appointment.status_label = "Próxima"
-            appointment.service_name = appointment.service.name if appointment.service else "No asignado"
 
-        # Combine and sort appointments
+        # Combinar ambas listas y ordenarlas
         all_appointments = list(past_appointments) + list(future_appointments)
         all_appointments.sort(key=lambda x: (x.date, x.start_hour), reverse=True)
+
+        # Obtener nombres de servicios
+        service_names = get_service_names()
+        for appointment in all_appointments:
+            service_id = getattr(appointment.service, 'id', None)
+            appointment.service_name = service_names.get(service_id, "No asignado")
 
         return render(request, 'appointments/appointment_history.html', {
             'appointments': all_appointments
         })
-
-    except Patient.DoesNotExist:
-        return redirect('login')
-
-
-@redirect_admin
-def my_appointments(request):
-    patient_id = request.session.get('patient_id')
-    if not patient_id:
-        return redirect('login')
-
-    try:
-        patient = Patient.objects.get(id=patient_id)
-        now_dt = timezone.now()
-
-        # Get future appointments with service information
-        appointments = Appointment.objects.filter(
-            patient=patient
-        ).select_related('service').order_by('date', 'start_hour')
-
-        future_appointments = [
-            appointment for appointment in appointments
-            if timezone.make_aware(datetime.combine(appointment.date, appointment.start_hour)) >= now_dt
-        ]
-
-        # Add service names directly from the Service model
-        for appointment in future_appointments:
-            appointment.service_name = appointment.service.name if appointment.service else "No asignado"
-
-        return render(request, 'appointments/my_appointments.html', {'appointments': future_appointments})
 
     except Patient.DoesNotExist:
         return redirect('login')
