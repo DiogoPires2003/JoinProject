@@ -12,13 +12,40 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
         .table thead th {
             background-color: #005f99;
             color: white;
+            vertical-align: middle;
         }
         .action-btn {
-            min-width: 120px; /* Ajusta según necesidad */
-            margin-bottom: 5px; /* Espacio entre botones si hay dos */
+            min-width: 120px;
+            margin-bottom: 5px;
+        }
+        .btn-custom-blue {
+            background-color: #005f99;
+            border-color: #005f99;
+            color: white;
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+        }
+        .btn-custom-blue:hover,
+        .btn-custom-blue:focus,
+        .btn-custom-blue:active {
+            background-color: #004c7a;
+            border-color: #004c7a;
+            color: white;
+        }
+        .card-header-custom {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .icon-muted {
+            color: #6c757d;
+        }
+        .icon-primary-emphasis {
+            color: #005f99;
         }
     </style>
 </head>
@@ -29,10 +56,19 @@
 
 <div class="page-wrapper d-flex flex-column min-vh-100">
     <main class="flex-grow-1">
-        <div class="container admin-container my-5">
+        <div class="container admin-container my-4 my-lg-5">
+            <br>
+            <div class="mb-4">
+                <a href="{% url 'financer_area' %}" class="btn btn-custom-blue">
+                    <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Finanzas
+                </a>
+            </div>
+
             <div class="card shadow-lg rounded-3 overflow-hidden">
-                <div class="card-body p-lg-5">
-                    <h1 class="text-center mb-4">{{ titulo_pagina|default:"Emitir Factura Individual" }}</h1>
+                <div class="card-header card-header-custom p-4 p-lg-5">
+                    <h1 class="text-center mb-0 h2">{{ titulo_pagina|default:"Emitir Factura Individual" }}</h1>
+                </div>
+                <div class="card-body p-4 p-lg-5">
 
                     {% if messages %}
                         {% for message in messages %}
@@ -51,13 +87,13 @@
                     {% if citas_info %}
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped table-hover align-middle">
-                            <thead class="table-dark">
+                            <thead>
                                 <tr>
-                                    <th>Paciente</th>
-                                    <th>Servicio</th>
-                                    <th>Fecha Cita</th>
-                                    <th class="text-center">Estado Factura</th>
-                                    <th class="text-center" style="min-width: 280px;">Acciones</th>
+                                    <th><i class="fas fa-user me-2"></i>Paciente</th>
+                                    <th><i class="fas fa-briefcase-medical me-2"></i>Servicio</th>
+                                    <th><i class="fas fa-calendar-alt me-2"></i>Fecha Cita</th>
+                                    <th class="text-center"><i class="fas fa-file-invoice me-2"></i>Estado Factura</th>
+                                    <th class="text-center" style="min-width: 280px;"><i class="fas fa-cogs me-2"></i>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -65,65 +101,54 @@
                                     {% with cita=item.cita factura=item.factura_generada %}
                                     <tr>
                                         <td>
-                                            <i class="fas fa-user me-2 text-primary"></i>
+                                            <i class="fas fa-user me-2 icon-primary-emphasis"></i>
                                             {{ cita.patient.first_name }} {{ cita.patient.last_name }}
-                                            <br><small class="text-muted">DNI: {{ cita.patient.dni }}</small>
+                                            <br><small class="text-muted ms-3 ps-1">DNI: {{ cita.patient.dni }}</small>
                                         </td>
                                         <td>
                                             {% if cita.service %}
-                                                <i class="fas fa-briefcase-medical me-2 text-muted"></i>
+                                                <i class="fas fa-notes-medical me-2 icon-muted"></i>
                                                 {{ cita.service.name }}
                                             {% else %}
-                                                Servicio no especificado
+                                                <span class="text-muted">Servicio no especificado</span>
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <i class="fas fa-calendar-alt me-2 text-muted"></i>
+                                            <i class="fas fa-calendar-check me-2 icon-muted"></i>
                                             {{ cita.date|date:"d/m/Y" }}
-                                            <small class="text-muted"> ({{ cita.start_hour|time:"H:i" }})</small>
+                                            <br><small class="text-muted ms-3 ps-1">Hora: {{ cita.start_hour|time:"H:i" }}</small>
                                         </td>
                                         <td class="text-center">
                                             {% if factura %}
-                                                <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Facturada</span>
-                                                <br><small class="text-muted">Nº: {{ factura.numero_factura }}</small>
+                                                <span class="badge bg-success rounded-pill px-3 py-2 fs-6">
+                                                    <i class="fas fa-check-circle me-1"></i>Facturada
+                                                </span>
+                                                <br><small class="text-muted mt-1 d-block">Nº: {{ factura.numero_factura }}</small>
                                             {% else %}
-                                                <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i>Pendiente</span>
+                                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fs-6">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>Pendiente
+                                                </span>
                                             {% endif %}
                                         </td>
                                         <td class="text-center">
                                             {% if factura %}
-                                                {# Si la factura ya existe, solo permitir descargarla #}
                                                 <form method="POST" action="{% url 'crear_factura_individual' %}" class="d-inline">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="appointment_id" value="{{ cita.id }}">
                                                     <input type="hidden" name="action" value="download_pdf">
-                                                    <button type="submit" class="btn btn-sm btn-info action-btn">
+                                                    <button type="submit" class="btn btn-sm btn-custom-blue action-btn">
                                                         <i class="fas fa-download me-1"></i> Descargar PDF
                                                     </button>
                                                 </form>
-                                                {# Podrías añadir un enlace para VER la factura si tienes esa vista #}
-                                                {# <a href="{% url 'sprint2:ver_factura' numero_factura=factura.numero_factura %}" class="btn btn-sm btn-outline-secondary action-btn"> #}
-                                                {# <i class="fas fa-eye me-1"></i> Ver Detalle #}
-                                                {# </a> #}
                                             {% else %}
-                                                {# Si la factura no existe, permitir generarla y/o descargarla #}
-                                                <form method="POST" action="{% url 'crear_factura_individual' %}" class="d-inline">
+                                                <form method="POST" action="{% url 'sprint2:crear_factura_individual' %}" class="d-inline">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="appointment_id" value="{{ cita.id }}">
                                                     <input type="hidden" name="action" value="generate_and_download_pdf">
-                                                    <button type="submit" class="btn btn-sm btn-primary action-btn">
+                                                    <button type="submit" class="btn btn-sm btn-custom-blue action-btn">
                                                         <i class="fas fa-file-invoice-dollar me-1"></i> Generar y Descargar
                                                     </button>
                                                 </form>
-                                                {# Botón para solo generar en BD (opcional) #}
-                                                {# <form method="POST" action="{% url 'sprint2:crear_factura_individual' %}" class="d-inline"> #}
-                                                {# {% csrf_token %} #}
-                                                {# <input type="hidden" name="appointment_id" value="{{ cita.id }}"> #}
-                                                {# <input type="hidden" name="action" value="generate_only"> #}
-                                                {# <button type="submit" class="btn btn-sm btn-outline-primary action-btn mt-1"> #}
-                                                {# <i class="fas fa-plus-circle me-1"></i> Solo Generar #}
-                                                {# </button> #}
-                                                {# </form> #}
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -133,16 +158,12 @@
                         </table>
                     </div>
                     {% else %}
-                    <div class="alert alert-info text-center mt-4" role="alert">
-                        <i class="fas fa-info-circle me-2"></i> No hay citas con asistencia confirmada para mostrar.
+                    <div class="alert alert-light text-center mt-4 border p-4" role="alert">
+                        <i class="fas fa-folder-open fa-2x text-muted mb-2 d-block"></i>
+                        <p class="mb-0">No hay citas con asistencia confirmada para mostrar en este momento.</p>
                     </div>
                     {% endif %}
 
-                    <div class="text-center mt-5">
-                        <a href="#" class="btn btn-secondary"> {# Cambiar href al panel de finanzas #}
-                            <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Finanzas
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -153,18 +174,6 @@
 
 {% bootstrap_javascript %}
 <script>
-    var alertList = document.querySelectorAll('.alert .btn-close');
-    alertList.forEach(function (element) {
-      element.addEventListener('click', function () {
-        var alertNode = this.closest('.alert');
-        if (alertNode) {
-          // Para Bootstrap 5, el método es directamente en el elemento, no new bootstrap.Alert(alertNode).close();
-          // Pero si data-bs-dismiss="alert" está en el botón, Bootstrap lo maneja.
-          // Este script es un fallback o para si el botón no tiene data-bs-dismiss.
-          // Para BS5, usualmente no necesitas este script si el HTML del alert es correcto.
-        }
-      })
-    })
 </script>
 </body>
 </html>
