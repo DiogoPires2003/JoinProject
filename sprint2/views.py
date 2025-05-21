@@ -1,7 +1,7 @@
 from healthApp.models import Service, Attendance, Appointment
 from django.shortcuts import render, get_object_or_404, redirect
 from sprint2.forms import ServiceForm
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 import csv
 from io import TextIOWrapper
 from django.contrib import messages
@@ -10,6 +10,13 @@ from healthApp.decorators import admin_required, redirect_admin, financer_requir
 from sprint2.models import Factura, LineaFactura
 from sprint2.utils import render_to_pdf
 from decimal import Decimal
+from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q # Para búsquedas complejas
+from datetime import datetime
+
+
+
 
 
 def manage_services_view(request):
@@ -225,10 +232,92 @@ def crear_factura_individual_view(request):
 
 @financer_required
 def historial_facturas_view(request):
-    facturas = Factura.objects.all().order_by('-fecha_emision').select_related('paciente')
+    facturas_list = Factura.objects.select_related('paciente').order_by('-fecha_emision',
+                                                                        '-numero_factura')  # Más recientes primero
+
+    # --- Filtros ---
+    query_numero = request.GET.get('numero_factura')
+    query_paciente_nombre = request.GET.get('paciente_nombre')
+    query_estado = request.GET.get('estado')
+    query_fecha_desde = request.GET.get('fecha_desde')
+    query_fecha_hasta = request.GET.get('fecha_hasta')
+
+    if query_numero:
+        facturas_list = facturas_list.filter(numero_factura__icontains=query_numero)
+
+    if query_paciente_nombre:
+        # Búsqueda en nombre y apellido del paciente
+        facturas_list = facturas_list.filter(
+            Q(paciente__first_name__icontains=query_paciente_nombre) |
+            Q(paciente__last_name__icontains=query_paciente_nombre) |
+            Q(paciente__dni__icontains=query_paciente_nombre)  # Opcional: buscar por DNI también
+        )
+
+    if query_estado:
+        facturas_list = facturas_list.filter(estado=query_estado)
+
+    if query_fecha_desde:
+        try:
+            fecha_desde_obj = datetime.strptime(query_fecha_desde, '%Y-%m-%d').date()
+            facturas_list = facturas_list.filter(fecha_emision__gte=fecha_desde_obj)
+        except ValueError:
+            pass  # Ignorar fecha inválida
+
+    if query_fecha_hasta:
+        try:
+            fecha_hasta_obj = datetime.strptime(query_fecha_hasta, '%Y-%m-%d').date()
+            facturas_list = facturas_list.filter(fecha_emision__lte=fecha_hasta_obj)
+        except ValueError:
+            pass  # Ignorar fecha inválida
+
+    # --- Paginación ---
+    paginator = Paginator(facturas_list, 15)  # 15 facturas por página
+    page_number = request.GET.get('page')
+    try:
+        facturas_pagina = paginator.page(page_number)
+    except PageNotAnInteger:
+        facturas_pagina = paginator.page(1)  # Si page no es un entero, entregar primera página.
+    except EmptyPage:
+        facturas_pagina = paginator.page(paginator.num_pages)  # Si page está fuera de rango, entregar última página.
 
     context = {
         'titulo_pagina': 'Historial de Facturas',
-        'facturas': facturas
+        'facturas_pagina': facturas_pagina,
+        'estados_factura': Factura.ESTADO_CHOICES,  # Para el dropdown de filtro por estado
+        'query_numero': query_numero or "",
+        'query_paciente_nombre': query_paciente_nombre or "",
+        'query_estado': query_estado or "",
+        'query_fecha_desde': query_fecha_desde or "",
+        'query_fecha_hasta': query_fecha_hasta or "",
     }
     return render(request, 'financer/historial_facturas.html', context)
+
+
+@financer_required
+def descargar_factura_pdf_view(request, numero_factura):
+    factura = get_object_or_404(Factura, numero_factura=numero_factura)
+    # Asegurarse que el usuario tiene permiso, etc.
+
+    # Volver a calcular totales por si acaso antes de generar PDF
+    # aunque deberían estar correctos en la BD.
+    factura.calcular_totales()
+
+    context_pdf = {
+        'factura': factura,
+        'lineas': factura.lineas_factura.all(),
+        'datos_clinica': {  # Deberías tener esto en settings o un modelo de configuración
+            'nombre': 'Better Health Clínica',
+            'cif': 'B12345678',
+            'direccion': 'Calle Ficticia 123, Ciudad',
+            'email': 'info@betterhealth.com'
+        }
+    }
+    pdf = render_to_pdf('financer/factura_pdf_template.html', context_pdf)
+    if pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        filename = f"Factura_{factura.numero_factura}_{factura.paciente.last_name if factura.paciente else 'SN'}.pdf"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+    else:
+        # messages.error(request, "Error al generar el PDF.") # Necesitarías pasar request
+        raise Http404("Error al generar el PDF o factura no encontrada.")

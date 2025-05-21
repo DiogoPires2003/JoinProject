@@ -50,6 +50,7 @@ urlpatterns = [
     path('financier_area/', financer_area, name='financer_area'),
     path('individual_bill/', crear_factura_individual_view, name='crear_factura_individual'),
     path('historial-facturas/', historial_facturas_view, name='historial_facturas'),
+    path('descargar/<str:numero_factura>/', descargar_factura_pdf_view, name='descargar_factura_pdf'),
     path('area-privada/', login_view, name='area_privada'),
     path('logout/', patient_logout, name='logout'),
     path('logout2/', logout_view, name='logout_view'),
