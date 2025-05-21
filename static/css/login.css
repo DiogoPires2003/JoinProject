@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;600;700&display=swap');
+
+.gradient-custom-2 {
+    background: linear-gradient(to left, #4CAF50, #4CAF7A, #47A89E, rgb(43, 169, 165));
+}
+
+@media (min-width: 768px) {
+    .gradient-form {
+        height: 100vh !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .gradient-custom-2 {
+        border-top-right-radius: .3rem;
+        border-bottom-right-radius: .3rem;
+    }
+}
+
+body {
+    font-family: 'Inter', 'Open Sans', 'Roboto', sans-serif;
+    color: #333333;
+}
+
+h1, h2, h3, body, p, small {
+    color: #333333;
+}
+
+.text-content {
+    color: #333333;
+}

@@ -129,9 +129,40 @@ class Patient(models.Model):
 
 
 class Service(models.Model):
+    SERVICE_TYPES = [
+        ('CON', 'Consulta'),
+        ('PRU', 'Prueba'),
+        ('TRA', 'Tratamiento'),
+        ('CIR', 'Cirugía'),
+    ]
+
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    service_type = models.CharField(
+        max_length=3,
+        choices=SERVICE_TYPES,
+        default='CON'
+    )
+    price = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        help_text='Precio en euros'
+    )
+    covered_by_insurance = models.BooleanField(
+        default=False,
+        verbose_name='Incluido en mutua'
+    )
+    duration = models.PositiveIntegerField(
+        help_text='Duración en minutos',
+        default=30
+    )
+
+    available = models.BooleanField(
+        default=True,
+        verbose_name='Disponible',
+        help_text='Indica si el servicio está disponible actualmente'
+    )
 
     def __str__(self):
         return self.name
@@ -139,7 +170,6 @@ class Service(models.Model):
     class Meta:
         verbose_name = 'Service'
         verbose_name_plural = 'Services'
-
 
 class Appointment(models.Model):
     patient = models.ForeignKey('Patient', on_delete=models.CASCADE)
