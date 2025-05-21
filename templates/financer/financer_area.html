@@ -10,7 +10,8 @@
     <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}"> {# Puedes crear un finance_dashboard.css si necesitas estilos específicos #}
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+    {# Puedes crear un finance_dashboard.css si necesitas estilos específicos #}
 </head>
 
 <body>
@@ -27,7 +28,8 @@
             <div class="card shadow-lg rounded-3 overflow-hidden">
                 <div class="card-body p-lg-5">
                     <h1 class="text-center mb-4">Panel de Finanzas</h1> {# Título principal actualizado #}
-                    <p class="text-center text-muted mb-5">Gestione las operaciones financieras de la clínica.</p> {# Subtítulo actualizado #}
+                    <p class="text-center text-muted mb-5">Gestione las operaciones financieras de la clínica.</p>
+                    {# Subtítulo actualizado #}
 
                     <div class="row g-4 mb-5">
                         {# --- Automatització Emissió de Factura Individual --- #}
@@ -36,7 +38,8 @@
                                 <div class="card-body d-flex flex-column align-items-center text-center">
                                     <i class="fas fa-file-invoice-dollar fa-3x mb-3 text-primary"></i>
                                     <h5 class="card-title">Emisión Factura Individual</h5>
-                                    <p class="card-text small">Automatizar la generación y envío de facturas individuales.</p>
+                                    <p class="card-text small">Automatizar la generación y envío de facturas
+                                        individuales.</p>
                                     <a href="#" class="btn btn-outline-primary mt-auto">Acceder</a>
                                 </div>
                             </div>
@@ -46,9 +49,11 @@
                         <div class="col-md-4">
                             <div class="card admin-action-card h-100">
                                 <div class="card-body d-flex flex-column align-items-center text-center">
-                                    <i class="fas fa-file-alt fa-3x mb-3 text-primary"></i> {# Icono genérico de archivo/documento, puedes cambiarlo #}
+                                    <i class="fas fa-file-alt fa-3x mb-3 text-primary"></i>
+                                    {# Icono genérico de archivo/documento, puedes cambiarlo #}
                                     <h5 class="card-title">Facturación Mensual a Mútuas</h5>
-                                    <p class="card-text small">Generar y enviar facturación consolidada a las mútuas.</p>
+                                    <p class="card-text small">Generar y enviar facturación consolidada a las
+                                        mútuas.</p>
                                     <a href="#" class="btn btn-outline-primary mt-auto">Acceder</a>
                                 </div>
                             </div>
@@ -58,10 +63,10 @@
                         <div class="col-md-4">
                             <div class="card admin-action-card h-100">
                                 <div class="card-body d-flex flex-column align-items-center text-center">
-                                    <i class="fas fa-tags fa-3x mb-3 text-primary"></i> {# Icono de etiquetas/precios #}
-                                    <h5 class="card-title">Actualización Precios (Mútuas)</h5>
-                                    <p class="card-text small">Automatizar la actualización de tarifas acordadas con las mútuas.</p>
-                                    <a href="#" class="btn btn-outline-primary mt-auto">Acceder</a>
+                                    <i class="fas fa-hospital-user fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Editar Servicios Clínicos</h5>
+                                    <p class="card-text small">Gestionar los servicios ofrecidos por la clínica.</p>
+                                    <a href="{% url 'manage_services' %}" class="btn btn-outline-primary mt-auto">Acceder</a>
                                 </div>
                             </div>
                         </div>
@@ -70,9 +75,11 @@
                         <div class="col-md-4">
                             <div class="card admin-action-card h-100">
                                 <div class="card-body d-flex flex-column align-items-center text-center">
-                                    <i class="fas fa-user-check fa-3x mb-3 text-primary"></i> {# Icono de aprobación/chequeo de usuario #}
+                                    <i class="fas fa-user-check fa-3x mb-3 text-primary"></i>
+                                    {# Icono de aprobación/chequeo de usuario #}
                                     <h5 class="card-title">Solicitud Autorización (Mútua)</h5>
-                                    <p class="card-text small">Gestionar solicitudes de autorización para tratamientos a mútuas.</p>
+                                    <p class="card-text small">Gestionar solicitudes de autorización para tratamientos a
+                                        mútuas.</p>
                                     <a href="#" class="btn btn-outline-primary mt-auto">Acceder</a>
                                 </div>
                             </div>
@@ -84,7 +91,8 @@
                                 <div class="card-body d-flex flex-column align-items-center text-center">
                                     <i class="fas fa-history fa-3x mb-3 text-primary"></i> {# Icono de historial #}
                                     <h5 class="card-title">Consulta Histórico Facturas</h5>
-                                    <p class="card-text small">Acceder y buscar en el archivo histórico de facturas emitidas.</p>
+                                    <p class="card-text small">Acceder y buscar en el archivo histórico de facturas
+                                        emitidas.</p>
                                     <a href="#" class="btn btn-outline-primary mt-auto">Acceder</a>
                                 </div>
                             </div>
