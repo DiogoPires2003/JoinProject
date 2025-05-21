@@ -6,6 +6,7 @@ import csv
 from io import TextIOWrapper
 from django.contrib import messages
 from django.db import transaction
+from healthApp.decorators import admin_required, redirect_admin, financer_required
 
 
 def manage_services_view(request):
@@ -113,3 +114,14 @@ def add_service_view(request):
         'form': form,
         'is_add': True
     })
+
+
+
+@financer_required
+def crear_factura_individual_view(request):
+    # Tu lógica para crear una factura individual
+    context = {
+        'titulo_pagina': 'Emitir Factura Individual'
+    }
+    return render(request, 'financer/crear_factura_individual.html', context)
+
