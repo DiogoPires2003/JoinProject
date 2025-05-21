@@ -603,7 +603,7 @@ def get_available_hours(request):
 @redirect_admin
 @redirect_admin
 def appointment_list(request):
-    MAX_APPOINTMENTS_PER_DAY = 150
+    MAX_APPOINTMENTS_PER_DAY = 5
 
     patient_id = request.session.get('patient_id')
     if not patient_id:
@@ -677,7 +677,7 @@ def appointment_list(request):
                         if verify_response.status_code == 200:
                             patient_data = verify_response.json()
                             insurance_id = patient_data.get('id')
-                            print (f"Insurance ID: {insurance_id}")
+                            print(f"Insurance ID: {insurance_id}")
                             services_response = requests.get(services_url, headers=headers)
 
                             if services_response.status_code == 200:
@@ -687,7 +687,7 @@ def appointment_list(request):
                                 for ins_service in insurance_services:
                                     if ins_service['servicio'] == appointment.service.name:
                                         service_id = ins_service['id']
-                                        print (f"Service ID: {service_id}")
+                                        print(f"Service ID: {service_id}")
                                         break
 
                                 authorization_url = "https://example-mutua.onrender.com/autorizaciones/"
@@ -701,7 +701,6 @@ def appointment_list(request):
                                     headers=headers
                                 )
 
-
                                 if authorization_response.status_code == 200:
                                     authorization_data = authorization_response.json()
                                     print(f"Authorization Data: {authorization_data}")
@@ -713,10 +712,10 @@ def appointment_list(request):
 
                 except Exception as e:
                     messages.error(request, f"Error al procesar el seguro: {str(e)}")
-
-            reserva_exitosa = True
-            messages.success(request, "Cita reservada exitosamente.")
-            return redirect('appointment_list')
+            else:
+                reserva_exitosa = True
+                messages.success(request, "Cita reservada exitosamente.")
+                return redirect('appointment_list')
 
         except Exception as e:
             messages.error(request, f"Error al crear la cita: {str(e)}")
