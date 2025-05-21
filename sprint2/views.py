@@ -8,6 +8,8 @@ from django.contrib import messages
 from django.db import transaction
 from healthApp.decorators import admin_required, redirect_admin, financer_required
 from sprint2.models import Factura, LineaFactura
+from sprint2.utils import render_to_pdf
+from decimal import Decimal
 
 
 def manage_services_view(request):
@@ -120,75 +122,99 @@ def add_service_view(request):
 
 @financer_required
 def crear_factura_individual_view(request):
-
-    asistencias_confirmadas = Attendance.objects.filter(attended=True)
-
-
-    citas_pendientes_de_facturar_ids = []
-    for asistencia in asistencias_confirmadas:
-        # Comprobar si ya existe una factura para esta cita
-        if not Factura.objects.filter(cita_origen=asistencia.appointment).exists():
-            citas_pendientes_de_facturar_ids.append(asistencia.appointment.id)
-
-    citas_a_facturar = Appointment.objects.filter(id__in=citas_pendientes_de_facturar_ids).select_related('patient',
-                                                                                                          'service')
-
-
     if request.method == 'POST':
         appointment_id_to_bill = request.POST.get('appointment_id')
-        if appointment_id_to_bill:
-            try:
-                cita_a_facturar = Appointment.objects.get(id=appointment_id_to_bill)
+        action = request.POST.get('action')
 
-                # Verificar de nuevo que no se haya facturado mientras tanto (concurrencia)
-                if Factura.objects.filter(cita_origen=cita_a_facturar).exists():
-                    messages.warning(request, f"La cita para {cita_a_facturar.patient} ya ha sido facturada.")
-                    return redirect('sprint2:crear_factura_individual')
+        try:
+            cita_a_facturar = Appointment.objects.select_related('patient', 'service').get(id=appointment_id_to_bill)
+            factura_existente = Factura.objects.filter(cita_origen=cita_a_facturar).first()
+            factura_a_procesar = None
 
-                # Crear la Factura
-                nueva_factura = Factura.objects.create(
+            # Lógica de creación/actualización de factura
+            if not factura_existente:
+                # Crear nueva factura
+                factura_a_procesar = Factura.objects.create(
                     paciente=cita_a_facturar.patient,
-                    cita_origen=cita_a_facturar,  # Guardar la referencia a la cita
-
+                    cita_origen=cita_a_facturar,
                 )
 
-                # Crear la LineaFactura
+                # Crear línea de factura
                 if cita_a_facturar.service:
                     LineaFactura.objects.create(
-                        factura=nueva_factura,
+                        factura=factura_a_procesar,
                         servicio=cita_a_facturar.service,
-                        descripcion_manual=cita_a_facturar.service.name,  # O una descripción más detallada
-                        cantidad=1,  # Asumiendo una cita es un servicio
-                        precio_unitario=cita_a_facturar.service.price
+                        descripcion_manual=cita_a_facturar.service.name,
+                        cantidad=1,
+                        precio_unitario=Decimal(str(cita_a_facturar.service.price))
                     )
+                    factura_a_procesar.calcular_totales()
+                    factura_a_procesar.estado = 'EMITIDA'
+                    factura_a_procesar.save()
+                    messages.success(request, f"Factura {factura_a_procesar.numero_factura} generada para {cita_a_facturar.patient}.")
                 else:
-                    # Manejar el caso de que la cita no tenga un servicio asociado (raro si se va a facturar)
-                    messages.error(request, "La cita no tiene un servicio asociado para facturar.")
-                    # Podrías borrar la factura en borrador o dejarla para edición manual
-                    nueva_factura.delete()
-                    return redirect('sprint2:crear_factura_individual')
+                    messages.error(request, f"La cita para {cita_a_facturar.patient} no tiene un servicio asociado.")
+                    factura_a_procesar.calcular_totales()
+                    factura_a_procesar.estado = 'BORRADOR'
+                    factura_a_procesar.save()
+            else:
+                factura_a_procesar = factura_existente
+                factura_a_procesar.calcular_totales()
+                factura_a_procesar.save()
+                if action != "download_pdf":
+                    messages.info(request, f"La factura {factura_a_procesar.numero_factura} ya existía.")
 
-                # Calcular totales de la factura
-                nueva_factura.calcular_totales()
-                nueva_factura.estado = 'EMITIDA'  # Opcional: cambiar estado al generar
-                nueva_factura.save()
+            # Lógica de generación de PDF
+            if action in ["download_pdf", "generate_and_download_pdf"] and factura_a_procesar:
+                if not factura_a_procesar.lineas_factura.exists() or factura_a_procesar.total_neto <= 0:
+                    messages.warning(request, f"La factura {factura_a_procesar.numero_factura} no tiene líneas válidas.")
+                    return redirect('crear_factura_individual')
 
-                messages.success(request,
-                                 f"Factura {nueva_factura.numero_factura} generada para {cita_a_facturar.patient}.")
+                context_pdf = {
+                    'factura': factura_a_procesar,
+                    'lineas': factura_a_procesar.lineas_factura.all(),
+                    'datos_clinica': {
+                        'nombre': 'Better Health Clínica',
+                        'cif': 'B12345678',
+                        'direccion': 'Calle Ficticia 123, Ciudad',
+                        'email': 'info@betterhealth.com'
+                    }
+                }
+                pdf = render_to_pdf('financer/factura_pdf_template.html', context_pdf)
+                if pdf:
+                    response = HttpResponse(pdf, content_type='application/pdf')
+                    filename = f"Factura_{factura_a_procesar.numero_factura}_{factura_a_procesar.paciente.last_name}.pdf"
+                    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+                    return response
+                else:
+                    messages.error(request, f"Error al generar el PDF.")
 
+            return redirect('crear_factura_individual')
 
+        except Appointment.DoesNotExist:
+            messages.error(request, "La cita especificada no existe.")
+            return redirect('crear_factura_individual')
+        except Exception as e:
+            messages.error(request, f"Error al procesar la factura: {str(e)}")
+            return redirect('crear_factura_individual')
 
-                return redirect('sprint2:crear_factura_individual')  # Recargar la página para ver la lista actualizada
+    # GET request
+    asistencias_confirmadas_ids = Attendance.objects.filter(attended=True).values_list('appointment_id', flat=True)
+    citas_con_asistencia = Appointment.objects.filter(id__in=asistencias_confirmadas_ids).select_related('patient', 'service')
+    citas_para_mostrar = []
 
-            except Appointment.DoesNotExist:
-                messages.error(request, "La cita seleccionada para facturar no existe.")
-            except Exception as e:
-                messages.error(request, f"Error al generar la factura: {e}")
-            return redirect('sprint2:crear_factura_individual')
+    for cita_obj in citas_con_asistencia:
+        factura_asociada = Factura.objects.filter(cita_origen=cita_obj).first()
+        if factura_asociada:
+            factura_asociada.calcular_totales()
+
+        citas_para_mostrar.append({
+            'cita': cita_obj,
+            'factura_generada': factura_asociada
+        })
 
     context = {
         'titulo_pagina': 'Emitir Factura Individual desde Asistencias',
-        'citas_a_facturar': citas_a_facturar,
+        'citas_info': citas_para_mostrar,
     }
     return render(request, 'financer/crear_factura_individual.html', context)
-
