@@ -20,7 +20,7 @@ from healthApp.views import *
 from sprint2.views import *
 
 urlpatterns = [
-    path('/manage-services/', manage_services_view, name='manage_services'),
+    path('manage-services/', manage_services_view, name='manage_services'),
     path('admin/services/edit/<int:service_id>/', edit_service_view, name='edit_service'),
     path('services/download-csv/', download_services_csv, name='download_services_csv'),
     path('admin/', admin.site.urls),
@@ -48,6 +48,7 @@ urlpatterns = [
     path('informacion-util/', informacion_util, name='informacion_util'),
     path('contacto/', contacto, name='contacto'),
     path('financier_area/', financer_area, name='financer_area'),
+    path('individual_bill/', crear_factura_individual_view, name='crear_factura_individual'),
     path('area-privada/', login_view, name='area_privada'),
     path('logout/', patient_logout, name='logout'),
     path('logout2/', logout_view, name='logout_view'),
