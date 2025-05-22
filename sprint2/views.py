@@ -321,61 +321,102 @@ def descargar_factura_pdf_view(request, numero_factura):
 
 @financer_required
 def facturas_mutua_view(request):
-    # Get all attended appointments with insurance
-    asistencias_confirmadas_ids = Attendance.objects.filter(
-        attended=True
+    # Get current date for default month selection
+    current_date = datetime.now()
+
+    # Initialize citas_info for the template
+    citas_info = []
+
+    if request.method == 'POST':
+        mes = request.POST.get('mes')
+        action = request.POST.get('action')
+
+        if action == 'generate_monthly' and mes:
+            try:
+                # Parse the month string to datetime (mes comes in format YYYY-MM)
+                fecha_inicio = datetime.strptime(mes + "-01", "%Y-%m-%d").date()
+                # Get last day of month
+                if fecha_inicio.month == 12:
+                    fecha_fin = datetime(fecha_inicio.year + 1, 1, 1).date()
+                else:
+                    fecha_fin = datetime(fecha_inicio.year, fecha_inicio.month + 1, 1).date()
+
+                # Get appointments for the selected month
+                asistencias_confirmadas = Attendance.objects.filter(
+                    attended=True,
+                    appointment__date__gte=fecha_inicio,
+                    appointment__date__lt=fecha_fin
+                ).values_list('appointment_id', flat=True)
+
+                citas = Appointment.objects.filter(
+                    id__in=asistencias_confirmadas,
+                    patient__has_insurance=True,
+                    service__covered_by_insurance=True
+                ).select_related('patient', 'service')
+
+                if not citas.exists():
+                    messages.warning(request, "No hay citas con mutua para generar la factura mensual.")
+                    return redirect('facturas_mutua')
+
+                # Prepare context for PDF
+                context_pdf = {
+                    'mes': fecha_inicio.strftime("%B %Y"),
+                    'fecha_emision': datetime.now().date(),
+                    'citas': citas,
+                    'datos_clinica': {
+                        'nombre': 'Better Health Clínica',
+                        'cif': 'B12345678',
+                        'direccion': 'Calle Ficticia 123, Ciudad',
+                        'email': 'info@betterhealth.com'
+                    },
+                    'total': sum(cita.service.price for cita in citas)
+                }
+
+                # Generate PDF
+                pdf = render_to_pdf('financer/factura_mutua_pdf_template.html', context_pdf)
+                if pdf:
+                    response = HttpResponse(pdf, content_type='application/pdf')
+                    filename = f"Factura_Mutua_{fecha_inicio.strftime('%Y_%m')}.pdf"
+                    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+                    return response
+                else:
+                    messages.error(request, "Error al generar el PDF de la factura mensual.")
+
+            except Exception as e:
+                messages.error(request, f"Error al generar la factura mensual: {str(e)}")
+                return redirect('facturas_mutua')
+
+    # Get data for the current month by default
+    fecha_inicio = current_date.replace(day=1)
+    if fecha_inicio.month == 12:
+        fecha_fin = datetime(fecha_inicio.year + 1, 1, 1)
+    else:
+        fecha_fin = datetime(fecha_inicio.year, fecha_inicio.month + 1, 1)
+
+    # Get appointments with insurance for the current month
+    asistencias_confirmadas = Attendance.objects.filter(
+        attended=True,
+        appointment__date__gte=fecha_inicio,
+        appointment__date__lt=fecha_fin
     ).values_list('appointment_id', flat=True)
 
-    citas_con_asistencia = Appointment.objects.filter(
-        id__in=asistencias_confirmadas_ids,
-        patient__has_insurance=True,  # Only patients with insurance
-        service__covered_by_insurance=True  # Only covered services
+    citas = Appointment.objects.filter(
+        id__in=asistencias_confirmadas,
+        patient__has_insurance=True,
+        service__covered_by_insurance=True
     ).select_related('patient', 'service')
 
-    citas_para_mostrar = []
-
-    for cita_obj in citas_con_asistencia:
-        factura_asociada = Factura.objects.filter(cita_origen=cita_obj).first()
-        if factura_asociada:
-            factura_asociada.calcular_totales()
-
-        citas_para_mostrar.append({
-            'cita': cita_obj,
-            'factura_generada': factura_asociada
+    for cita in citas:
+        citas_info.append({
+            'fecha': cita.date,
+            'paciente': cita.patient,
+            'servicio': cita.service,
+            'precio': cita.service.price
         })
-
-    # Handle bulk invoice generation
-    if request.method == 'POST' and request.POST.get('action') == 'generate_all':
-        try:
-            with transaction.atomic():
-                for item in citas_para_mostrar:
-                    if not item['factura_generada']:  # Only for non-invoiced appointments
-                        cita = item['cita']
-                        # Create invoice
-                        factura = Factura.objects.create(
-                            paciente=cita.patient,
-                            cita_origen=cita,
-                        )
-                        # Create invoice line
-                        if cita.service:
-                            LineaFactura.objects.create(
-                                factura=factura,
-                                servicio=cita.service,
-                                descripcion_manual=cita.service.name,
-                                cantidad=1,
-                                precio_unitario=Decimal(str(cita.service.price))
-                            )
-                            factura.calcular_totales()
-                            factura.estado = 'EMITIDA'
-                            factura.save()
-                messages.success(request, "Se han generado todas las facturas pendientes.")
-                return redirect('facturas_mutua')
-        except Exception as e:
-            messages.error(request, f"Error al generar las facturas: {str(e)}")
-            return redirect('facturas_mutua')
 
     context = {
         'titulo_pagina': 'Facturación a Mutuas',
-        'citas_info': citas_para_mostrar,
+        'citas_info': citas_info,
+        'mes_actual': current_date.strftime('%Y-%m')
     }
     return render(request, 'financer/facturas_mutua.html', context)

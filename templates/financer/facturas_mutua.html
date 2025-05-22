@@ -8,43 +8,57 @@
     {% load bootstrap5 %}
     {% bootstrap_css %}
     <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+    <style>
+        .content-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
 <div class="navbar-wrapper">
     {% include "base/navbar.html" %}
 </div>
 
-<div class="page-wrapper d-flex flex-column min-vh-100">
+<div class="page-wrapper d-flex flex-column min-vh-100 mt-5">
     <main class="flex-grow-1">
         <div class="container admin-container my-4">
-            <div class="card shadow-lg">
-                <div class="card-header bg-light">
-                    <h2 class="text-center mb-0">Facturación Mensual Mutuas</h2>
+            <div class="content-wrapper">
+                <div class="mb-4">
+                    <a href="{% url 'financer_area' %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Finanzas
+                    </a>
                 </div>
-                <div class="card-body">
-                    <form method="POST" class="mb-4">
-                        {% csrf_token %}
-                        <div class="row align-items-end">
-                            <div class="col-md-6">
-                                <label for="mes" class="form-label">Seleccionar Mes</label>
-                                <input type="month" class="form-control" id="mes" name="mes" required>
-                            </div>
-                            <div class="col-md-6">
-                                <button type="submit" class="btn btn-primary" name="action" value="generate_monthly">
-                                    <i class="fas fa-file-invoice me-2"></i>Generar Factura Mensual
-                                </button>
-                            </div>
-                        </div>
-                    </form>
 
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="card shadow-lg">
+                    <div class="card-header bg-light p-4">
+                        <h2 class="text-center mb-0">Facturación Mensual Mutuas</h2>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="POST" class="mb-4">
+                            {% csrf_token %}
+                            <div class="row align-items-end justify-content-center">
+                                <div class="col-md-6 mb-3">
+                                    <label for="mes" class="form-label">Seleccionar Mes</label>
+                                    <input type="month" class="form-control" id="mes" name="mes" required>
+                                </div>
+                                <div class="col-md-6 text-center">
+                                    <button type="submit" class="btn btn-primary w-100" name="action" value="generate_monthly">
+                                        <i class="fas fa-file-invoice me-2"></i>Generar Factura Mensual
+                                    </button>
+                                </div>
                             </div>
-                        {% endfor %}
-                    {% endif %}
+                        </form>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
