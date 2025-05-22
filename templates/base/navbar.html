@@ -31,6 +31,9 @@
                     <a class="nav-link" href="{% url 'servicios_salud' %}" style="color: white;">Servicios de salud</a>
                 </li>
                 <li class="nav-item mb-2">
+                    <a class="nav-link" href="{% url 'contacto' %}" style="color: white;">Contacto</a>
+                </li>
+                <li class="nav-item mb-2">
                     {% if request.session.employee_id %}
                         <a class="nav-link" href="{% url 'admin_area' %}" style="color: white;">Panel de
                             Administración</a>
@@ -38,19 +41,13 @@
                     <a class="nav-link" href="{% url 'my_appointments' %}" style="color: white;">Mis Citas</a>
                     {% endif %}
                 </li>
-
-                <!-- Nuevo enlace al Perfil -->
-                <li class="nav-item mb-2">
-                    {% if request.session.patient_id %}
-                        <a class="nav-link" href="{% url 'profile' %}" style="color: white;">Perfil</a>
-                    {% endif %}
-                </li>
-
+                <li class="nav-item mb-2"> {% if request.session.patient_id %} <a class="nav-link" href="{% url 'profile' %}" style="color: white;">Perfil</a> {% endif %} </li>
                 <li class="nav-item mb-2">
                     {% if not request.session.employee_id %}
                     <a style="margin-right: 2px" class="btn btn-success"
                        href="{% url 'appointment_list' %}">Pedir Cita</a>
                     {% endif %}
+
                 </li>
                 <li class="nav-item mb-2">
                     {% if request.session.patient_id %}

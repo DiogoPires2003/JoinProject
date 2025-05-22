@@ -1,4 +1,3 @@
-
 navbar-toggler {
     position: relative;
     margin-left: 10px; /* Pushes the button to the right */
@@ -43,4 +42,3 @@ navbar-toggler {
 
 .navbar-collapse.show {
     display: block; /* Ensures the menu is visible when expanded */
-}
