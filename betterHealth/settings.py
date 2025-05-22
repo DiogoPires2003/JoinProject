@@ -36,7 +36,7 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")  # Replace with your email address
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_SSL_CONTEXT = ssl._create_unverified_context()
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 CSRF_TRUSTED_ORIGINS = [
     'https://joinproject.onrender.com',
 ]
