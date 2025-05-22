@@ -10,7 +10,7 @@ bcrypt==3.2.0
 beautifulsoup4==4.13.3
 binaryornot==0.4.4
 blinker==1.4
-Brlapi==0.8.3
+
 certifi==2025.1.31
 cffi==1.17.1
 chardet==5.2.0
