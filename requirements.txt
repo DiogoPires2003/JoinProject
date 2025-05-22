@@ -8,3 +8,4 @@ django-background-tasks~=1.2.8
 python-dotenv==1.1.0
 dj-database-url~=2.3.0
 psycopg2-binary~=2.9.10
+xhtml2pdf==0.2.17
