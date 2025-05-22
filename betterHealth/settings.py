@@ -20,6 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TIME_ZONE = 'Europe/Madrid'
 USE_TZ = True
 
+ALLOWED_HOSTS = ['joinproject.onrender.com', '0.0.0.0']
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -98,12 +100,7 @@ WSGI_APPLICATION = 'betterHealth.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+DATABASES['default'] = dj_database_url.parse("postgresql://django_vxxo_user:AGygWeF0dSKdFlAK7qiSfv9y4MUZvDTV@dpg-d04vbmbe5dus738o59e0-a.frankfurt-postgres.render.com/django_vxxo")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
