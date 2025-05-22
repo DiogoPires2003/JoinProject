@@ -165,3 +165,4 @@ xdg==5
 xhtml2pdf==0.2.17
 xkit==0.0.0
 zipp==3.21.0
+apturl==0.5.2
