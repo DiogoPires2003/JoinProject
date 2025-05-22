@@ -56,5 +56,6 @@ urlpatterns = [
     path('logout2/', logout_view, name='logout_view'),
     path('get-available-hours/', get_available_hours, name='get_available_hours'),
     path("check-attendance/", check_attendance, name="check_attendance"),
+    path('facturas/mutua',facturas_mutua_view, name='facturas_mutua'),
 
 ]

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facturación Mensual | Better Health</title>
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+</head>
+<body>
+<div class="navbar-wrapper">
+    {% include "base/navbar.html" %}
+</div>
+
+<div class="page-wrapper d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container admin-container my-4">
+            <div class="card shadow-lg">
+                <div class="card-header bg-light">
+                    <h2 class="text-center mb-0">Facturación Mensual Mutuas</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="mb-4">
+                        {% csrf_token %}
+                        <div class="row align-items-end">
+                            <div class="col-md-6">
+                                <label for="mes" class="form-label">Seleccionar Mes</label>
+                                <input type="month" class="form-control" id="mes" name="mes" required>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary" name="action" value="generate_monthly">
+                                    <i class="fas fa-file-invoice me-2"></i>Generar Factura Mensual
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+    {% include "base/footer.html" %}
+</div>
+
+{% bootstrap_javascript %}
+</body>
+</html>

@@ -12,11 +12,8 @@ from sprint2.utils import render_to_pdf
 from decimal import Decimal
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q # Para búsquedas complejas
+from django.db.models import Q  # Para búsquedas complejas
 from datetime import datetime
-
-
-
 
 
 def manage_services_view(request):
@@ -126,7 +123,6 @@ def add_service_view(request):
     })
 
 
-
 @financer_required
 def crear_factura_individual_view(request):
     if request.method == 'POST':
@@ -158,7 +154,8 @@ def crear_factura_individual_view(request):
                     factura_a_procesar.calcular_totales()
                     factura_a_procesar.estado = 'EMITIDA'
                     factura_a_procesar.save()
-                    messages.success(request, f"Factura {factura_a_procesar.numero_factura} generada para {cita_a_facturar.patient}.")
+                    messages.success(request,
+                                     f"Factura {factura_a_procesar.numero_factura} generada para {cita_a_facturar.patient}.")
                 else:
                     messages.error(request, f"La cita para {cita_a_facturar.patient} no tiene un servicio asociado.")
                     factura_a_procesar.calcular_totales()
@@ -174,7 +171,8 @@ def crear_factura_individual_view(request):
             # Lógica de generación de PDF
             if action in ["download_pdf", "generate_and_download_pdf"] and factura_a_procesar:
                 if not factura_a_procesar.lineas_factura.exists() or factura_a_procesar.total_neto <= 0:
-                    messages.warning(request, f"La factura {factura_a_procesar.numero_factura} no tiene líneas válidas.")
+                    messages.warning(request,
+                                     f"La factura {factura_a_procesar.numero_factura} no tiene líneas válidas.")
                     return redirect('crear_factura_individual')
 
                 context_pdf = {
@@ -207,7 +205,8 @@ def crear_factura_individual_view(request):
 
     # GET request
     asistencias_confirmadas_ids = Attendance.objects.filter(attended=True).values_list('appointment_id', flat=True)
-    citas_con_asistencia = Appointment.objects.filter(id__in=asistencias_confirmadas_ids).select_related('patient', 'service')
+    citas_con_asistencia = Appointment.objects.filter(id__in=asistencias_confirmadas_ids).select_related('patient',
+                                                                                                         'service')
     citas_para_mostrar = []
 
     for cita_obj in citas_con_asistencia:
@@ -225,9 +224,6 @@ def crear_factura_individual_view(request):
         'citas_info': citas_para_mostrar,
     }
     return render(request, 'financer/crear_factura_individual.html', context)
-
-
-
 
 
 @financer_required
@@ -321,3 +317,65 @@ def descargar_factura_pdf_view(request, numero_factura):
     else:
         # messages.error(request, "Error al generar el PDF.") # Necesitarías pasar request
         raise Http404("Error al generar el PDF o factura no encontrada.")
+
+
+@financer_required
+def facturas_mutua_view(request):
+    # Get all attended appointments with insurance
+    asistencias_confirmadas_ids = Attendance.objects.filter(
+        attended=True
+    ).values_list('appointment_id', flat=True)
+
+    citas_con_asistencia = Appointment.objects.filter(
+        id__in=asistencias_confirmadas_ids,
+        patient__has_insurance=True,  # Only patients with insurance
+        service__covered_by_insurance=True  # Only covered services
+    ).select_related('patient', 'service')
+
+    citas_para_mostrar = []
+
+    for cita_obj in citas_con_asistencia:
+        factura_asociada = Factura.objects.filter(cita_origen=cita_obj).first()
+        if factura_asociada:
+            factura_asociada.calcular_totales()
+
+        citas_para_mostrar.append({
+            'cita': cita_obj,
+            'factura_generada': factura_asociada
+        })
+
+    # Handle bulk invoice generation
+    if request.method == 'POST' and request.POST.get('action') == 'generate_all':
+        try:
+            with transaction.atomic():
+                for item in citas_para_mostrar:
+                    if not item['factura_generada']:  # Only for non-invoiced appointments
+                        cita = item['cita']
+                        # Create invoice
+                        factura = Factura.objects.create(
+                            paciente=cita.patient,
+                            cita_origen=cita,
+                        )
+                        # Create invoice line
+                        if cita.service:
+                            LineaFactura.objects.create(
+                                factura=factura,
+                                servicio=cita.service,
+                                descripcion_manual=cita.service.name,
+                                cantidad=1,
+                                precio_unitario=Decimal(str(cita.service.price))
+                            )
+                            factura.calcular_totales()
+                            factura.estado = 'EMITIDA'
+                            factura.save()
+                messages.success(request, "Se han generado todas las facturas pendientes.")
+                return redirect('facturas_mutua')
+        except Exception as e:
+            messages.error(request, f"Error al generar las facturas: {str(e)}")
+            return redirect('facturas_mutua')
+
+    context = {
+        'titulo_pagina': 'Facturación a Mutuas',
+        'citas_info': citas_para_mostrar,
+    }
+    return render(request, 'financer/facturas_mutua.html', context)
