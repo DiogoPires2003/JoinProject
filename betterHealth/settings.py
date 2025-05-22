@@ -142,10 +142,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # Esto asume que la carpeta 'assets' está en la raíz del proyecto.
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = ('static',)
+STATIC_ROOT = ''
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
