@@ -1,7 +1,9 @@
+from django.views.decorators.http import require_GET
+
 from healthApp.models import Service, Attendance, Appointment
 from django.shortcuts import render, get_object_or_404, redirect
-from sprint2.forms import ServiceForm
-from django.http import HttpResponse, Http404
+from sprint2.forms import ServiceForm, ProfileForm
+from django.http import HttpResponse, Http404, JsonResponse
 import csv
 from io import TextIOWrapper
 from django.contrib import messages
@@ -14,7 +16,12 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q  # Para búsquedas complejas
 from datetime import datetime
+from django.contrib import messages
+from django.contrib.auth.hashers import make_password
+from django.shortcuts import render, redirect, get_object_or_404
 
+from sprint2 import *
+from healthApp.models import Patient
 
 def manage_services_view(request):
     if request.method == 'POST' and request.FILES.get('csv_file'):
@@ -420,3 +427,38 @@ def facturas_mutua_view(request):
         'mes_actual': current_date.strftime('%Y-%m')
     }
     return render(request, 'financer/facturas_mutua.html', context)
+
+
+
+from django.contrib import messages
+from django.contrib.auth.hashers import make_password
+from django.shortcuts import render, redirect, get_object_or_404
+from healthApp.forms import *
+from healthApp.models import Patient
+
+
+# Create your views here.
+def profile_view(request):
+    if 'patient_id' not in request.session:
+        return redirect('login')
+
+    patient = get_object_or_404(Patient, id=request.session['patient_id'])
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=patient)
+        if form.is_valid():
+            # Actualizar contraseña si se proporcionó
+            new_password = form.cleaned_data.get('new_password')
+            if new_password:
+                patient.password = make_password(new_password)
+
+            form.save()
+            messages.success(request, 'Perfil actualizado correctamente')
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=patient)
+
+    return render(request, 'profile.html', {
+        'form': form,
+        'patient': patient
+    })

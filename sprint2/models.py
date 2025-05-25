@@ -144,3 +144,5 @@ class LineaFactura(models.Model):
         super().save(*args, **kwargs)
         # No recalcular totales de factura aquí para cada línea guardada,
         # es más eficiente hacerlo una vez en la vista después de todas las operaciones de líneas.
+
+
