@@ -1,5 +1,5 @@
-from django.contrib import admin
 from .models import Factura, LineaFactura
+from django.contrib import admin
 
 class LineaFacturaInline(admin.TabularInline): # O admin.StackedInline
     model = LineaFactura

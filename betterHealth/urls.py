@@ -38,7 +38,6 @@ urlpatterns = [
     path('services/add/', add_service_view, name='add_service'),
     path('manage-appointments/edit/<int:pk>/', edit_appointment_admin_view, name='edit_appointment_admin'),
     path('manage-appointments/cancel/<int:pk>/', cancel_appointment_admin_view, name='cancel_appointment_admin'),
-
     path('manage-patients/', manage_patients_view, name='manage_patients'),
     path('patients/edit/<int:pk>/', edit_patient_view, name='edit_patient'),
     path('patients/history/<int:pk>/', patient_appointment_history_view, name='patient_appointment_history'),
@@ -57,5 +56,6 @@ urlpatterns = [
     path('get-available-hours/', get_available_hours, name='get_available_hours'),
     path("check-attendance/", check_attendance, name="check_attendance"),
     path('facturas/mutua',facturas_mutua_view, name='facturas_mutua'),
-
+    path('ajax/validar-mutua/', views.validar_mutua, name='ajax_validar_mutua'),
+    path('profile/', profile_view, name='profile')
 ]
