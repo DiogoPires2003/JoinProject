@@ -31,3 +31,4 @@ class AttendanceAdmin(admin.ModelAdmin):
     list_display = ('appointment', 'attended', 'marked_at')  # Customize the columns displayed
     search_fields = ('appointment__patient__first_name', 'appointment__patient__last_name')  # Enable search
     list_filter = ('attended',)  # Add filters for attendance status
+

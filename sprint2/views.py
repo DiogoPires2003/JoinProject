@@ -2,7 +2,7 @@ from django.views.decorators.http import require_GET
 
 from healthApp.models import Service, Attendance, Appointment
 from django.shortcuts import render, get_object_or_404, redirect
-from sprint2.forms import ServiceForm
+from sprint2.forms import ServiceForm, ProfileForm
 from django.http import HttpResponse, Http404, JsonResponse
 import csv
 from io import TextIOWrapper
@@ -428,66 +428,37 @@ def facturas_mutua_view(request):
     }
     return render(request, 'financer/facturas_mutua.html', context)
 
-    from healthApp.forms import *
-    from healthApp.models import Patient
-    from django.contrib import messages
-    from django.contrib.auth.hashers import make_password
-    from django.shortcuts import render, redirect, get_object_or_404
-    # Create your views here.
-    class ProfileForm:
-        pass
 
 
-    def profile_view(request):
-        if 'patient_id' not in request.session:
-            return redirect('login')
+from django.contrib import messages
+from django.contrib.auth.hashers import make_password
+from django.shortcuts import render, redirect, get_object_or_404
+from healthApp.forms import *
+from healthApp.models import Patient
 
-        patient = get_object_or_404(Patient, id=request.session['patient_id'])
 
-        if request.method == 'POST':
-            form = ProfileForm(request.POST, instance=patient)
-            if form.is_valid():
-                # Actualizar contraseña si se proporcionó
-                new_password = form.cleaned_data.get('new_password')
-                if new_password:
-                    patient.password = make_password(new_password)
+# Create your views here.
+def profile_view(request):
+    if 'patient_id' not in request.session:
+        return redirect('login')
 
-                form.save()
-                messages.success(request, 'Perfil actualizado correctamente')
-                return redirect('profile')
-        else:
-            form = ProfileForm(instance=patient)
+    patient = get_object_or_404(Patient, id=request.session['patient_id'])
 
-        return render(request, 'profile.html', {
-            'form': form,
-            'patient': patient
-        })
-    def get_api_token():
-        auth_url = "https://example-mutua.onrender.com/token"
-        auth_data = {
-            "username": config("API_USERNAME"),
-            "password": config("API_PASSWORD"),
-        }
-        resp = requests.post(auth_url, data=auth_data)
-        if resp.status_code == 200:
-            return resp.json().get("access_token")
-        return None
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=patient)
+        if form.is_valid():
+            # Actualizar contraseña si se proporcionó
+            new_password = form.cleaned_data.get('new_password')
+            if new_password:
+                patient.password = make_password(new_password)
 
-    @require_GET
-    def validar_mutua(request):
-        numero = request.GET.get("numero", "").strip()
-        token = get_api_token()
-        if not token:
-            return JsonResponse({"error": "autenticacion_fail"}, status=500)
+            form.save()
+            messages.success(request, 'Perfil actualizado correctamente')
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=patient)
 
-        api_url = f"https://example-mutua.onrender.com/pacientes/verificar/{numero}"
-        headers = {"Authorization": f"Bearer {token}"}
-        try:
-            resp = requests.get(api_url, headers=headers, timeout=5)
-        except requests.RequestException:
-            return JsonResponse({"pertenece_mutua": False})
-
-        if resp.status_code != 200:
-            return JsonResponse({"pertenece_mutua": False})
-        data = resp.json()
-        return JsonResponse({"pertenece_mutua": data.get("pertenece_mutua", False)})
+    return render(request, 'profile.html', {
+        'form': form,
+        'patient': patient
+    })
