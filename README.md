@@ -119,11 +119,8 @@ La aplicación estará disponible en `http://localhost:8000/`.
 
 env/bin/python manage.py test
 
-```
 3. Envía un Pull Request describiendo tu aporte.
 4. Se ejecutará la pipeline de CI/CD que incluye tests, métricas y validación de complejidad.
-
----
 
 ### Miembros del Proyecto
 
@@ -132,7 +129,6 @@ env/bin/python manage.py test
 - **Hamza Boulhani** - [Jamshaa](https://github.com/Jamshaa)
 
 ---
-
 ### Checklist de Documentación
 
 | Ítem                                 | Cumple | Comentarios                                    |
@@ -144,7 +140,6 @@ env/bin/python manage.py test
 | Trazabilidad                         | Sí     | Enlaces a secciones y referencias claras       |
 
 ---
-
 ### Licencia
 
 Este proyecto está licenciado bajo la **MIT License**. Consulta el archivo LICENSE para más detalles.
