@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'sprint2',
     'bootstrap5',
     'background_task',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
