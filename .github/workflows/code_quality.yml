@@ -25,28 +25,41 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Check Cyclomatic Complexity
+      - name: Cyclomatic Complexity must not exceed C
         run: |
-          echo "🔍 Radon - Complejidad ciclomática"
-          radon cc . -a -nc
+          echo "🔍 Radon - Complejidad"
+          radon cc . -nc -s | tee complexity.txt
+          if grep -E ": [DEF]" complexity.txt; then
+            echo "❌ Complejidad muy alta (D, E o F) encontrada"
+            exit 1
+          fi
 
-      - name: Check Maintainability Index
+      - name: Maintainability Index must be >= 50
         run: |
           echo "📉 Radon - Mantenibilidad"
-          radon mi . -nc
+          radon mi . -nc | tee maintainability.txt
+          if grep -E ' - [A-Z] ' maintainability.txt | awk '{print $NF}' | grep -qE '[0-4][0-9]'; then
+            echo "❌ Mantenibilidad menor a 50"
+            exit 1
+          fi
 
-      - name: Check Code Style (flake8)
+      - name: Check Code Style (flake8 must pass)
         run: |
           echo "⚠️ Flake8 - Estilo"
           flake8 .
-
-      - name: Security Check (bandit)
+          
+      - name: Security Check (bandit must have no HIGH issues)
         run: |
           echo "🛡️ Bandit - Seguridad"
-          bandit -r .
+          bandit -r . -ll -o bandit_result.txt -f txt
+          cat bandit_result.txt
+          if grep -q "Severity: HIGH" bandit_result.txt; then
+            echo "❌ Vulnerabilidades HIGH encontradas"
+            exit 1
+          fi
 
-      - name: Run Tests and Measure Coverage
+      - name: Run Tests and Ensure 80% Coverage
         run: |
           echo "🧪 Pytest + Coverage"
           coverage run -m pytest
-          coverage report
+          coverage report --fail-under=80
