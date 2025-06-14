@@ -142,11 +142,23 @@ class Service(models.Model):
 
 
 class Appointment(models.Model):
+    APPOINTMENT_STATES = [
+        ('AUT', 'Autorizada por mutua'),
+        ('DEN', 'Autorizacion denegada'),
+        ('CON', 'Confirmada')
+    ]
+
     patient = models.ForeignKey('Patient', on_delete=models.CASCADE)
     service = models.ForeignKey('Service', on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateField(default=now)
     start_hour = models.TimeField(default=time(9, 0))  # 09:00 por defecto
     end_hour = models.TimeField(default=time(10, 0))
+    state = models.CharField(
+        max_length=3,
+        choices=APPOINTMENT_STATES,
+        default='PEN',
+        verbose_name='Estado'
+    )
 
     def __str__(self):
         return f"{self.patient} - {self.date.strftime('%Y-%m-%d')} {self.start_hour.strftime('%H:%M')} - {self.service or 'No service'}"

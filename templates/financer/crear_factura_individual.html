@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo_pagina|default:"Emitir Factura Individual" }} | Finanzas | Better Health</title>
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .table thead th {
+            background-color: #005f99;
+            color: white;
+            vertical-align: middle;
+        }
+        .action-btn {
+            min-width: 120px;
+            margin-bottom: 5px;
+        }
+        .btn-custom-blue {
+            background-color: #005f99;
+            border-color: #005f99;
+            color: white;
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+        }
+        .btn-custom-blue:hover,
+        .btn-custom-blue:focus,
+        .btn-custom-blue:active {
+            background-color: #004c7a;
+            border-color: #004c7a;
+            color: white;
+        }
+        .card-header-custom {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .icon-muted {
+            color: #6c757d;
+        }
+        .icon-primary-emphasis {
+            color: #005f99;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar-wrapper">
+    {% include "base/navbar.html" %}
+</div>
+
+<div class="page-wrapper d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container admin-container my-4 my-lg-5">
+            <br>
+            <div class="mb-4">
+                <a href="{% url 'financer_area' %}" class="btn btn-custom-blue">
+                    <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Finanzas
+                </a>
+            </div>
+
+            <div class="card shadow-lg rounded-3 overflow-hidden">
+                <div class="card-header card-header-custom p-4 p-lg-5">
+                    <h1 class="text-center mb-0 h2">{{ titulo_pagina|default:"Emitir Factura Individual" }}</h1>
+                </div>
+                <div class="card-body p-4 p-lg-5">
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show mt-3" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <p class="text-center text-muted mb-4">
+                        A continuación se listan las citas con asistencia confirmada.
+                        Puedes generar una nueva factura o descargar una existente.
+                    </p>
+
+                    {% if citas_info %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-user me-2"></i>Paciente</th>
+                                    <th><i class="fas fa-briefcase-medical me-2"></i>Servicio</th>
+                                    <th><i class="fas fa-calendar-alt me-2"></i>Fecha Cita</th>
+                                    <th class="text-center"><i class="fas fa-file-invoice me-2"></i>Estado Factura</th>
+                                    <th class="text-center" style="min-width: 280px;"><i class="fas fa-cogs me-2"></i>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in citas_info %}
+                                    {% with cita=item.cita factura=item.factura_generada %}
+                                    <tr>
+                                        <td>
+                                            <i class="fas fa-user me-2 icon-primary-emphasis"></i>
+                                            {{ cita.patient.first_name }} {{ cita.patient.last_name }}
+                                            <br><small class="text-muted ms-3 ps-1">DNI: {{ cita.patient.dni }}</small>
+                                        </td>
+                                        <td>
+                                            {% if cita.service %}
+                                                <i class="fas fa-notes-medical me-2 icon-muted"></i>
+                                                {{ cita.service.name }}
+                                            {% else %}
+                                                <span class="text-muted">Servicio no especificado</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <i class="fas fa-calendar-check me-2 icon-muted"></i>
+                                            {{ cita.date|date:"d/m/Y" }}
+                                            <br><small class="text-muted ms-3 ps-1">Hora: {{ cita.start_hour|time:"H:i" }}</small>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if factura %}
+                                                <span class="badge bg-success rounded-pill px-3 py-2 fs-6">
+                                                    <i class="fas fa-check-circle me-1"></i>Facturada
+                                                </span>
+                                                <br><small class="text-muted mt-1 d-block">Nº: {{ factura.numero_factura }}</small>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fs-6">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>Pendiente
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if factura %}
+                                                <form method="POST" action="{% url 'crear_factura_individual' %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="appointment_id" value="{{ cita.id }}">
+                                                    <input type="hidden" name="action" value="download_pdf">
+                                                    <button type="submit" class="btn btn-sm btn-custom-blue action-btn">
+                                                        <i class="fas fa-download me-1"></i> Descargar PDF
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <form method="POST" action="{% url 'sprint2:crear_factura_individual' %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="appointment_id" value="{{ cita.id }}">
+                                                    <input type="hidden" name="action" value="generate_and_download_pdf">
+                                                    <button type="submit" class="btn btn-sm btn-custom-blue action-btn">
+                                                        <i class="fas fa-file-invoice-dollar me-1"></i> Generar y Descargar
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endwith %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-light text-center mt-4 border p-4" role="alert">
+                        <i class="fas fa-folder-open fa-2x text-muted mb-2 d-block"></i>
+                        <p class="mb-0">No hay citas con asistencia confirmada para mostrar en este momento.</p>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% include "base/footer.html" %}
+</div>
+
+{% bootstrap_javascript %}
+<script>
+</script>
+</body>
+</html>

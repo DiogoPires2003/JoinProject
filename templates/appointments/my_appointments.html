@@ -41,7 +41,13 @@
                     </div>
                 </div>
                 <div class="appointment-status">
-                    Confirmada
+                    {% if appointment.state == 'AUT' %}
+                        Autorizada por mutua
+                    {% elif appointment.state == 'CON' %}
+                        Confirmada
+                    {% elif appointment.state == 'DEN' %}
+                        Autorización denegada
+                    {% endif %}
                 </div>
                 <div class="appointment-details">
                     <p><strong>Detalles:</strong> Esta es tu cita para el servicio de {{ appointment.service_name }}.
