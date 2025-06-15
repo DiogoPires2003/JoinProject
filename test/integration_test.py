@@ -33,7 +33,7 @@ class FacturaIntegrationTestCase(TestCase):
         factura.calcular_totales()
         self.assertEqual(factura.total_bruto, Decimal('100.00'))
         self.assertEqual(factura.monto_impuesto, Decimal('10.00'))
-        self.assertEqual(factura.total_neto, Decimal('110.00'))  
+        self.assertEqual(factura.total_neto, Decimal('110.00'))
 
         # Cambiar el impuesto al 20% y recalcular
         factura.porcentaje_impuesto = Decimal('20.00')
