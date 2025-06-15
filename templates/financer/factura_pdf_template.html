@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Factura {{ factura.numero_factura }}</title>
+    <style>
+        @page {
+            size: a4 portrait; /* Define el tamaño de la página y orientación */
+            margin: 1.5cm; /* Márgenes de la página */
+            /* Puedes añadir @frame para cabeceras/pies de página si tu librería lo soporta (xhtml2pdf es limitado en esto) */
+        }
+
+        body {
+            font-family: "Helvetica", "Arial", sans-serif; /* Fuentes comunes para PDF */
+            font-size: 10pt; /* Tamaño de fuente base */
+            color: #333333;
+            line-height: 1.4;
+        }
+
+        .header-container,
+        .footer-container {
+            /* Estos son más difíciles de posicionar de forma fija con xhtml2pdf sin trucos CSS avanzados. */
+            /* WeasyPrint maneja mejor @top-center, @bottom-left, etc. dentro de @page. */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 18pt;
+            color: #000000;
+            text-align: center;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .invoice-meta-container {
+            margin-bottom: 25px;
+            /* Usaremos una tabla para alinear mejor los bloques de información */
+            width: 100%;
+        }
+
+        .invoice-meta-container td {
+            vertical-align: top;
+            padding: 5px;
+        }
+
+        .company-details,
+        .client-details,
+        .invoice-info {
+            /* border: 1px solid #eee; /* Descomentar para depurar layout */
+            padding: 10px;
+        }
+
+        .company-details h4,
+        .client-details h4,
+        .invoice-info h4 {
+            font-size: 11pt;
+            margin-top: 0;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #cccccc;
+            padding-bottom: 4px;
+            color: #000000;
+        }
+
+        .company-details p,
+        .client-details p,
+        .invoice-info p {
+            margin: 3px 0;
+            font-size: 9pt;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 25px;
+        }
+
+        .items-table th,
+        .items-table td {
+            border: 1px solid #cccccc;
+            padding: 8px;
+            text-align: left;
+            font-size: 9pt;
+        }
+
+        .items-table th {
+            background-color: #f0f0f0; /* Un gris claro para la cabecera de la tabla */
+            font-weight: bold;
+            color: #000000;
+        }
+
+        .items-table td.text-right,
+        .items-table th.text-right {
+            text-align: right !important;
+        }
+        .items-table td.text-center,
+        .items-table th.text-center {
+            text-align: center !important;
+        }
+
+
+        .totals-section {
+            /* Alinea la tabla de totales a la derecha */
+            margin-top: 20px;
+            /* float: right; /* Float puede ser problemático en algunos renderizadores de PDF */
+            /* width: 45%; */
+            /* Usaremos una tabla con colspan para alinear a la derecha */
+        }
+
+        .totals-table {
+            width: 100%; /* La tabla interna puede ser más pequeña si se quiere */
+            border-collapse: collapse;
+        }
+        .totals-table td {
+            padding: 6px 8px;
+            font-size: 10pt;
+        }
+        .totals-table td.label {
+            font-weight: bold;
+            text-align: right;
+        }
+        .totals-table td.amount {
+            text-align: right;
+        }
+        .totals-table tr.grand-total td {
+            font-size: 12pt;
+            font-weight: bold;
+            border-top: 2px solid #333333;
+            padding-top: 10px;
+        }
+
+        .notes-section {
+            margin-top: 30px;
+            border-top: 1px solid #eeeeee;
+            padding-top: 15px;
+            font-size: 9pt;
+        }
+        .notes-section h4 {
+            font-size: 11pt;
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #000000;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 8pt;
+            color: #777777;
+            margin-top: 40px; /* Espacio antes del pie de página */
+            /* Posicionamiento fijo es complejo, esto es un pie de página al final del contenido */
+            /* border-top: 1px solid #eee; */
+            /* padding-top: 10px; */
+        }
+
+        /* Para evitar que las tablas se dividan de forma extraña entre páginas si es posible */
+        .items-table, .totals-section {
+            -pdf-keep-with-next: true; /* Para xhtml2pdf */
+            /* page-break-inside: avoid !important; /* Estándar, pero no siempre respetado */
+        }
+        tr {
+            /* page-break-inside: avoid !important; */
+        }
+
+    </style>
+</head>
+<body>
+    {# <div class="header-container"> #}
+        {# Si tienes un logo, puedes intentar insertarlo aquí. #}
+        {# <img src="/ruta/absoluta/a/tu/logo.png" alt="Logo" style="max-height: 60px; margin-bottom: 10px;" /> #}
+        {# O si lo pasas como variable de contexto en base64 #}
+        {# {% if logo_base64 %} <img src="data:image/png;base64,{{ logo_base64 }}" style="max-height: 60px; margin-bottom: 10px;" /> {% endif %} #}
+    {# </div> #}
+
+    <h1>Factura</h1>
+
+    <table class="invoice-meta-container">
+        <tr>
+            <td style="width: 50%;">
+                <div class="company-details">
+                    <h4>{{ datos_clinica.nombre|default:"Nombre de tu Clínica" }}</h4>
+                    <p>
+                        {% if datos_clinica.cif %}<strong>CIF:</strong> {{ datos_clinica.cif }}<br>{% endif %}
+                        {% if datos_clinica.direccion %}{{ datos_clinica.direccion|linebreaksbr }}<br>{% endif %}
+                        {% if datos_clinica.telefono %}<strong>Teléfono:</strong> {{ datos_clinica.telefono }}<br>{% endif %}
+                        {% if datos_clinica.email %}<strong>Email:</strong> {{ datos_clinica.email }}{% endif %}
+                    </p>
+                </div>
+            </td>
+            <td style="width: 50%;">
+                <div class="invoice-info">
+                    <h4>Factura N°: {{ factura.numero_factura }}</h4>
+                    <p>
+                        <strong>Fecha Emisión:</strong> {{ factura.fecha_emision|date:"d/m/Y" }}<br>
+                        {% if factura.fecha_vencimiento %}
+                        <strong>Fecha Vencimiento:</strong> {{ factura.fecha_vencimiento|date:"d/m/Y" }}<br>
+                        {% endif %}
+                        <strong>Estado:</strong> {{ factura.get_estado_display }}
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="client-details">
+                    <h4>Cliente:</h4>
+                    {% if factura.paciente %}
+                    <p>
+                        <strong>Nombre:</strong> {{ factura.paciente.first_name }} {{ factura.paciente.last_name }}<br>
+                        {% if factura.paciente.dni %}<strong>DNI/NIF:</strong> {{ factura.paciente.dni }}<br>{% endif %}
+                        {# Añade aquí la dirección del paciente si la tienes y quieres mostrarla #}
+                        {# {% if factura.paciente.direccion_completa %}Dirección: {{ factura.paciente.direccion_completa }}<br>{% endif %} #}
+                        {% if factura.paciente.email %}<strong>Email:</strong> {{ factura.paciente.email }}{% endif %}
+                        {% if factura.paciente.phone %}<strong>Teléfono:</strong> {{ factura.paciente.phone }}{% endif %}
+                    </p>
+                    {% else %}
+                    <p>Cliente no especificado.</p>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Concepto / Descripción</th>
+                <th class="text-center">Cant.</th>
+                <th class="text-right">P. Unitario (€)</th>
+                <th class="text-right">Subtotal (€)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for linea in lineas %} {# 'lineas' debe venir del contexto #}
+            <tr>
+                <td>
+                    {% if linea.servicio %}
+                        {{ linea.servicio.name }}
+                        {% if linea.servicio.description and linea.servicio.description != linea.servicio.name %}
+                            <br><small style="color: #555555; font-size: 8pt;">{{ linea.servicio.description }}</small>
+                        {% endif %}
+                    {% elif linea.descripcion_manual %}
+                        {{ linea.descripcion_manual }}
+                    {% else %}
+                        Concepto no detallado
+                    {% endif %}
+                </td>
+                <td class="text-center">{{ linea.cantidad }}</td>
+                <td class="text-right">{{ linea.precio_unitario|floatformat:2 }}</td>
+                <td class="text-right">{{ linea.subtotal|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align:center; padding: 20px;">No hay conceptos en esta factura.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="totals-table">
+        <tr>
+            <td colspan="2" style="width: 60%;"></td> {# Columna vacía para empujar los totales a la derecha #}
+            <td class="label">Subtotal (Base Imponible):</td>
+            <td class="amount">{{ factura.total_bruto|floatformat:2 }} €</td>
+        </tr>
+        {% if factura.porcentaje_impuesto > 0 %}
+        <tr>
+            <td colspan="2"></td>
+            <td class="label">IVA ({{ factura.porcentaje_impuesto|floatformat:0 }}%):</td> {# floatformat:0 para no mostrar decimales en el porcentaje #}
+            <td class="amount">{{ factura.monto_impuesto|floatformat:2 }} €</td>
+        </tr>
+        {% endif %}
+        <tr class="grand-total">
+            <td colspan="2"></td>
+            <td class="label">TOTAL A PAGAR:</td>
+            <td class="amount">{{ factura.total_neto|floatformat:2 }} €</td>
+        </tr>
+    </table>
+
+
+    {% if factura.notas_adicionales %}
+    <div class="notes-section">
+        <h4>Notas Adicionales:</h4>
+        <p>{{ factura.notas_adicionales|linebreaksbr }}</p>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>
+            {{ datos_clinica.nombre|default:"Nombre de tu Clínica" }}. Gracias por su confianza.<br>
+            {% if factura.metodo_pago_sugerido %}Forma de pago: {{ factura.metodo_pago_sugerido }}.{% endif %}
+            <!-- Puedes añadir información legal o bancaria aquí -->
+        </p>
+    </div>
+
+</body>
+</html>

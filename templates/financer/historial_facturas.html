@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo_pagina|default:"Historial de Facturas" }} | Finanzas | Better Health</title>
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'images/favicon.webp' %}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+    <style>
+        .table thead th {
+            background-color: #005f99;
+            color: white;
+            vertical-align: middle;
+        }
+        .table tbody td {
+            vertical-align: middle;
+        }
+        .action-btn-historial { /* Nueva clase para botones en esta tabla */
+            min-width: 100px;
+        }
+        .filter-form .form-control, .filter-form .form-select {
+            font-size: 0.9rem; /* Hacer los campos de filtro un poco más pequeños */
+        }
+        .pagination .page-link {
+            font-size: 0.9rem;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #005f99;
+            border-color: #005f99;
+        }
+        .btn-custom-blue {
+            background-color: #005f99;
+            border-color: #005f99;
+            color: white;
+        }
+        .btn-custom-blue:hover {
+            background-color: #004c7a;
+            border-color: #004c7a;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar-wrapper">
+    {% include "base/navbar.html" %}
+</div>
+
+<div class="page-wrapper d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <br><br>
+        <div class="container admin-container my-5">
+            <div class="card shadow-lg rounded-3 overflow-hidden">
+                <div class="card-body p-lg-5">
+
+                    <div class="mb-4">
+                        <a href="{% url 'financer_area' %}" class="btn btn-custom-blue">
+                            <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Finanzas
+                        </a>
+                    </div>
+
+                    <h1 class="text-center mb-4">{{ titulo_pagina|default:"Historial de Facturas" }}</h1>
+                    <p class="text-center text-muted mb-4">
+                        Consulta y gestiona todas las facturas emitidas.
+                    </p>
+
+                    <!-- Formulario de Filtros -->
+                    <form method="get" class="filter-form mb-4 p-3 border rounded bg-light">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-3">
+                                <label for="numero_factura" class="form-label">Nº Factura</label>
+                                <input type="text" name="numero_factura" id="numero_factura" class="form-control" value="{{ query_numero }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="paciente_nombre" class="form-label">Paciente (Nombre/DNI)</label>
+                                <input type="text" name="paciente_nombre" id="paciente_nombre" class="form-control" value="{{ query_paciente_nombre }}">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="estado" class="form-label">Estado</label>
+                                <select name="estado" id="estado" class="form-select">
+                                    <option value="">Todos</option>
+                                    {% for valor, texto in estados_factura %}
+                                    <option value="{{ valor }}" {% if query_estado == valor %}selected{% endif %}>{{ texto }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="fecha_desde" class="form-label">Desde</label>
+                                <input type="date" name="fecha_desde" id="fecha_desde" class="form-control" value="{{ query_fecha_desde }}">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="fecha_hasta" class="form-label">Hasta</label>
+                                <input type="date" name="fecha_hasta" id="fecha_hasta" class="form-control" value="{{ query_fecha_hasta }}">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-filter me-1"></i> Filtrar
+                                </button>
+                                <a href="{% url 'historial_facturas' %}" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-undo me-1"></i> Limpiar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- Fin Formulario de Filtros -->
+
+
+                    {% if facturas_pagina %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Nº Factura</th>
+                                    <th>Paciente</th>
+                                    <th>Fecha Emisión</th>
+                                    <th class="text-end">Total Neto (€)</th>
+                                    <th class="text-center">Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for factura_obj in facturas_pagina %}
+                                <tr>
+                                    <td><strong>{{ factura_obj.numero_factura }}</strong></td>
+                                    <td>
+                                        {% if factura_obj.paciente %}
+                                            {{ factura_obj.paciente.first_name }} {{ factura_obj.paciente.last_name }}
+                                            <br><small class="text-muted">DNI: {{ factura_obj.paciente.dni }}</small>
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ factura_obj.fecha_emision|date:"d/m/Y" }}</td>
+                                    <td class="text-end">{{ factura_obj.total_neto|floatformat:2 }}</td>
+                                    <td class="text-center">
+                                        <span class="badge
+                                            {% if factura_obj.estado == 'PAGADA' %}bg-success
+                                            {% elif factura_obj.estado == 'EMITIDA' %}bg-primary
+                                            {% elif factura_obj.estado == 'VENCIDA' %}bg-danger
+                                            {% elif factura_obj.estado == 'ANULADA' %}bg-dark
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ factura_obj.get_estado_display }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{% url 'descargar_factura_pdf' numero_factura=factura_obj.numero_factura %}" class="btn btn-sm btn-info action-btn-historial" title="Descargar PDF">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    {% if facturas_pagina.has_other_pages %}
+                    <nav aria-label="Navegación de facturas" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if facturas_pagina.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{{ request.GET.urlencode|cut:'&page='|cut:request.GET.page }}" aria-label="Primero">«</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ facturas_pagina.previous_page_number }}{{ request.GET.urlencode|cut:'&page='|cut:request.GET.page }}" aria-label="Anterior">‹</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled"><span class="page-link">«</span></li>
+                                <li class="page-item disabled"><span class="page-link">‹</span></li>
+                            {% endif %}
+
+                            {% for i in facturas_pagina.paginator.page_range %}
+                                {% if facturas_pagina.number == i %}
+                                    <li class="page-item active" aria-current="page"><span class="page-link">{{ i }}</span></li>
+                                {% elif i > facturas_pagina.number|add:'-3' and i < facturas_pagina.number|add:'3' %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ i }}{{ request.GET.urlencode|cut:'&page='|cut:request.GET.page }}">{{ i }}</a></li>
+                                {% elif i == facturas_pagina.number|add:'-3' or i == facturas_pagina.number|add:'3' %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if facturas_pagina.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ facturas_pagina.next_page_number }}{{ request.GET.urlencode|cut:'&page='|cut:request.GET.page }}" aria-label="Siguiente">›</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ facturas_pagina.paginator.num_pages }}{{ request.GET.urlencode|cut:'&page='|cut:request.GET.page }}" aria-label="Último">»</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled"><span class="page-link">›</span></li>
+                                <li class="page-item disabled"><span class="page-link">»</span></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+
+
+                    {% else %}
+                    <div class="alert alert-info text-center mt-4" role="alert">
+                        <i class="fas fa-info-circle me-2"></i> No hay facturas registradas que coincidan con los criterios de búsqueda.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% include "base/footer.html" %}
+</div>
+
+{% bootstrap_javascript %}
+
+</body>
+</html>

@@ -69,6 +69,7 @@
                                     <th>Paciente</th>
                                     <th>Servicio</th>
                                     <th>Hora</th>
+                                    <th>Estado</th>
                                     <th>Acción</th>
                                 </tr>
                                 </thead>
@@ -88,18 +89,34 @@
                                             {{ item.start_hour }}
                                         </td>
                                         <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="form-check me-3">
-                                                    <input type="checkbox" class="form-check-input" name="attended"
-                                                           id="attended-{{ item.id }}"
-                                                           {% if item.attended %}checked{% endif %}>
-                                                    <label class="form-check-label"
-                                                           for="attended-{{ item.id }}">Asistió</label>
-                                                </div>
-                                                <button type="submit" class="btn btn-sm btn-outline-primary"
-                                                        name="appointment_id" value="{{ item.id }}">
-                                                    <i class="fas fa-save"></i> Guardar
-                                                </button>
+                                        <span class="badge {% if item.attended %}bg-success{% else %}bg-danger{% endif %}">
+                                            {% if item.attended %}
+                                                <i class="fas fa-check me-1"></i>Asistió
+                                            {% else %}
+                                                <i class="fas fa-times me-1"></i>No asistió
+                                            {% endif %}
+                                        </span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <form method="post" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="appointment_id" value="{{ item.id }}">
+                                                    <input type="hidden" name="attended" value="true">
+                                                    <button type="submit"
+                                                            class="attendance-btn btn btn-sm {{ item.attended|yesno:'btn-success,btn-outline-success' }}">
+                                                        <i class="fas fa-check me-1"></i> Asistió
+                                                    </button>
+                                                </form>
+                                                <form method="post" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="appointment_id" value="{{ item.id }}">
+                                                    <input type="hidden" name="attended" value="false">
+                                                    <button type="submit"
+                                                            class="attendance-btn btn btn-sm {{ item.attended|yesno:'btn-outline-danger,btn-danger' }}">
+                                                        <i class="fas fa-times me-1"></i> No asistió
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
@@ -133,7 +150,22 @@
 </html>
 <style>
     .table thead th {
-    background-color: var(--azul-profesional); /* Azul profesional */
-    color: var(--blanco); /* Texto blanco para contraste */
-}
+        background-color: var(--azul-profesional); /* Azul profesional */
+        color: var(--blanco); /* Texto blanco para contraste */
+    }
+
+    .attendance-btn {
+        min-width: 100px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.25rem !important; /* Force consistent border radius */
+    }
+
+    .btn-outline-danger:focus,
+    .btn-danger:focus,
+    .btn-outline-success:focus,
+    .btn-success:focus {
+        border-radius: 0.25rem !important; /* Maintain radius when focused/active */
+    }
 </style>

@@ -49,7 +49,6 @@ MIDDLEWARE = [
     'healthApp.middleware.PatientAuthenticationMiddleware',
 ]
 
-ALLOWED_HOSTS = ['joinproject.onrender.com', '0.0.0.0']# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -59,6 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'healthApp',
+    'sprint2',
     'bootstrap5',
     'background_task',
 ]
