@@ -36,7 +36,7 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")  # Replace with your email address
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_SSL_CONTEXT = ssl._create_unverified_context()
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 CSRF_TRUSTED_ORIGINS = [
     'https://joinproject.onrender.com',
 ]
@@ -143,8 +143,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = ('static',)
-STATIC_ROOT = ''
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # Esto asume que la carpeta 'assets' está en la raíz del proyecto.
+]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
