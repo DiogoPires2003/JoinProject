@@ -7,30 +7,174 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Better Health - Centros</title>
   {% bootstrap_css %}
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
-  <!-- Font Awesome for icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <!-- Enlace al CSS específico para Centros -->
-  <link rel="stylesheet" href="{% static 'css/centros.css' %}">
+
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #F5F5F5;
+      color: #03222F;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .info-section {
+      padding: 3rem 0;
+      background-color: #F5F5F5;
+    }
+
+    .container.content {
+      padding: 2rem 80px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      color: #005F99;
+    }
+
+    p {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      text-align: justify;
+    }
+
+    .centers-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      justify-content: center;
+      margin-bottom: 4rem;
+    }
+
+    .center-card {
+      background-color: #fff;
+      border-radius: 0.75rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 420px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .center-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    .center-image {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .center-info {
+      padding: 1.5rem;
+    }
+
+    .center-info h2 {
+      font-size: 1.85rem;
+      color: #005F99;
+      margin-bottom: 1rem;
+    }
+
+    .center-info p {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 1rem;
+    }
+
+    .center-info a.btn {
+      background-color: #005F99;
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      text-decoration: none;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .center-info a.btn:hover {
+      background-color: #00477a;
+    }
+
+    .map-section {
+      text-align: center;
+      margin-top: 4rem;
+    }
+
+    .map-section h2,
+    .map-section p {
+      text-align: center;
+    }
+
+    .map-image {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      border-radius: 0.75rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .container.content {
+        padding: 1.5rem 20px;
+      }
+
+      .center-card {
+        max-width: 100%;
+      }
+
+      .center-image {
+        height: 200px;
+      }
+
+      .map-image {
+        max-width: 100%;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1199px) {
+      .center-card {
+        max-width: 48%;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .center-card {
+        max-width: 420px;
+      }
+    }
+  </style>
 </head>
+
 <body>
   <div class="navbar-wrapper">
     {% include 'base/navbar.html' %}
   </div>
 
   <main>
-    <!-- Sección de Información y Presentación de Centros -->
     <section class="info-section">
       <div class="container content">
         <h1>Nuestros Centros</h1>
         <p>
-          Conoce nuestros centros de atención médica, distribuidos en las principales ciudades. Cada centro está equipado con tecnología de punta y un equipo profesional comprometido con tu salud. Nos esforzamos por ofrecer una atención personalizada y accesible en cada ubicación.
+          Conoce nuestros centros de atención médica, distribuidos en las principales ciudades. Cada centro está equipado con tecnología de punta y un equipo profesional comprometido con tu salud.
         </p>
 
-        <!-- Lista de Centros -->
         <div class="centers-list">
-          <!-- Centro Activo -->
           <article class="center-card">
             <img src="{% static 'images/betterhealth.webp' %}" alt="Centro Salud Lleida" class="center-image">
             <div class="center-info">
@@ -42,24 +186,22 @@
             </div>
           </article>
 
-          <!-- Centro en Construcción -->
           <article class="center-card">
             <img src="{% static 'images/centro_construcción.webp' %}" alt="Centro en Construcción" class="center-image">
             <div class="center-info">
               <h2>Centro en Construcción</h2>
               <p>
-                Próximamente inauguraremos este centro para ampliar nuestra red de atención médica. ¡Mantente atento a las novedades y sé el primero en conocer nuestras innovadoras instalaciones!
+                Próximamente inauguraremos este centro para ampliar nuestra red de atención médica. ¡Mantente atento a las novedades!
               </p>
               <a href="#" class="btn btn-secondary disabled">Próximamente</a>
             </div>
           </article>
         </div>
 
-        <!-- Sección Mapa Interactivo -->
         <div class="map-section">
           <h2>Encuentra tu Centro</h2>
           <p>
-            Utiliza nuestro mapa interactivo para localizar el centro de atención más cercano a tu ubicación y descubre cómo llegar de forma rápida y sencilla.
+            Utiliza nuestro mapa interactivo para localizar el centro más cercano.
           </p>
           <img src="{% static 'images/mapa.webp' %}" alt="Mapa de centros" class="map-image">
         </div>
@@ -67,7 +209,7 @@
     </section>
   </main>
 
-{% include 'base/footer.html' %}
+  {% include 'base/footer.html' %}
   {% bootstrap_javascript %}
 </body>
 </html>
