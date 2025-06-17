@@ -62,7 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'healthApp',
     'sprint2',
-    'bootstrap5',
+    'django_bootstrap5',
     'background_task',
 ]
 
