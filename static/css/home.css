@@ -1,159 +1,75 @@
-/* 1. Variables globales y reset */
-:root {
-  --primary: #000000;
-  --secondary: #007acc;
-  --accent: #ffffff;
-  --bg-light: #f4f7fa;
-  --text-dark: #346d8f;
-  --white: #ffffff;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  font-family: 'Open Sans', sans-serif;
-  background-color: var(--bg-light);
-  color: var(--text-dark);
+    font-family: 'Open Sans', sans-serif;
+    background-color: #F5F5F5;
+    color: #03222F;
+    margin: 0;
+    padding: 0;
 }
 
-a {
-  text-decoration: none;
+h1, h2, h3 {
+    font-family: 'Montserrat', sans-serif;
 }
 
-/* 2. Hero Section */
+.brand-logo {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.btn-primary {
+    background-color: #005F99;
+    border: none;
+}
+
+.btn-success {
+    background-color: #4ACF50;
+    border: none;
+}
+
 .hero {
-  position: relative;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: var(--white);
-  padding: 6rem 1rem;
-  background-attachment: fixed;
+    background-color: #005F99;
+    color: #fff;
+    padding: 4rem 0;
 }
 
-.hero .overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+.hero .hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
 }
 
-.hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.hero-title {
-  font-size: 3rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
-}
-
-.hero-subtitle {
-  font-size: 1.75rem;
-  margin-bottom: 2rem;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-}
-
-.hero-btn {
-  background-color: var(--accent);
-  border: none;
-  padding: 0.85rem 1.75rem;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 5px;
-  transition: transform 0.3s ease;
-}
-.hero-btn:hover {
-  transform: translateY(-3px);
+.hero .hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
 }
 
 .hero-img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-  transition: transform 0.3s ease;
-}
-.hero-img:hover {
-  transform: scale(1.03);
+    max-width: 100%;
+    height: auto;
 }
 
-/* 3. Sección de Servicios */
 .info-section {
-  padding: 4rem 1rem;
-  background-color: var(--bg-light);
-}
-
-.section-header h2 {
-  font-size: 2.75rem;
-  color: var(--primary);
-  margin-bottom: 0.5rem;
-}
-
-.section-header p {
-  font-size: 1.125rem;
-  color: #555;
+    padding: 3rem 0;
+    background-color: #F5F5F5;
 }
 
 .info-card {
-  border: none;
-  background-color: var(--white);
-  border-radius: 0.75rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.info-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-}
-.info-card .card-img-top {
-  height: 220px;
-  object-fit: cover;
-}
-.info-card .card-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  color: var(--primary);
-}
-.info-card .card-text {
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  color: #555;
+    border: none;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-/* 4. Animaciones y Footer */
-.fade-in {
-  animation: fadeIn 1s ease-in-out;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
 }
 
 footer {
-  background-color: var(--text-dark);
-  color: var(--white);
-  padding: 2rem 1rem;
-  text-align: center;
-  margin-top: auto;
+    background-color: #03222F;
+    color: #fff;
+    padding: 2rem 0;
+    text-align: center;
+    margin-top: auto;
 }
 
-/* 5. Responsividad */
-@media (max-width: 768px) {
-  .hero-title { font-size: 2.5rem; }
-  .hero-subtitle { font-size: 1.25rem; }
-  .info-card .card-img-top { height: 180px; }
-  .section-header h2 { font-size: 2rem; }
-  .hero-btn {
-    margin-bottom: 1rem;
-    width: 100%;
-    text-align: center;
-  }
-}

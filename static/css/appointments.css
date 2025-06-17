@@ -163,7 +163,7 @@ small { font-size: 14px; font-weight: 400; }
 }
 
 .hour-btn:hover {
-    background-color: var(--azul-profesional);
+    background-color: #e9ecef;
 }
 
 .hour-btn.selected {

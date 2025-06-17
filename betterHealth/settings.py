@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'healthApp.middleware.PatientAuthenticationMiddleware',
 ]
 
+ALLOWED_HOSTS = ['joinproject.onrender.com', '0.0.0.0']# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
