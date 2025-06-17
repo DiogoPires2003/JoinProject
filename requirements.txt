@@ -165,3 +165,8 @@ xdg==5
 xhtml2pdf==0.2.17
 xkit==0.0.0
 zipp==3.21.0
+radon==6.0.1
+flake8==7.0.0
+bandit==1.7.8
+coverage==7.5.3
+pytest==8.2.2
