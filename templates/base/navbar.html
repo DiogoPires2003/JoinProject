@@ -29,9 +29,6 @@
                     <a class="nav-link" href="{% url 'centros' %}" style="color: white;">Centros</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a class="nav-link" href="{% url 'informacion_util' %}" style="color: white;">Información útil</a>
-                </li>
-                <li class="nav-item mb-2">
                     <a class="nav-link" href="{% url 'servicios_salud' %}" style="color: white;">Servicios de salud</a>
                 </li>
                 <li class="nav-item mb-2">
@@ -39,15 +36,22 @@
                 </li>
                 <li class="nav-item mb-2">
                     {% if request.session.employee_id %}
-                        <a class="nav-link" href="{% url 'admin_area' %}" style="color: white;">Panel de
-                            Administración</a>
+                        {% comment %} Lógica basada en las variables booleanas de sesión is_financer e is_admin {% endcomment %}
+                        {% if request.session.is_financer %}
+                            <a class="nav-link" href="{% url 'financer_area' %}" style="color: white;">Panel de Finanzas</a> {# URL coincide con tu código: 'financer_area' #}
+                        {% elif request.session.is_admin %}
+                            <a class="nav-link" href="{% url 'admin_area' %}" style="color: white;">Panel de Administración</a>
+                        {% else %}
+                            {# Opcional: un enlace por defecto si es empleado pero no admin ni financer #}
+                            <a class="nav-link" href="#" style="color: white;">Portal Empleado</a>
+                        {% endif %}
                     {% else %}
-                    <a class="nav-link" href="{% url 'my_appointments' %}" style="color: white;">Mis Citas</a>
+                        <a class="nav-link" href="{% url 'my_appointments' %}" style="color: white;">Mis Citas</a>
                     {% endif %}
                 </li>
 
                 <li class="nav-item mb-2">
-                    {% if not request.session.employee_id %}
+                    {% if not request.session.employee_id and request.session.patient_id %} {# Modificado para asegurar que es un paciente y no un empleado #}
                     <a style="margin-right: 2px" class="btn btn-success"
                        href="{% url 'appointment_list' %}">Pedir Cita</a>
                     {% endif %}
@@ -57,8 +61,7 @@
                     {% if request.session.patient_id %}
                         <a style="margin-left: 2px" class="btn btn-success" href="{% url 'logout' %}">Cerrar sesión</a>
                     {% elif request.session.employee_id %}
-                        <a style="margin-left: 2px" class="btn btn-success" href="{% url 'logout_view' %}">Cerrar
-                            sesión</a>
+                        <a style="margin-left: 2px" class="btn btn-success" href="{% url 'logout_view' %}">Cerrar sesión</a>
                     {% else %}
                         <a style="margin-left: 2px" class="btn btn-success" href="{% url 'login' %}">Acceder/Registrar-se</a>
                     {% endif %}

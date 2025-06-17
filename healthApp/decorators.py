@@ -16,3 +16,11 @@ def redirect_admin(view_func):
             return redirect('admin_area')
         return view_func(request, *args, **kwargs)
     return wrapper
+
+def financer_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.session.get('is_financer'):
+            return redirect('home')
+        return view_func(request, *args, **kwargs)
+    return wrapper
