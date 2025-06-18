@@ -136,7 +136,7 @@ class Service(models.Model):
         ('CIR', 'Cirugía'),
     ]
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=256)
     description = models.TextField(blank=True)
     service_type = models.CharField(
         max_length=3,
