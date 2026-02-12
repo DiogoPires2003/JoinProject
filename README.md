@@ -96,28 +96,8 @@ Authorization: Bearer <token>
    ```bash
    python manage.py test
    ```
-
 ## Diagrama de componentes
-graph LR
-    A[Usuario] --> B[Cliente (HTML/CSS/JS)]
-    B --> C[Controlador Django]
-    C --> D[Servicio de Pacientes]
-    C --> E[Servicio de Citas]
-    C --> F[Servicio de Catálogo]
-    C --> G[Servicio de Autenticación]
-    subgraph Persistencia
-      D & E & F & G --> H[(Base de datos: SQLite/PostgreSQL)]
-    end
-    C --> I[API Externa de Servicios]
-## Checklist de calidad (ISO/IEC 25000)
-
-| Característica     | Criterio                                                     | Cumplido (✓/✗) | Observaciones                           |
-| ------------------ | ------------------------------------------------------------ | -------------- | --------------------------------------- |
-| **Entendibilidad** | Lenguaje claro y coherente en toda la documentación          | ✓              | Uso de términos definidos y ejemplos    |
-| **Completitud**    | Cobertura de instalación, uso, API, desarrollo y despliegue  | ✓              | Falta incluir endpoints avanzados       |
-| **Consistencia**   | Formato uniforme (nomenclatura, estilo de código y markdown) | ✓              | Se unificó estilo de cabeceras y listas |
-| **Exactitud**      | Información correcta y actualizada                           | ✓              | Variables de entorno definidas en .env  |
-| **Trazabilidad**   | Referencias cruzadas (diagrama, código, ejemplos)            | ✓              | Diagramas enlazados y ejemplos de API   |
+![Diagrama](https://raw.githubusercontent.com/DiogoPires2003/JoinProject/main/static/images/diagramac.png)
 
 ## Contribución
 
